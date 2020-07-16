@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+
+        <variable
+            name="viewModel"
+            type="az.rabita.lifestep.viewModel.fragment.profileDetails.UserProfileViewModel" />
+    </data>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:clipChildren="false"
+        android:clipToPadding="false">
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="#CC000000" />
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/content"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:background="@drawable/background_dialog"
+            android:clickable="true"
+            android:clipChildren="false"
+            android:clipToPadding="false"
+            android:elevation="20dp"
+            android:focusable="true">
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/text_view_wanted_steps"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/page_padding_normal"
+                android:layout_marginTop="@dimen/page_padding_large"
+                android:layout_marginEnd="@dimen/page_padding_normal"
+                android:fontFamily="@font/gilroy_bold"
+                android:text="@string/desired_steps_count_send"
+                android:textAlignment="center"
+                android:textSize="20sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/input_layout_steps"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="250dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/page_padding_normal"
+                android:layout_marginTop="5dp"
+                android:layout_marginEnd="@dimen/page_padding_normal"
+                app:boxStrokeColor="@color/light_gray_text_color"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/text_view_wanted_steps">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/edit_text_amount"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:fontFamily="@font/gilroy_bold"
+                    android:imeOptions="actionDone"
+                    android:inputType="numberDecimal"
+                    android:text="@={viewModel.sendStepInput}"
+                    android:textAlignment="center"
+                    android:textColor="@color/bottom_navigation_view_color"
+                    android:textSize="40sp"
+                    app:hint="@{viewModel.personalInfo.balance}" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/button_send_steps"
+                android:layout_width="0dp"
+                android:layout_height="@dimen/button_height_48"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="15dp"
+                android:fontFamily="@font/gilroy_bold"
+                android:insetLeft="0dp"
+                android:insetTop="0dp"
+                android:insetRight="0dp"
+                android:insetBottom="0dp"
+                android:letterSpacing="0"
+                android:text="@string/send"
+                android:textAlignment="center"
+                android:textAllCaps="false"
+                android:textColor="@android:color/white"
+                android:textSize="16sp"
+                app:backgroundTint="@color/bottom_navigation_view_color"
+                app:cornerRadius="15dp"
+                app:icon="@drawable/ic_heart_white"
+                app:iconGravity="textStart"
+                app:iconSize="20dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="@+id/input_layout_steps"
+                app:layout_constraintStart_toStartOf="@+id/input_layout_steps"
+                app:layout_constraintTop_toBottomOf="@id/input_layout_steps"
+                app:layout_constraintWidth_percent="0.5" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </FrameLayout>
+</layout>

@@ -1,0 +1,209 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="viewModel"
+            type="az.rabita.lifestep.viewModel.fragment.profileDetails.ProfileDetailsViewModel" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:clickable="true"
+        android:focusable="true"
+        tools:context=".ui.fragment.profileDetails.ProfileDetailsFragment">
+
+        <ImageButton
+            android:id="@+id/image_button_back"
+            android:layout_width="20dp"
+            android:layout_height="0dp"
+            android:background="?selectableItemBackgroundBorderless"
+            android:scaleType="center"
+            android:src="@drawable/ic_back"
+            app:layout_constraintBottom_toBottomOf="@id/text_view_title"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.05"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@id/text_view_title" />
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/text_view_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/page_padding_large"
+            android:fontFamily="@font/gilroy_bold"
+            android:text="@string/text_profile"
+            android:textSize="29sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.05"
+            app:layout_constraintStart_toEndOf="@id/image_button_back"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageButton
+            android:id="@+id/image_button_edit_profile"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@android:color/transparent"
+            android:src="@drawable/ic_edit_profile"
+            app:layout_constraintBottom_toBottomOf="@id/text_view_title"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.85"
+            app:layout_constraintStart_toEndOf="@id/text_view_title"
+            app:layout_constraintTop_toTopOf="@id/text_view_title" />
+
+        <androidx.core.widget.NestedScrollView
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_marginTop="20dp"
+            android:fillViewport="true"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/text_view_title">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/constraint_layout_content"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:clickable="true"
+                android:clipChildren="false"
+                android:clipToPadding="false"
+                android:focusable="true">
+
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/card_image_container"
+                    android:layout_width="60dp"
+                    android:layout_height="60dp"
+                    android:layout_marginTop="25dp"
+                    app:cardCornerRadius="20dp"
+                    app:cardElevation="0dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.1"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent">
+
+                    <ImageView
+                        android:id="@+id/image_view_profile"
+                        imageUrl="@{viewModel.profileInfo.url}"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:scaleType="centerCrop" />
+
+                </com.google.android.material.card.MaterialCardView>
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/text_view_full_name"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="30dp"
+                    android:layout_marginEnd="30dp"
+                    android:fontFamily="@font/gilroy_bold"
+                    android:text="@{@string/two_lined_format(viewModel.profileInfo.name, viewModel.profileInfo.surname)}"
+                    android:textColor="@color/dark_text_color"
+                    android:textSize="22sp"
+
+                    app:layout_constraintBottom_toBottomOf="@+id/card_image_container"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@id/card_image_container"
+                    app:layout_constraintTop_toTopOf="@id/card_image_container" />
+
+                <LinearLayout
+                    android:id="@+id/linear_layout_status"
+                    android:layout_width="wrap_content"
+                    android:layout_height="100dp"
+                    android:layout_marginTop="40dp"
+                    android:background="@drawable/ic_bg_status"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/card_image_container"
+                    app:layout_constraintWidth_percent="0.8">
+
+                    <com.google.android.material.textview.MaterialTextView
+                        android:id="@+id/text_view_friends"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical|center_horizontal"
+                        android:layout_weight="0.75"
+                        android:fontFamily="@font/gilroy_medium"
+                        android:textAlignment="center"
+                        android:textColor="@android:color/white"
+                        android:textSize="16sp" />
+
+                    <com.google.android.material.textview.MaterialTextView
+                        android:id="@+id/text_view_total_steps"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical|center_horizontal"
+                        android:layout_weight="1"
+                        android:fontFamily="@font/gilroy_medium"
+                        android:textAlignment="center"
+                        android:textColor="@android:color/white"
+                        android:textSize="16sp" />
+
+                </LinearLayout>
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/text_view_join_date"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="15dp"
+                    android:fontFamily="@font/gilroy_medium"
+                    android:text="@{@string/join_date_text(viewModel.profileInfo.createdDate)}"
+                    android:textAlignment="center"
+                    android:textColor="@color/gray_text_color"
+                    android:textSize="16sp"
+                    app:layout_constraintEnd_toEndOf="@id/linear_layout_status"
+                    app:layout_constraintStart_toStartOf="@id/linear_layout_status"
+                    app:layout_constraintTop_toBottomOf="@id/linear_layout_status" />
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/text_view_daily"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="30dp"
+                    android:onClick="@{()->viewModel.onDailyTextClick()}"
+                    android:text="@string/daily"
+                    app:isBold="@{viewModel.dailyTextSelected}"
+                    app:layout_constraintStart_toStartOf="@+id/linear_layout_status"
+                    app:layout_constraintTop_toBottomOf="@id/text_view_join_date" />
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/text_view_monthly"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="20dp"
+                    android:onClick="@{()->viewModel.onMonthlyTextClick()}"
+                    android:text="@string/monthly"
+                    app:isBold="@{viewModel.monthlyTextSelected}"
+                    app:layout_constraintBottom_toBottomOf="@id/text_view_daily"
+                    app:layout_constraintStart_toEndOf="@id/text_view_daily"
+                    app:layout_constraintTop_toTopOf="@id/text_view_daily" />
+
+                <az.rabita.lifestep.ui.custom.BarDiagram
+                    android:id="@+id/diagram"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:layout_marginTop="25dp"
+                    android:layout_marginBottom="130dp"
+                    android:background="@drawable/background_diagram"
+                    android:clickable="true"
+                    android:elevation="20dp"
+                    android:focusable="true"
+                    android:theme="@style/DiagramTheme"
+                    app:data="@{viewModel.stats}"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintDimensionRatio="14:10"
+                    app:layout_constraintEnd_toEndOf="@id/linear_layout_status"
+                    app:layout_constraintStart_toStartOf="@id/linear_layout_status"
+                    app:layout_constraintTop_toBottomOf="@id/text_view_daily"
+                    app:layout_constraintVertical_bias="0" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+        </androidx.core.widget.NestedScrollView>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</layout>

@@ -1,0 +1,313 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="viewModel"
+            type="az.rabita.lifestep.viewModel.fragment.home.HomeViewModel" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:animateLayoutChanges="true"
+        tools:context=".ui.fragment.home.HomeFragment">
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/text_view_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/page_padding_large"
+            android:fontFamily="@font/gilroy_bold"
+            android:text="@string/main"
+            android:textAppearance="@style/TextAppearance.MaterialComponents.Headline5"
+            android:textSize="29sp"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <EditText
+            android:id="@+id/edit_text_search_bar"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/gilroy_regular"
+            android:hint="@string/search"
+            android:inputType="textCapWords"
+            android:text="@={viewModel.searchInput}"
+            android:visibility="invisible"
+            app:layout_constraintBottom_toBottomOf="@id/image_button_search"
+            app:layout_constraintEnd_toStartOf="@id/image_button_search"
+            app:layout_constraintStart_toStartOf="@id/text_view_title"
+            app:layout_constraintTop_toTopOf="@id/image_button_search" />
+
+        <FrameLayout
+            android:id="@+id/frame_layout_search_results"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:background="@drawable/edit_text_background"
+            android:elevation="20dp"
+            android:padding="20dp"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="@id/image_button_notification"
+            app:layout_constraintStart_toStartOf="@id/text_view_title"
+            app:layout_constraintTop_toBottomOf="@id/edit_text_search_bar">
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recycler_view_results"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                tools:listitem="@layout/item_search_result" />
+
+            <ProgressBar
+                android:id="@+id/progress_bar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center" />
+
+        </FrameLayout>
+
+        <ImageButton
+            android:id="@+id/image_button_search"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="?selectableItemBackgroundBorderless"
+            android:src="@drawable/ic_search"
+            app:layout_constraintBottom_toBottomOf="@id/text_view_title"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.8"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@id/text_view_title" />
+
+        <View
+            android:id="@+id/seperator"
+            android:layout_width="2dp"
+            android:layout_height="0dp"
+            android:background="@color/main_text_color"
+            app:layout_constraintBottom_toBottomOf="@id/image_button_search"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.15"
+            app:layout_constraintStart_toEndOf="@id/image_button_search"
+            app:layout_constraintTop_toTopOf="@id/image_button_search" />
+
+        <ImageButton
+            android:id="@+id/image_button_notification"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="?selectableItemBackgroundBorderless"
+            android:src="@drawable/ic_notification"
+            app:layout_constraintBottom_toBottomOf="@+id/seperator"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.25"
+            app:layout_constraintStart_toEndOf="@id/seperator"
+            app:layout_constraintTop_toTopOf="@+id/seperator" />
+
+        <androidx.core.widget.NestedScrollView
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_marginTop="15dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/text_view_title">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/scrollable_content"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:clickable="true"
+                android:clipChildren="false"
+                android:focusable="true">
+
+                <FrameLayout
+                    android:id="@+id/tab_layout_container"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:background="@drawable/background_tab_layout"
+                    android:elevation="20dp"
+                    android:padding="7dp"
+
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintVertical_bias="0.0"
+                    app:layout_constraintWidth_percent="0.9">
+
+                    <com.google.android.material.tabs.TabLayout
+                        android:id="@+id/tab_layout"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@android:color/transparent"
+                        app:tabIndicator="@drawable/tab_indicator"
+                        app:tabIndicatorAnimationDuration="200"
+                        app:tabIndicatorColor="@color/bottom_navigation_view_color"
+                        app:tabIndicatorFullWidth="true"
+                        app:tabIndicatorHeight="48dp"
+                        app:tabMode="fixed"
+                        app:tabRippleColor="@android:color/transparent"
+                        app:tabSelectedTextColor="@android:color/white"
+                        app:tabTextAppearance="@style/WeekTabsAppearance"
+                        app:tabTextColor="#000000" />
+
+                </FrameLayout>
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/gilroy_semibold"
+                    android:text="@string/today"
+                    android:textColor="@color/gray_text_color"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    app:layout_constraintBottom_toTopOf="@+id/text_view_count"
+                    app:layout_constraintEnd_toEndOf="@+id/seek_bar"
+                    app:layout_constraintStart_toStartOf="@+id/seek_bar" />
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/text_view_count"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/gilroy_bold"
+                    android:text="0"
+                    android:textAlignment="center"
+                    android:textSize="54sp"
+                    android:textStyle="bold"
+                    app:layout_constraintBottom_toBottomOf="@+id/seek_bar"
+                    app:layout_constraintEnd_toEndOf="@id/seek_bar"
+                    app:layout_constraintStart_toStartOf="@id/seek_bar"
+                    app:layout_constraintTop_toTopOf="@+id/seek_bar" />
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/gilroy_semibold"
+                    android:text="@string/steps"
+                    android:textAppearance="@style/TextAppearance.MaterialComponents.Body1"
+                    android:textColor="@color/gray_text_color"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    app:layout_constraintEnd_toEndOf="@+id/seek_bar"
+                    app:layout_constraintStart_toStartOf="@+id/seek_bar"
+                    app:layout_constraintTop_toBottomOf="@id/text_view_count" />
+
+                <az.rabita.lifestep.ui.custom.CircleSeekBar
+                    android:id="@+id/seek_bar"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:layout_marginTop="20dp"
+                    android:clickable="false"
+                    android:focusable="false"
+                    android:rotation="180"
+                    app:csb_arcColor="@color/progress_background_color"
+                    app:csb_arcWidth="8dp"
+                    app:csb_isShowText="false"
+                    app:csb_max="100"
+                    app:csb_progressColor="@color/bottom_navigation_view_color"
+                    app:csb_progressWidth="14dp"
+                    app:csb_thumbDrawable="@drawable/ic_seek_bar"
+                    app:csb_thumbSize="8dp"
+                    app:layout_constraintDimensionRatio="1:1"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/tab_layout_container"
+                    app:layout_constraintVertical_bias="0.050000012"
+                    app:layout_constraintWidth_percent="0.5" />
+
+                <az.rabita.lifestep.ui.custom.DailyStatCard
+                    android:id="@+id/card_converted_steps"
+                    android:layout_width="0dp"
+                    android:layout_height="@dimen/button_height_48"
+                    android:layout_marginStart="@dimen/page_padding_large"
+                    android:layout_marginTop="30dp"
+                    app:daily_stat_card_count="1234"
+                    app:daily_stat_card_image="@drawable/ic_heart"
+                    app:daily_stat_card_title="@string/converted_steps"
+                    app:layout_constraintEnd_toStartOf="@id/card_unconverted_steps"
+                    app:layout_constraintHeight_percent="0.07"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/seek_bar"
+                    app:layout_constraintVertical_bias="0.01999998" />
+
+                <az.rabita.lifestep.ui.custom.DailyStatCard
+                    android:id="@+id/card_unconverted_steps"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:layout_marginEnd="@dimen/page_padding_large"
+                    app:daily_stat_card_count="1234"
+                    app:daily_stat_card_image="@drawable/ic_shoe"
+                    app:daily_stat_card_title="@string/unconverted_steps"
+                    app:layout_constraintBottom_toBottomOf="@+id/card_converted_steps"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@id/card_converted_steps"
+                    app:layout_constraintTop_toTopOf="@+id/card_converted_steps" />
+
+                <az.rabita.lifestep.ui.custom.DailyStatCard
+                    android:id="@+id/card_distance"
+                    android:layout_width="0dp"
+                    android:layout_height="@dimen/button_height_48"
+                    android:layout_marginTop="20dp"
+                    app:daily_stat_card_count="1234"
+                    app:daily_stat_card_image="@drawable/ic_km"
+                    app:daily_stat_card_title="@string/kilometer"
+                    app:layout_constraintEnd_toStartOf="@id/card_calorie"
+                    app:layout_constraintHeight_percent="0.07"
+                    app:layout_constraintHorizontal_chainStyle="packed"
+                    app:layout_constraintStart_toStartOf="@id/card_converted_steps"
+                    app:layout_constraintTop_toBottomOf="@id/card_converted_steps"
+                    app:layout_constraintVertical_bias="0.050000012" />
+
+                <az.rabita.lifestep.ui.custom.DailyStatCard
+                    android:id="@+id/card_calorie"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:layout_marginEnd="@dimen/page_padding_large"
+                    app:daily_stat_card_count="1234"
+                    app:daily_stat_card_image="@drawable/ic_calorie"
+                    app:daily_stat_card_title="@string/calorie"
+                    app:layout_constraintBottom_toBottomOf="@+id/card_distance"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@id/card_distance"
+                    app:layout_constraintTop_toTopOf="@+id/card_distance" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/button_convert_steps"
+                    android:layout_width="0dp"
+                    android:layout_height="@dimen/button_height_62"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginTop="30dp"
+                    android:layout_marginEnd="10dp"
+                    android:layout_marginBottom="120dp"
+                    android:fontFamily="@font/gilroy_semibold"
+                    android:insetLeft="0dp"
+                    android:insetTop="0dp"
+                    android:insetRight="0dp"
+                    android:insetBottom="0dp"
+                    android:letterSpacing="0"
+                    android:text="@string/convert_life_step"
+                    android:textAllCaps="false"
+                    android:textColor="@android:color/white"
+                    android:textSize="18sp"
+                    app:backgroundTint="@color/balance_header_background_color"
+                    app:cornerRadius="10dp"
+                    app:icon="@drawable/ic_heart_white"
+                    app:iconGravity="textStart"
+                    app:iconPadding="10dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="@id/tab_layout_container"
+                    app:layout_constraintHeight_percent="0.076"
+                    app:layout_constraintHorizontal_bias="1.0"
+                    app:layout_constraintStart_toStartOf="@+id/tab_layout_container"
+                    app:layout_constraintTop_toBottomOf="@+id/card_distance"
+                    app:layout_constraintVertical_bias="0.25" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+        </androidx.core.widget.NestedScrollView>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</layout>

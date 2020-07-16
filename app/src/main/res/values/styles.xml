@@ -1,0 +1,101 @@
+<resources>
+
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="Theme.MaterialComponents.Light.NoActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/main_text_color</item>
+        <item name="colorPrimaryDark">@color/bottom_navigation_view_color</item>
+        <item name="colorAccent">@color/bottom_navigation_view_color</item>
+        <item name="android:textColor">@color/main_text_color</item>
+        <item name="android:windowActionBarOverlay">true</item>
+    </style>
+
+    <style name="WeekTabsAppearance" parent="@android:style/TextAppearance.Widget.TabWidget">
+        <item name="android:textAllCaps">false</item>
+        <item name="android:textColor">@color/tab_text_selector</item>
+        <item name="android:textSize">15sp</item>
+        <item name="fontFamily">@font/gilroy_bold</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="HistoryTabsAppearance" parent="@android:style/TextAppearance.Widget.TabWidget">
+        <item name="android:textAllCaps">false</item>
+        <item name="android:textColor">@color/gray_text_color</item>
+        <item name="android:textSize">16sp</item>
+        <item name="fontFamily">@font/gilroy_semibold</item>
+    </style>
+
+    <style name="ProfileTabsAppearance" parent="@android:style/TextAppearance.Widget.TabWidget">
+        <item name="android:textAllCaps">false</item>
+        <item name="android:textColor">#314559</item>
+        <item name="android:textSize">18sp</item>
+        <item name="fontFamily">@font/gilroy_medium</item>
+    </style>
+
+    <style name="FriendTabsAppearance" parent="@android:style/TextAppearance.Widget.TabWidget">
+        <item name="android:textAllCaps">false</item>
+        <item name="android:textColor">#314559</item>
+        <item name="android:textSize">16sp</item>
+        <item name="fontFamily">@font/gilroy_medium</item>
+    </style>
+
+    <style name="DiagramTheme" parent="Theme.MaterialComponents.Light.NoActionBar">
+        <item name="fontFamily">@font/gilroy_medium</item>
+        <item name="android:textSize">12sp</item>
+        <item name="android:textColor">@color/gray_text_color</item>
+    </style>
+
+    <style name="PinViewTheme" parent="Theme.MaterialComponents.Light.NoActionBar">
+        <item name="android:fontFamily">@font/gilroy_bold</item>
+    </style>
+
+    <style name="authenticationInputLayout" parent="Widget.MaterialComponents.TextInputLayout.FilledBox.Dense">
+        <item name="android:textColorHint">@color/gray_text_color</item>
+        <item name="hintTextColor">@color/gray_text_color</item>
+        <item name="boxBackgroundColor">@android:color/white</item>
+        <item name="boxStrokeColor">@color/light_gray_text_color</item>
+    </style>
+
+    <style name="authenticationInputTextAppearance" parent="TextAppearance.AppCompat">
+        <item name="android:textColor">@color/dark_text_color</item>
+        <item name="android:fontFamily">@font/gilroy_medium</item>
+        <item name="android:textSize">18sp</item>
+    </style>
+
+    <style name="DialogTheme" parent="AppTheme">
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowFullscreen">true</item>
+        <item name="android:windowIsFloating">false</item>
+    </style>
+
+    <style name="NormalButton" parent="Widget.MaterialComponents.Button">
+        <item name="android:insetTop">0dp</item>
+        <item name="android:insetBottom">0dp</item>
+        <item name="android:insetLeft">0dp</item>
+        <item name="android:insetRight">0dp</item>
+        <item name="android:letterSpacing">0</item>
+        <item name="android:textAllCaps">false</item>
+    </style>
+
+    <style name="OutlinedButton" parent="Widget.MaterialComponents.Button.OutlinedButton">
+        <item name="android:insetTop">0dp</item>
+        <item name="android:insetBottom">0dp</item>
+        <item name="android:insetLeft">0dp</item>
+        <item name="android:insetRight">0dp</item>
+        <item name="android:letterSpacing">0</item>
+        <item name="android:textAllCaps">false</item>
+    </style>
+
+    <style name="styleProfileDiagramTabUnselectedText">
+        <item name="android:fontFamily">@font/gilroy_medium</item>
+        <item name="android:textSize">18sp</item>
+        <item name="android:textColor">@color/dark_text_color</item>
+    </style>
+
+    <style name="styleProfileDiagramTabSelectedText">
+        <item name="android:fontFamily">@font/gilroy_bold</item>
+        <item name="android:textSize">18sp</item>
+        <item name="android:textColor">@color/dark_text_color</item>
+    </style>
+
+</resources>

@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "472442484197",
+    "firebase_url": "https://lifesteps-862f2.firebaseio.com",
+    "project_id": "lifesteps-862f2",
+    "storage_bucket": "lifesteps-862f2.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:472442484197:android:7105ef78ec4da402496b0c",
+        "android_client_info": {
+          "package_name": "az.rabita.healingsteps"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "472442484197-sa31m7dajooils7tfmvmgmlt33t7iufa.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "az.rabita.healingsteps",
+            "certificate_hash": "b3c9476a58b6f3dd3c9e312308a5ff7a704eef7c"
+          }
+        },
+        {
+          "client_id": "472442484197-uh8u4nd2bp7nmc7ljvj1g4tgs0oi9k06.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBeHr0BPSiuoNbBQxLt-Cpo_cSwGJjYSUk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "472442484197-uh8u4nd2bp7nmc7ljvj1g4tgs0oi9k06.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

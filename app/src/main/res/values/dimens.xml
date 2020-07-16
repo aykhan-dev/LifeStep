@@ -1,0 +1,24 @@
+<resources>
+
+    <!-- custom progress bar dimens -->
+    <dimen name="default_stroke_width">7dp</dimen>
+    <dimen name="default_background_stroke_width">3dp</dimen>
+
+    <dimen name="page_padding_large">35dp</dimen>
+    <dimen name="page_padding_normal">25dp</dimen>
+
+    <dimen name="profile_image_diameter">55dp</dimen>
+
+    <dimen name="fab_diameter">70dp</dimen>
+
+    <dimen name="home_page_card_size">57dp</dimen>
+
+    <dimen name="button_height_62">67dp</dimen>
+    <dimen name="button_height_48">53dp</dimen>
+    <dimen name="button_height_50">55dp</dimen>
+    <dimen name="button_height_32">37dp</dimen>
+
+    <dimen name="loading_gif_size">50dp</dimen>
+    <dimen name="home_page_card_size_small">47dp</dimen>
+
+</resources>

@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="data"
+            type="az.rabita.lifestep.pojo.apiPOJO.content.DonorsContentPOJO" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginBottom="15dp"
+        android:background="@drawable/background_friends_item"
+        android:clipChildren="false"
+        android:clipToPadding="false"
+        android:elevation="20dp">
+
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/card_image_container"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginStart="10dp"
+            android:layout_marginBottom="10dp"
+            app:cardElevation="7dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintDimensionRatio="8:10"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintWidth_percent="0.2">
+
+            <ImageView
+                android:id="@+id/image_view_profile"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="centerCrop"
+                app:imageUrl="@{data.url}" />
+
+        </com.google.android.material.card.MaterialCardView>
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/text_view_full_name"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="15dp"
+            android:layout_marginTop="22.5dp"
+            android:layout_marginEnd="15dp"
+            android:fontFamily="@font/gilroy_semibold"
+            android:text="@{data.fullName}"
+            android:textColor="@color/dark_text_color"
+            android:textSize="18sp"
+            app:layout_constraintEnd_toStartOf="@id/image_view_medal"
+            app:layout_constraintStart_toEndOf="@id/card_image_container"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="Vahid Quluzude" />
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/text_view_step_count"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="10dp"
+            android:elevation="20dp"
+            android:fontFamily="@font/gilroy_semibold"
+            android:text="@{@string/friends_balance(data.count)}"
+            android:textColor="@color/gray_text_color"
+            android:textSize="16sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="@id/text_view_full_name"
+            app:layout_constraintStart_toStartOf="@id/text_view_full_name"
+            app:layout_constraintTop_toBottomOf="@id/text_view_full_name"
+            app:layout_constraintVertical_bias="0"
+            tools:text="1500 addım" />
+
+        <ImageView
+            android:id="@+id/image_view_medal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="15dp"
+            android:elevation="20dp"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/text_view_full_name"
+            app:layout_constraintTop_toTopOf="@id/text_view_full_name" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</layout>

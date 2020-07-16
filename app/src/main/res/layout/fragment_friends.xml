@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+
+        <variable
+            name="viewModel"
+            type="az.rabita.lifestep.viewModel.fragment.friends.FriendsViewModel" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/default_background_color">
+
+        <ImageButton
+            android:id="@+id/image_button_back"
+            android:layout_width="20dp"
+            android:layout_height="0dp"
+            android:background="?selectableItemBackgroundBorderless"
+            android:scaleType="center"
+            android:src="@drawable/ic_back"
+            app:layout_constraintBottom_toBottomOf="@id/text_view_friends"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.05"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@id/text_view_friends" />
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/text_view_friends"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/page_padding_large"
+            android:fontFamily="@font/gilroy_bold"
+            android:text="@string/text_friends_title"
+            android:textSize="29sp"
+
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.05"
+            app:layout_constraintStart_toEndOf="@id/image_button_back"
+            app:layout_constraintTop_toTopOf="parent">
+
+        </com.google.android.material.textview.MaterialTextView>
+
+        <com.google.android.material.tabs.TabLayout
+            android:id="@+id/tab_layout_friends"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/page_padding_normal"
+            android:layout_marginTop="10dp"
+            android:layout_marginEnd="@dimen/page_padding_normal"
+            android:background="@android:color/transparent"
+            app:layout_constraintEnd_toEndOf="@id/text_view_friends"
+            app:layout_constraintHorizontal_bias="0"
+            app:layout_constraintStart_toStartOf="@id/text_view_friends"
+            app:layout_constraintTop_toBottomOf="@id/text_view_friends"
+            app:tabIndicatorFullWidth="false"
+            app:tabIndicatorHeight="0dp"
+            app:tabMode="scrollable"
+            app:tabRippleColor="@android:color/transparent"
+            app:tabSelectedTextColor="@color/main_text_color"
+            app:tabTextAppearance="@style/FriendTabsAppearance">
+
+        </com.google.android.material.tabs.TabLayout>
+
+        <androidx.viewpager2.widget.ViewPager2
+            android:id="@+id/view_pager"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tab_layout_friends" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

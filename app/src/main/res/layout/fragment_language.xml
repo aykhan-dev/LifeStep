@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="viewModel"
+            type="az.rabita.lifestep.viewModel.fragment.language.LanguageViewModel" />
+    </data>
+
+    <androidx.constraintlayout.motion.widget.MotionLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:clipChildren="false"
+        app:layoutDescription="@xml/shifting_scene"
+        tools:context=".ui.fragment.language.LanguageFragment">
+
+        <ImageButton
+            android:id="@+id/image_button_back"
+            android:layout_width="20dp"
+            android:layout_height="0dp"
+            android:background="?selectableItemBackgroundBorderless"
+            android:scaleType="center"
+            android:src="@drawable/ic_back"
+            app:layout_constraintBottom_toBottomOf="@id/text_view_title"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.05"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@id/text_view_title" />
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/text_view_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/page_padding_large"
+            android:fontFamily="@font/gilroy_bold"
+            android:text="@string/language_selection"
+            android:textSize="29sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.05"
+            app:layout_constraintStart_toEndOf="@id/image_button_back"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <androidx.core.widget.NestedScrollView
+            android:id="@+id/scroll_content"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:fillViewport="true"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintHeight_percent="0.89"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="1">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/constraint_layout_content"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@drawable/background_auth_panel"
+                android:clipChildren="false"
+                android:clipToPadding="false"
+                android:elevation="20dp"
+                android:padding="@dimen/page_padding_large">
+
+                <az.rabita.lifestep.ui.custom.CustomSwitch
+                    android:id="@+id/switcher_az"
+                    android:layout_width="50dp"
+                    android:layout_height="25dp"
+                    android:background="@drawable/background_custom_switch"
+                    android:padding="5dp"
+                    app:layout_constraintBottom_toBottomOf="@id/text_view_az"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@id/text_view_az" />
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/text_view_az"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/gilroy_semibold"
+                    android:text="@string/az_lang"
+                    android:textColor="@color/dark_text_color"
+                    android:textSize="26sp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <az.rabita.lifestep.ui.custom.CustomSwitch
+                    android:id="@+id/switcher_en"
+                    android:layout_width="50dp"
+                    android:layout_height="25dp"
+                    android:background="@drawable/background_custom_switch"
+                    android:padding="5dp"
+                    app:layout_constraintBottom_toBottomOf="@id/text_view_en"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@id/text_view_en" />
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/text_view_en"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:fontFamily="@font/gilroy_semibold"
+                    android:text="@string/en_lang"
+                    android:textColor="@color/dark_text_color"
+                    android:textSize="26sp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/text_view_az" />
+
+                <az.rabita.lifestep.ui.custom.CustomSwitch
+                    android:id="@+id/switcher_ru"
+                    android:layout_width="50dp"
+                    android:layout_height="25dp"
+                    android:background="@drawable/background_custom_switch"
+                    android:padding="5dp"
+                    app:layout_constraintBottom_toBottomOf="@id/text_view_ru"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@id/text_view_ru" />
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/text_view_ru"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:fontFamily="@font/gilroy_semibold"
+                    android:text="@string/ru_lang"
+                    android:textColor="@color/dark_text_color"
+                    android:textSize="26sp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/text_view_en" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+        </androidx.core.widget.NestedScrollView>
+
+    </androidx.constraintlayout.motion.widget.MotionLayout>
+
+</layout>

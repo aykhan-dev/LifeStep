@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph_main_screen"
+    app:startDestination="@id/homeFragment">
+
+    <fragment
+        android:id="@+id/walletFragment"
+        android:name="az.rabita.lifestep.ui.fragment.wallet.WalletFragment"
+        android:label="WalletFragment"
+        tools:layout="@layout/fragment_wallet" />
+    <fragment
+        android:id="@+id/adsFragment"
+        android:name="az.rabita.lifestep.ui.fragment.ads.AdsFragment"
+        android:label="AdsFragment"
+        tools:layout="@layout/fragment_ads" />
+
+    <fragment
+        android:id="@+id/homeFragment"
+        android:name="az.rabita.lifestep.ui.fragment.home.HomeFragment"
+        android:label="HomeFragment"
+        tools:layout="@layout/fragment_home" >
+        <action
+            android:id="@+id/action_homeFragment_to_notificationsFragment"
+            app:destination="@id/notificationsFragment" />
+        <action
+            android:id="@+id/action_homeFragment_to_userProfileFragment"
+            app:destination="@id/userProfileFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/userProfileFragment"
+        android:name="az.rabita.lifestep.ui.fragment.userProfile.UserProfileFragment"
+        android:label="UserProfileFragment"
+        tools:layout="@layout/fragment_user_profile">
+        <argument
+            android:name="userId"
+            app:argType="string" />
+        <action
+            android:id="@+id/action_userProfileFragment_to_sendStepDialogFragment"
+            app:destination="@id/sendStepDialogFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/notificationsFragment"
+        android:name="az.rabita.lifestep.ui.fragment.notifications.NotificationsFragment"
+        android:label="NotificationsFragment"
+        tools:layout="@layout/fragment_notifications"/>
+
+    <include app:graph="@navigation/nav_graph_settings" />
+    <include app:graph="@navigation/nav_graph_categories" />
+    <dialog
+        android:id="@+id/sendStepDialogFragment"
+        android:name="az.rabita.lifestep.ui.dialog.sendStep.SendStepDialogFragment"
+        android:label="SendStepDialogFragment"
+        tools:layout="@layout/fragment_send_step_dialog">
+        <argument
+            android:name="userId"
+            app:argType="string" />
+    </dialog>
+
+</navigation>

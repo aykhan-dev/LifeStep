@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<MotionScene xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:motion="http://schemas.android.com/apk/res-auto">
+
+    <Transition
+        motion:constraintSetEnd="@id/scene_end"
+        motion:constraintSetStart="@id/scene_start"
+        motion:duration="300">
+
+    </Transition>
+
+    <ConstraintSet android:id="@+id/scene_start">
+
+        <Constraint
+            android:id="@+id/text_view_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/gilroy_extrabold"
+            android:text="@string/auth_title"
+            android:textColor="@android:color/white"
+            android:scaleX="1.0"
+            android:scaleY="1.0"
+            motion:layout_constraintBottom_toTopOf="@id/frame_layout_container"
+            motion:layout_constraintEnd_toEndOf="parent"
+            motion:layout_constraintHorizontal_bias="0.15"
+            motion:layout_constraintStart_toStartOf="parent"
+            motion:layout_constraintTop_toTopOf="parent"
+            motion:layout_constraintVertical_bias="0.2" />
+
+        <Constraint
+            android:id="@+id/image_running"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_marginEnd="-260dp"
+            android:src="@drawable/img_auth"
+            android:scaleX="1.0"
+            android:scaleY="1.0"
+            motion:layout_constraintBottom_toBottomOf="parent"
+            motion:layout_constraintEnd_toEndOf="parent"
+            motion:layout_constraintHeight_percent="0.55"
+            motion:layout_constraintStart_toStartOf="parent"
+            motion:layout_constraintTop_toTopOf="parent"
+            motion:layout_constraintVertical_bias="0.175" />
+
+        <Constraint
+            android:id="@+id/frame_layout_container"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:background="@drawable/background_auth_panel"
+            motion:layout_constraintBottom_toBottomOf="parent"
+            motion:layout_constraintEnd_toEndOf="parent"
+            motion:layout_constraintHeight_percent="0.50"
+            motion:layout_constraintStart_toStartOf="parent" />
+
+    </ConstraintSet>
+
+    <ConstraintSet android:id="@+id/scene_end">
+
+        <Constraint
+            android:id="@+id/text_view_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/gilroy_extrabold"
+            android:text="@string/auth_title"
+            android:textColor="@android:color/white"
+            android:scaleX="0.9"
+            android:scaleY="0.9"
+            motion:layout_constraintBottom_toTopOf="@id/frame_layout_container"
+            motion:layout_constraintEnd_toEndOf="parent"
+            motion:layout_constraintHorizontal_bias="0.15"
+            motion:layout_constraintStart_toStartOf="parent"
+            motion:layout_constraintTop_toTopOf="parent"
+            motion:layout_constraintVertical_bias="0.5" />
+
+        <Constraint
+            android:id="@+id/image_running"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_marginEnd="-250dp"
+            android:src="@drawable/img_auth"
+            motion:layout_constraintBottom_toBottomOf="parent"
+            motion:layout_constraintEnd_toEndOf="parent"
+            motion:layout_constraintHeight_percent="0.35"
+            motion:layout_constraintStart_toStartOf="parent"
+            motion:layout_constraintTop_toTopOf="parent"
+            motion:layout_constraintVertical_bias="0.05" />
+
+        <Constraint
+            android:id="@+id/frame_layout_container"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:background="@drawable/background_auth_panel"
+            motion:layout_constraintBottom_toBottomOf="parent"
+            motion:layout_constraintEnd_toEndOf="parent"
+            motion:layout_constraintHeight_percent="0.7"
+            motion:layout_constraintStart_toStartOf="parent" />
+
+    </ConstraintSet>
+
+</MotionScene>

@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="viewModel"
+            type="az.rabita.lifestep.viewModel.activity.main.MainViewModel" />
+
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/default_background_color"
+        tools:context=".ui.activity.main.MainActivity">
+
+        <fragment
+            android:id="@+id/fragment_main_host"
+            android:name="androidx.navigation.fragment.NavHostFragment"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:defaultNavHost="true"
+            app:navGraph="@navigation/nav_graph_main_screen" />
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fab"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginBottom="40dp"
+            android:onClick="@{()->viewModel.changePage(2)}"
+            app:backgroundTint="@color/bottom_navigation_view_color"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintDimensionRatio="1:1"
+            app:layout_constraintEnd_toEndOf="@+id/custom_curved_layout"
+            app:layout_constraintHorizontal_bias="0.498"
+            app:layout_constraintStart_toStartOf="@+id/custom_curved_layout"
+            app:layout_constraintVertical_bias="0.945"
+            app:layout_constraintWidth_percent="0.19"
+            app:tint="@android:color/white" />
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:elevation="18dp"
+            android:src="@drawable/ic_home"
+            app:layout_constraintBottom_toBottomOf="@id/fab"
+            app:layout_constraintEnd_toEndOf="@id/fab"
+            app:layout_constraintStart_toStartOf="@id/fab"
+            app:layout_constraintTop_toTopOf="@id/fab" />
+
+        <az.rabita.lifestep.ui.custom.CustomCurvedLayout
+            android:id="@+id/custom_curved_layout"
+            android:layout_width="match_parent"
+            android:layout_height="70dp"
+            android:layout_gravity="bottom"
+            android:clickable="true"
+            android:focusable="true"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="1">
+
+            <ImageView
+                android:id="@+id/image_view_donation"
+                icon_donation="@{viewModel.indexOfSelectedPage}"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:onClick="@{()->viewModel.changePage(0)}"
+                android:scaleType="center"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintWidth_percent="0.2" />
+
+            <ImageView
+                android:id="@+id/image_view_wallet"
+                icon_wallet="@{viewModel.indexOfSelectedPage}"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:onClick="@{()->viewModel.changePage(1)}"
+                android:scaleType="center"
+                app:layout_constraintStart_toEndOf="@id/image_view_donation"
+                app:layout_constraintWidth_percent="0.2" />
+
+            <ImageView
+                android:id="@+id/image_view_ads"
+                icon_ads="@{viewModel.indexOfSelectedPage}"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:onClick="@{()->viewModel.changePage(3)}"
+                android:scaleType="center"
+                app:layout_constraintEnd_toStartOf="@id/image_view_settings"
+                app:layout_constraintWidth_percent="0.2" />
+
+            <ImageView
+                android:id="@+id/image_view_settings"
+                icon_settings="@{viewModel.indexOfSelectedPage}"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:onClick="@{()->viewModel.changePage(4)}"
+                android:scaleType="center"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintWidth_percent="0.2" />
+
+        </az.rabita.lifestep.ui.custom.CustomCurvedLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</layout>

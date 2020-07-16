@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="viewModel"
+            type="az.rabita.lifestep.viewModel.fragment.forgotPassword.ForgotPasswordViewModel" />
+
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:clipChildren="false"
+        android:clipToPadding="false"
+        tools:context=".ui.fragment.pin.PinFragment">
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/text_view_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/gilroy_bold"
+            android:text="@string/confirm_account"
+            android:textColor="@color/dark_text_color"
+            android:textSize="22sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageButton
+            android:id="@+id/image_button_back"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_marginStart="@dimen/page_padding_normal"
+            android:background="?android:selectableItemBackgroundBorderless"
+            android:src="@drawable/ic_back"
+            android:tint="@color/blue"
+            app:layout_constraintBottom_toBottomOf="@id/text_view_title"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@id/text_view_title" />
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/text_view_instruction"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="18dp"
+            android:fontFamily="@font/gilroy_regular"
+            android:text="@string/confirm_account_instruction"
+            android:textAlignment="center"
+            android:textColor="@color/gray_text_color"
+            android:textSize="16sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/text_view_title" />
+
+        <az.rabita.lifestep.ui.custom.PinView
+            android:id="@+id/pin_view"
+            android:layout_width="wrap_content"
+            android:layout_height="?actionBarSize"
+            android:layout_marginTop="@dimen/page_padding_large"
+            android:theme="@style/PinViewTheme"
+            app:accentRequiresFocus="false"
+            app:accentType="none"
+            app:digitBackground="@drawable/edit_text_background"
+            app:digitElevation="20dp"
+            app:digitHeight="60dp"
+            app:digitSpacing="15dp"
+            app:digitTextColor="@color/dark_text_color"
+            app:digitTextSize="25sp"
+            app:digitWidth="60dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/text_view_instruction"
+            app:mask=""
+            app:numDigits="4"
+            app:pinAccentColor="@android:color/transparent"
+            app:pinInputType="number" />
+
+        <com.google.android.material.textview.MaterialTextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:fontFamily="@font/gilroy_regular"
+            android:text="@string/try_again_later"
+            android:textColor="@color/gray_text_color"
+            android:textSize="12sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/pin_view" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/button_confirm"
+            android:layout_width="match_parent"
+            android:layout_height="?actionBarSize"
+            android:layout_margin="@dimen/page_padding_normal"
+            android:drawableEnd="@drawable/ic_confirm"
+            android:enabled="@{viewModel.statePinConfirmButtonEnable}"
+            android:fontFamily="@font/gilroy_semibold"
+            android:insetLeft="0dp"
+            android:insetTop="0dp"
+            android:insetRight="0dp"
+            android:insetBottom="0dp"
+            android:onClick="@{()->viewModel.onPinConfirmClick()}"
+            android:text="@string/confirm"
+            android:textAlignment="center"
+            android:textAllCaps="false"
+            android:textSize="16sp"
+            app:backgroundTint="@color/confirm_button_selector"
+            app:cornerRadius="10dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</layout>

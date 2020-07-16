@@ -1,0 +1,308 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="viewModel"
+            type="az.rabita.lifestep.viewModel.fragment.editProfile.EditProfileViewModel" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".ui.fragment.editProfile.EditProfileFragment">
+
+        <ImageButton
+            android:id="@+id/image_button_back"
+            android:layout_width="20dp"
+            android:layout_height="0dp"
+            android:background="?selectableItemBackgroundBorderless"
+            android:scaleType="center"
+            android:src="@drawable/ic_back"
+            app:layout_constraintBottom_toBottomOf="@id/text_view_title"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.05"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@id/text_view_title" />
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/text_view_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/page_padding_large"
+            android:fontFamily="@font/gilroy_bold"
+            android:text="@string/profile_details"
+            android:textSize="29sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.05"
+            app:layout_constraintStart_toEndOf="@id/image_button_back"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <androidx.core.widget.NestedScrollView
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_marginTop="20dp"
+            android:fillViewport="true"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/text_view_title">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/card_image_container"
+                    android:layout_width="60dp"
+                    android:layout_height="60dp"
+                    android:layout_marginTop="@dimen/page_padding_normal"
+                    app:cardCornerRadius="20dp"
+                    app:cardElevation="0dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.1"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent">
+
+                    <ImageView
+                        android:id="@+id/image_view_profile"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:scaleType="centerCrop"
+                        app:imageUrl="@{viewModel.profileInfo.url}" />
+
+                </com.google.android.material.card.MaterialCardView>
+
+                <ImageView
+                    android:id="@+id/image_view_edit_image"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_edit_image"
+                    app:layout_constraintBottom_toBottomOf="@id/card_image_container"
+                    app:layout_constraintEnd_toEndOf="@id/card_image_container"
+                    app:layout_constraintStart_toEndOf="@id/card_image_container"
+                    app:layout_constraintTop_toBottomOf="@id/card_image_container" />
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="30dp"
+                    android:fontFamily="@font/gilroy_bold"
+                    android:text="@{@string/two_lined_format(viewModel.profileInfo.name, viewModel.profileInfo.surname)}"
+                    android:textColor="@color/dark_text_color"
+                    android:textSize="22sp"
+                    app:layout_constraintBottom_toBottomOf="@id/card_image_container"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@id/card_image_container"
+                    app:layout_constraintTop_toTopOf="@id/card_image_container" />
+
+                <View
+                    android:id="@+id/seperator"
+                    android:layout_width="match_parent"
+                    android:layout_height="0.5dp"
+                    android:layout_marginTop="@dimen/page_padding_normal"
+                    android:background="@color/gray_text_color"
+                    app:layout_constraintTop_toBottomOf="@id/image_view_edit_image" />
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/text_view_full_name"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/page_padding_normal"
+                    android:layout_marginTop="@dimen/page_padding_normal"
+                    android:layout_marginEnd="@dimen/page_padding_normal"
+                    android:fontFamily="@font/gilroy_semibold"
+                    android:text="@string/surname"
+                    android:textColor="@color/gray_text_color"
+                    android:textSize="16sp"
+                    app:layout_constraintTop_toBottomOf="@id/seperator" />
+
+                <EditText
+                    android:id="@+id/edit_text_fullname"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:background="@drawable/edit_text_background"
+                    android:elevation="20dp"
+                    android:fontFamily="@font/gilroy_medium"
+                    android:inputType="text"
+                    android:padding="20dp"
+                    android:text="@={viewModel.surnameInput}"
+                    android:textColor="@color/dark_text_color"
+                    android:textSize="16sp"
+                    app:layout_constraintEnd_toEndOf="@id/text_view_full_name"
+                    app:layout_constraintStart_toStartOf="@id/text_view_full_name"
+                    app:layout_constraintTop_toBottomOf="@id/text_view_full_name"
+                    tools:text="Vahid Quluzade" />
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/text_view_name"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/page_padding_normal"
+                    android:layout_marginTop="@dimen/page_padding_normal"
+                    android:layout_marginEnd="@dimen/page_padding_normal"
+                    android:fontFamily="@font/gilroy_semibold"
+                    android:text="@string/name"
+                    android:textColor="@color/gray_text_color"
+                    android:textSize="16sp"
+                    app:layout_constraintTop_toBottomOf="@id/edit_text_fullname" />
+
+                <EditText
+                    android:id="@+id/edit_text_name"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:background="@drawable/edit_text_background"
+                    android:elevation="20dp"
+                    android:fontFamily="@font/gilroy_medium"
+                    android:inputType="text"
+                    android:padding="20dp"
+                    android:text="@={viewModel.nameInput}"
+                    android:textColor="@color/dark_text_color"
+                    android:textSize="16sp"
+                    app:layout_constraintEnd_toEndOf="@id/text_view_full_name"
+                    app:layout_constraintStart_toStartOf="@id/text_view_full_name"
+                    app:layout_constraintTop_toBottomOf="@id/text_view_name"
+                    tools:text="Vahid Quluzade" />
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/text_view_email"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/page_padding_normal"
+                    android:layout_marginTop="@dimen/page_padding_normal"
+                    android:layout_marginEnd="@dimen/page_padding_normal"
+                    android:fontFamily="@font/gilroy_semibold"
+                    android:text="@string/email"
+                    android:textColor="@color/gray_text_color"
+                    android:textSize="16sp"
+                    app:layout_constraintTop_toBottomOf="@id/edit_text_name" />
+
+                <EditText
+                    android:id="@+id/edit_text_email"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:background="@drawable/edit_text_background"
+                    android:elevation="20dp"
+                    android:fontFamily="@font/gilroy_medium"
+                    android:inputType="textEmailAddress"
+                    android:padding="20dp"
+                    android:text="@{viewModel.profileInfo.email}"
+                    android:textColor="@color/dark_text_color"
+                    android:textSize="16sp"
+                    app:layout_constraintEnd_toEndOf="@id/text_view_full_name"
+                    app:layout_constraintStart_toStartOf="@id/text_view_full_name"
+                    app:layout_constraintTop_toBottomOf="@id/text_view_email"
+                    tools:text="vahidquluzadeh@gmail.com" />
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/text_view_phone"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/page_padding_normal"
+                    android:layout_marginTop="@dimen/page_padding_normal"
+                    android:layout_marginEnd="@dimen/page_padding_normal"
+                    android:fontFamily="@font/gilroy_semibold"
+                    android:text="@string/phone"
+                    android:textColor="@color/gray_text_color"
+                    android:textSize="16sp"
+                    app:layout_constraintTop_toBottomOf="@id/edit_text_email" />
+
+                <EditText
+                    android:id="@+id/edit_text_phone"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:background="@drawable/edit_text_background"
+                    android:elevation="20dp"
+                    android:fontFamily="@font/gilroy_medium"
+                    android:inputType="phone"
+                    android:padding="20dp"
+                    android:text="@={viewModel.phoneInput}"
+                    android:textColor="@color/dark_text_color"
+                    android:textSize="16sp"
+                    app:layout_constraintEnd_toEndOf="@id/text_view_full_name"
+                    app:layout_constraintStart_toStartOf="@id/text_view_full_name"
+                    app:layout_constraintTop_toBottomOf="@id/text_view_phone"
+                    tools:text="+994 50 201 06 10" />
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/text_view_invitation_code"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/page_padding_normal"
+                    android:layout_marginTop="@dimen/page_padding_normal"
+                    android:layout_marginEnd="@dimen/page_padding_normal"
+                    android:fontFamily="@font/gilroy_semibold"
+                    android:text="@string/code"
+                    android:textColor="@color/gray_text_color"
+                    android:textSize="16sp"
+                    app:layout_constraintTop_toBottomOf="@id/edit_text_phone" />
+
+                <EditText
+                    android:id="@+id/edit_text_invitation_code"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:background="@drawable/edit_text_background"
+                    android:elevation="20dp"
+                    android:fontFamily="@font/gilroy_medium"
+                    android:inputType="text"
+                    android:padding="20dp"
+                    android:text="@{viewModel.profileInfo.invitationCode}"
+                    android:textAllCaps="true"
+                    android:textColor="@color/dark_text_color"
+                    android:textSize="16sp"
+                    app:layout_constraintEnd_toEndOf="@id/text_view_full_name"
+                    app:layout_constraintStart_toStartOf="@id/text_view_full_name"
+                    app:layout_constraintTop_toBottomOf="@id/text_view_invitation_code"
+                    tools:text="CR5487215" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/button_change_password"
+                    style="@style/Widget.MaterialComponents.Button.TextButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/page_padding_normal"
+                    android:fontFamily="@font/gilroy_semibold"
+                    android:text="@string/refresh_password"
+                    android:textAllCaps="false"
+                    android:textColor="@color/bottom_navigation_view_color"
+                    android:textSize="16sp"
+                    app:layout_constraintStart_toStartOf="@+id/edit_text_invitation_code"
+                    app:layout_constraintTop_toBottomOf="@id/edit_text_invitation_code" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:layout_width="0dp"
+                    android:layout_height="@dimen/button_height_50"
+                    android:layout_marginTop="@dimen/page_padding_normal"
+                    android:layout_marginBottom="120dp"
+                    android:fontFamily="@font/gilroy_bold"
+                    android:insetLeft="0dp"
+                    android:insetTop="0dp"
+                    android:insetRight="0dp"
+                    android:insetBottom="0dp"
+                    android:letterSpacing="0"
+                    android:onClick="@{()->viewModel.saveChanges()}"
+                    android:padding="15dp"
+                    android:text="@string/save"
+                    android:textAllCaps="false"
+                    android:textSize="18sp"
+                    app:backgroundTint="@color/balance_header_background_color"
+                    app:cornerRadius="10dp"
+                    app:elevation="0dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="@id/text_view_invitation_code"
+                    app:layout_constraintStart_toStartOf="@id/text_view_invitation_code"
+                    app:layout_constraintTop_toBottomOf="@id/button_change_password" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+        </androidx.core.widget.NestedScrollView>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</layout>

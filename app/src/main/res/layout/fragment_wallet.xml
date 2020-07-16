@@ -1,0 +1,216 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="viewModel"
+            type="az.rabita.lifestep.viewModel.fragment.wallet.WalletViewModel" />
+    </data>
+
+    <androidx.constraintlayout.motion.widget.MotionLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:clipChildren="false"
+        app:layoutDescription="@xml/shifting_scene"
+        tools:context=".ui.fragment.wallet.WalletFragment">
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/text_view_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/page_padding_large"
+            android:fontFamily="@font/gilroy_bold"
+            android:text="@string/balance"
+            android:textSize="29sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <!--        <ImageButton-->
+        <!--            android:id="@+id/image_button_search"-->
+        <!--            android:layout_width="wrap_content"-->
+        <!--            android:layout_height="wrap_content"-->
+        <!--            android:background="?selectableItemBackgroundBorderless"-->
+        <!--            android:src="@drawable/ic_search"-->
+        <!--            app:layout_constraintBottom_toBottomOf="@id/text_view_title"-->
+        <!--            app:layout_constraintEnd_toEndOf="parent"-->
+        <!--            app:layout_constraintHorizontal_bias="0.8"-->
+        <!--            app:layout_constraintStart_toStartOf="parent"-->
+        <!--            app:layout_constraintTop_toTopOf="@id/text_view_title" />-->
+
+        <!--        <View-->
+        <!--            android:id="@+id/seperator"-->
+        <!--            android:layout_width="2dp"-->
+        <!--            android:layout_height="0dp"-->
+        <!--            android:background="@color/main_text_color"-->
+        <!--            app:layout_constraintBottom_toBottomOf="@id/image_button_search"-->
+        <!--            app:layout_constraintEnd_toEndOf="parent"-->
+        <!--            app:layout_constraintHorizontal_bias="0.15"-->
+        <!--            app:layout_constraintStart_toEndOf="@id/image_button_search"-->
+        <!--            app:layout_constraintTop_toTopOf="@id/image_button_search" />-->
+
+        <!--        <ImageButton-->
+        <!--            android:id="@+id/image_button_notification"-->
+        <!--            android:layout_width="wrap_content"-->
+        <!--            android:layout_height="wrap_content"-->
+        <!--            android:background="?selectableItemBackgroundBorderless"-->
+        <!--            android:src="@drawable/ic_notification"-->
+        <!--            app:layout_constraintBottom_toBottomOf="@+id/seperator"-->
+        <!--            app:layout_constraintEnd_toEndOf="parent"-->
+        <!--            app:layout_constraintHorizontal_bias="0.25"-->
+        <!--            app:layout_constraintStart_toEndOf="@id/seperator"-->
+        <!--            app:layout_constraintTop_toTopOf="@+id/seperator" />-->
+
+        <androidx.core.widget.NestedScrollView
+            android:id="@+id/scroll_content"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:background="@drawable/background_auth_panel"
+            android:elevation="20dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintHeight_percent="0.89"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="1.0">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/constraint_layout_content"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:clipChildren="false"
+                android:clipToPadding="false">
+
+                <LinearLayout
+                    android:id="@+id/linear_layout_header"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="@dimen/page_padding_normal"
+                    android:background="@drawable/background_balance_header"
+                    android:orientation="vertical"
+                    android:padding="20dp"
+                    app:layout_constraintTop_toTopOf="parent">
+
+                    <com.google.android.material.textview.MaterialTextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/gilroy_bold"
+                        android:text="@{viewModel.walletInfo.balance}"
+                        android:textAlignment="center"
+                        android:textColor="@android:color/white"
+                        android:textSize="38sp" />
+
+                    <com.google.android.material.textview.MaterialTextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:fontFamily="@font/gilroy_medium"
+                        android:text="@string/total_lifesteps"
+                        android:textAlignment="center"
+                        android:textColor="@android:color/white"
+                        android:textSize="16sp" />
+
+                </LinearLayout>
+
+                <az.rabita.lifestep.ui.custom.WalletCard
+                    android:id="@+id/card_converted_steps"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/page_padding_normal"
+                    android:layout_marginEnd="10dp"
+                    app:cardCornerRadius="12dp"
+                    app:cardElevation="20dp"
+                    app:countData="@{viewModel.walletInfo.convertSteps}"
+                    app:image="@drawable/img_converted"
+                    app:layout_constraintEnd_toStartOf="@id/card_donated_steps"
+                    app:layout_constraintStart_toStartOf="@id/linear_layout_header"
+                    app:layout_constraintTop_toBottomOf="@id/linear_layout_header"
+                    app:title="@string/converted" />
+
+                <az.rabita.lifestep.ui.custom.WalletCard
+                    android:id="@+id/card_donated_steps"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    app:cardCornerRadius="12dp"
+                    app:cardElevation="20dp"
+                    app:countData="@{viewModel.walletInfo.donationSteps}"
+                    app:image="@drawable/img_donation"
+                    app:layout_constraintEnd_toEndOf="@id/linear_layout_header"
+                    app:layout_constraintStart_toEndOf="@id/card_converted_steps"
+                    app:layout_constraintTop_toTopOf="@id/card_converted_steps"
+                    app:title="@string/donated" />
+
+                <az.rabita.lifestep.ui.custom.WalletCard
+                    android:id="@+id/card_transfered_steps"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginEnd="10dp"
+                    app:cardCornerRadius="12dp"
+                    app:cardElevation="20dp"
+                    app:countData="@{viewModel.walletInfo.transferStepsOut}"
+                    app:image="@drawable/img_transfered"
+                    app:layout_constraintEnd_toStartOf="@id/card_earned_steps"
+                    app:layout_constraintStart_toStartOf="@id/card_converted_steps"
+                    app:layout_constraintTop_toBottomOf="@id/card_converted_steps"
+                    app:title="@string/transfered" />
+
+                <az.rabita.lifestep.ui.custom.WalletCard
+                    android:id="@+id/card_earned_steps"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginTop="20dp"
+                    app:cardCornerRadius="12dp"
+                    app:cardElevation="20dp"
+                    app:countData="@{viewModel.walletInfo.transferStepsIn}"
+                    app:image="@drawable/img_from_transfer"
+                    app:layout_constraintEnd_toEndOf="@id/card_donated_steps"
+                    app:layout_constraintStart_toEndOf="@id/card_transfered_steps"
+                    app:layout_constraintTop_toBottomOf="@id/card_donated_steps"
+                    app:title="@string/earned_steps" />
+
+                <az.rabita.lifestep.ui.custom.WalletCard
+                    android:id="@+id/card_bonus_steps"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginEnd="10dp"
+                    android:layout_marginBottom="120dp"
+                    app:cardCornerRadius="12dp"
+                    app:cardElevation="20dp"
+                    app:countData="@{viewModel.walletInfo.bonusSteps}"
+                    app:image="@drawable/img_bonus"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@id/card_earned_money"
+                    app:layout_constraintStart_toStartOf="@id/card_transfered_steps"
+                    app:layout_constraintTop_toBottomOf="@id/card_transfered_steps"
+                    app:layout_constraintVertical_bias="0"
+                    app:title="@string/bonus" />
+
+                <az.rabita.lifestep.ui.custom.WalletCard
+                    android:id="@+id/card_earned_money"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginBottom="120dp"
+                    app:cardCornerRadius="12dp"
+                    app:cardElevation="20dp"
+                    app:countData="@{viewModel.walletInfo.balanceMoney}"
+                    app:image="@drawable/img_earned"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="@id/card_earned_steps"
+                    app:layout_constraintStart_toEndOf="@id/card_bonus_steps"
+                    app:layout_constraintTop_toBottomOf="@id/card_earned_steps"
+                    app:layout_constraintVertical_bias="0"
+                    app:title="@string/earned" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+        </androidx.core.widget.NestedScrollView>
+
+    </androidx.constraintlayout.motion.widget.MotionLayout>
+
+</layout>

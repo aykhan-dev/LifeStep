@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+
+        <variable
+            name="data"
+            type="az.rabita.lifestep.pojo.apiPOJO.content.HistoryItemContentPOJO" />
+
+    </data>
+
+    <com.google.android.material.card.MaterialCardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/page_padding_normal"
+        app:cardCornerRadius="13dp"
+        app:cardElevation="20dp">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="20dp">
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/text_view_name"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/gilroy_medium"
+                android:text="@{data.fullName}"
+                android:textColor="@color/dark_text_color"
+                android:textSize="16sp"
+                app:layout_constraintEnd_toStartOf="@id/text_view_count"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/text_view_date"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1.2"
+                android:fontFamily="@font/gilroy_medium"
+                android:textAlignment="viewStart"
+                android:layout_marginTop="5dp"
+                android:textColor="@color/dark_text_color"
+                android:textSize="12sp"
+                app:dateText="@{data.date}"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/text_view_name" />
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/text_view_count"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:fontFamily="@font/gilroy_medium"
+                android:textAlignment="viewEnd"
+                android:textColor="@color/dark_text_color"
+                android:textSize="16sp"
+                app:layout_constraintBottom_toBottomOf="@+id/text_view_name"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/text_view_name"
+                app:layout_constraintTop_toTopOf="@+id/text_view_name"
+                app:textContent="@{data.count}" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </com.google.android.material.card.MaterialCardView>
+
+</layout>

@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<MotionScene xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:motion="http://schemas.android.com/apk/res-auto">
+
+    <Transition
+        motion:constraintSetEnd="@id/end_scene"
+        motion:constraintSetStart="@id/start_scene"
+        motion:duration="100">
+
+        <OnSwipe
+            motion:dragDirection="dragUp"
+            motion:moveWhenScrollAtTop="true"
+            motion:touchAnchorSide="top" />
+
+    </Transition>
+
+    <ConstraintSet android:id="@+id/start_scene">
+
+        <Constraint
+            android:id="@+id/constraint_layout_content"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:background="@drawable/background_auth_panel"
+            android:clipChildren="false"
+            android:clipToPadding="false"
+            android:elevation="20dp"
+            motion:layout_constraintBottom_toBottomOf="parent"
+            motion:layout_constraintHeight_percent="0.89"
+            motion:layout_constraintTop_toTopOf="parent"
+            motion:layout_constraintVertical_bias="1" />
+
+    </ConstraintSet>
+
+    <ConstraintSet android:id="@+id/end_scene">
+
+        <Constraint
+            android:id="@+id/constraint_layout_content"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:background="@drawable/background_auth_panel"
+            android:clipChildren="false"
+            android:clipToPadding="false"
+            android:elevation="20dp"
+            motion:layout_constraintBottom_toBottomOf="parent"
+            motion:layout_constraintHeight_percent="1"
+            motion:layout_constraintTop_toTopOf="parent"
+            motion:layout_constraintVertical_bias="1" />
+
+    </ConstraintSet>
+
+</MotionScene>

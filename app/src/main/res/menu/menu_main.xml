@@ -1,0 +1,25 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="az.rabita.lifestep.ui.activity.main.MainActivity">
+
+    <item
+        android:id="@+id/nav_graph_categories"
+        android:title="" />
+
+    <item
+        android:id="@+id/walletFragment"
+        android:title="" />
+
+    <item
+        android:id="@+id/homeFragment"
+        android:title="" />
+
+    <item
+        android:id="@+id/adsFragment"
+        android:title="" />
+
+    <item
+        android:id="@+id/nav_graph_settings"
+        android:title="" />
+
+</menu>

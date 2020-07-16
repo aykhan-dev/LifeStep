@@ -1,0 +1,322 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+        <variable
+            name="viewModel"
+            type="az.rabita.lifestep.viewModel.fragment.detailedInfo.DetailedInfoViewModel" />
+    </data>
+
+    <androidx.constraintlayout.motion.widget.MotionLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/default_background_color"
+        android:clipChildren="false"
+        android:clipToPadding="false"
+        app:layoutDescription="@xml/shifting_scene"
+        tools:context=".ui.fragment.detailedInfo.DetailedInfoFragment">
+
+        <ImageButton
+            android:id="@+id/image_button_back"
+            android:layout_width="20dp"
+            android:layout_height="0dp"
+            android:background="?selectableItemBackgroundBorderless"
+            android:scaleType="center"
+            android:src="@drawable/ic_back"
+            app:layout_constraintBottom_toBottomOf="@id/text_view_title"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.05"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@id/text_view_title" />
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/text_view_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/page_padding_large"
+            android:fontFamily="@font/gilroy_bold"
+            android:text="@string/text_detailed_info"
+            android:textSize="29sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.05"
+            app:layout_constraintStart_toEndOf="@id/image_button_back"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <androidx.core.widget.NestedScrollView
+            android:id="@+id/scroll_content"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:fillViewport="true"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintHeight_percent="0.89"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="1">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/constraint_layout_content"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@drawable/background_auth_panel"
+                android:clipChildren="false"
+                android:clipToPadding="false"
+                android:elevation="20dp"
+                android:padding="@dimen/page_padding_normal">
+
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/card_image_container"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:clipChildren="true"
+                    app:cardCornerRadius="20dp"
+                    app:cardElevation="0dp"
+                    app:layout_constraintDimensionRatio="1:0.75"
+                    app:layout_constraintTop_toTopOf="parent">
+
+                    <ImageView
+                        android:id="@+id/image_view_contact"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:adjustViewBounds="true"
+                        android:scaleType="centerCrop"
+                        imageUrl="@{viewModel.assocationDetails.url}"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                </com.google.android.material.card.MaterialCardView>
+
+                <ImageView
+                    android:id="@+id/image_view_donated"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:backgroundTint="@color/balance_header_background_color"
+                    android:src="@drawable/ic_donated_count"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.025"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/card_image_container" />
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/text_view_donated_count"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/gilroy_semibold"
+                    tools:text="345 min"
+                    android:textColor="@color/dark_text_color"
+                    android:textSize="16sp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.025"
+                    app:layout_constraintStart_toEndOf="@id/image_view_donated"
+                    app:layout_constraintTop_toTopOf="@id/image_view_donated" />
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/text_view_donated_steps"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/gilroy_medium"
+                    android:text="@string/donated_steps"
+                    android:textColor="@color/gray_text_color"
+                    android:textSize="14sp"
+                    app:layout_constraintBottom_toBottomOf="@id/image_view_donated"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0"
+                    app:layout_constraintHorizontal_chainStyle="packed"
+                    app:layout_constraintStart_toStartOf="@id/text_view_donated_count" />
+
+                <ImageView
+                    android:id="@+id/image_view_target"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_target_count"
+                    app:layout_constraintBottom_toBottomOf="@+id/image_view_donated"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.2"
+                    app:layout_constraintStart_toEndOf="@id/text_view_donated_steps"
+                    app:layout_constraintTop_toTopOf="@+id/image_view_donated" />
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/text_view_target_count"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:fontFamily="@font/gilroy_semibold"
+                    tools:text="1000 min"
+                    android:textColor="@color/dark_text_color"
+                    android:textSize="16sp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.025"
+                    app:layout_constraintStart_toEndOf="@id/image_view_target"
+                    app:layout_constraintTop_toTopOf="@id/image_view_target" />
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/text_view_target_steps"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/gilroy_medium"
+                    android:text="@string/target_steps"
+                    android:textColor="@color/gray_text_color"
+                    android:textSize="14sp"
+                    app:layout_constraintBottom_toBottomOf="@+id/image_view_target"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0"
+                    app:layout_constraintStart_toStartOf="@id/text_view_target_count" />
+
+                <SeekBar
+                    android:id="@+id/seek_bar"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/page_padding_normal"
+                    android:clickable="false"
+                    android:focusable="false"
+                    android:progress="@{viewModel.assocationDetails.percent}"
+                    android:progressTint="@color/bottom_navigation_view_color"
+                    android:thumbTint="@color/bottom_navigation_view_color"
+                    app:layout_constraintEnd_toEndOf="@id/card_image_container"
+                    app:layout_constraintStart_toStartOf="@id/card_image_container"
+                    app:layout_constraintTop_toBottomOf="@id/text_view_donated_steps" />
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/text_view_content_title"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/page_padding_large"
+                    android:fontFamily="@font/gilroy_bold"
+                    android:text="@{viewModel.assocationDetails.name}"
+                    tools:text="16 yaşlı Nərminə dəstək olaq"
+                    android:textColor="@color/dark_text_color"
+                    android:textSize="20sp"
+                    app:layout_constraintTop_toBottomOf="@id/seek_bar" />
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/text_view_date"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
+                    android:fontFamily="@font/gilroy_regular"
+                    android:text="@{viewModel.assocationDetails.createdDate}"
+                    tools:text="2 aprel 2020"
+                    android:textColor="@color/gray_text_color"
+                    android:textSize="12sp"
+                    app:layout_constraintTop_toBottomOf="@id/text_view_content_title" />
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/text_view_body"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/page_padding_normal"
+                    android:fontFamily="@font/gilroy_medium"
+                    android:lineSpacingExtra="7.5dp"
+                    android:text="@{viewModel.assocationDetails.description}"
+                    tools:text="@string/lorem_impuls"
+                    android:textColor="@color/gray_text_color"
+                    android:textSize="14sp"
+                    app:layout_constraintTop_toBottomOf="@id/text_view_date" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/button_donate_steps"
+                    android:layout_width="wrap_content"
+                    android:layout_height="@dimen/button_height_48"
+                    android:fontFamily="@font/gilroy_bold"
+                    android:insetLeft="0dp"
+                    android:insetTop="0dp"
+                    android:insetRight="0dp"
+                    android:insetBottom="0dp"
+                    android:letterSpacing="0"
+                    android:paddingStart="20dp"
+                    android:paddingEnd="20dp"
+                    android:text="@string/donate_step"
+                    android:textAllCaps="false"
+                    android:textSize="16sp"
+                    app:backgroundTint="@color/balance_header_background_color"
+                    app:cornerRadius="15dp"
+                    app:layout_constraintBottom_toBottomOf="@+id/text_view_deadline"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/text_view_last_date" />
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/text_view_last_date"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="10dp"
+                    android:fontFamily="@font/gilroy_medium"
+                    android:text="@string/last_date_for_help"
+                    android:layout_marginTop="20dp"
+                    android:textColor="@color/gray_text_color"
+                    android:textSize="14sp"
+                    app:layout_constraintEnd_toStartOf="@+id/button_donate_steps"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/text_view_body"
+                    app:layout_constraintVertical_bias="0.2" />
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/text_view_deadline"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="10dp"
+                    android:fontFamily="@font/gilroy_semibold"
+                    android:text="@{viewModel.assocationDetails.expireDate}"
+                    tools:text="30 aprel, 2020"
+                    android:textColor="@color/dark_text_color"
+                    android:textSize="20sp"
+                    app:layout_constraintEnd_toStartOf="@id/button_donate_steps"
+                    app:layout_constraintHorizontal_bias="1.0"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/text_view_last_date" />
+
+                <View
+                    android:id="@+id/seperator"
+                    android:layout_width="match_parent"
+                    android:layout_height="0.5dp"
+                    android:layout_marginTop="?actionBarSize"
+                    android:background="@color/gray_text_color"
+                    app:layout_constraintTop_toBottomOf="@id/text_view_deadline" />
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/text_view_donated_persons"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:drawablePadding="5dp"
+                    android:fontFamily="@font/gilroy_bold"
+                    android:text="@string/step_donors"
+                    android:textColor="@color/dark_text_color"
+                    android:textSize="20sp"
+                    app:layout_constraintBottom_toBottomOf="@+id/text_view_all"
+                    app:layout_constraintEnd_toStartOf="@id/text_view_all"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="@id/text_view_all" />
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/text_view_all"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/page_padding_normal"
+                    android:drawableEnd="@drawable/ic_all"
+                    android:drawablePadding="5dp"
+                    android:fontFamily="@font/gilroy_medium"
+                    android:text="@string/all"
+                    android:textColor="@color/gray_text_color"
+                    android:textSize="16sp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/seperator" />
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/recycler_view_donors"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/page_padding_normal"
+                    android:clipChildren="false"
+                    android:clipToPadding="false"
+                    android:orientation="vertical"
+                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                    app:layout_constraintTop_toBottomOf="@id/text_view_donated_persons"
+                    tools:listitem="@layout/item_my_friends" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+        </androidx.core.widget.NestedScrollView>
+
+    </androidx.constraintlayout.motion.widget.MotionLayout>
+
+</layout>

@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="viewModel"
+            type="az.rabita.lifestep.viewModel.fragment.ads.AdsViewModel" />
+    </data>
+
+    <androidx.constraintlayout.motion.widget.MotionLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:clipChildren="false"
+        app:layoutDescription="@xml/shifting_scene"
+        tools:context=".ui.fragment.ads.AdsFragment">
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/text_view_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/page_padding_large"
+            android:fontFamily="@font/gilroy_bold"
+            android:text="@string/earn_steps"
+            android:textSize="29sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <androidx.core.widget.NestedScrollView
+            android:id="@+id/scroll_content"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:background="@drawable/background_auth_panel"
+            android:elevation="20dp"
+            android:fillViewport="true"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintHeight_percent="0.89"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="1">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/constraint_layout_content"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:clipChildren="false"
+                android:clipToPadding="false"
+                android:padding="@dimen/page_padding_large">
+
+                <ImageView
+                    android:id="@+id/image_view_watch_ads"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:scaleType="fitStart"
+                    android:src="@drawable/img_watch_ads"
+                    app:layout_constraintHeight_percent="0.3"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/text_view_content_title"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/page_padding_large"
+                    android:fontFamily="@font/gilroy_extrabold"
+                    android:text="@{viewModel.title.content}"
+                    android:textColor="@color/dark_text_color"
+                    android:textSize="35sp"
+                    app:layout_constraintTop_toBottomOf="@id/image_view_watch_ads" />
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/text_view_body"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="15dp"
+                    android:fontFamily="@font/gilroy_medium"
+                    android:lineSpacingExtra="7.5dp"
+                    android:text="@{viewModel.body.content}"
+                    android:textColor="@color/gray_text_color"
+                    android:textSize="14sp"
+                    app:layout_constraintTop_toBottomOf="@id/text_view_content_title" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/button_watch_ads"
+                    android:layout_width="wrap_content"
+                    android:layout_height="@dimen/button_height_48"
+                    android:layout_marginTop="@dimen/page_padding_normal"
+                    android:layout_marginBottom="90dp"
+                    android:fontFamily="@font/gilroy_bold"
+                    android:insetLeft="0dp"
+                    android:insetTop="0dp"
+                    android:insetRight="0dp"
+                    android:insetBottom="0dp"
+                    android:letterSpacing="0"
+                    android:paddingStart="30dp"
+                    android:paddingEnd="30dp"
+                    android:text="@string/watch_ads"
+                    android:textAllCaps="false"
+                    android:textSize="16sp"
+                    app:backgroundTint="@color/balance_header_background_color"
+                    app:cornerRadius="10dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="@+id/text_view_body"
+                    app:layout_constraintTop_toBottomOf="@id/text_view_body" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+        </androidx.core.widget.NestedScrollView>
+
+    </androidx.constraintlayout.motion.widget.MotionLayout>
+
+</layout>

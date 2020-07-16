@@ -1,0 +1,213 @@
+package az.rabita.lifestep.local
+
+import android.content.Context
+import androidx.lifecycle.LiveData
+import androidx.room.*
+import androidx.room.OnConflictStrategy.REPLACE
+import az.rabita.lifestep.pojo.apiPOJO.entity.*
+import kotlinx.coroutines.flow.Flow
+
+@Dao
+abstract class UsersDao {
+
+    @Insert(onConflict = REPLACE)
+    abstract suspend fun insert(item: PersonalInfo)
+
+    @Query("select * from personalInfo where saveId = 1")
+    abstract fun getPersonalInfo(): Flow<PersonalInfo>
+
+    @Query("delete from personalInfo")
+    abstract suspend fun deletePersonalInfo()
+
+    @Transaction
+    open suspend fun cachePersonalInfo(item: PersonalInfo) {
+        deletePersonalInfo()
+        insert(item)
+    }
+
+}
+
+@Dao
+abstract class NotificationsDao {
+
+    @Insert(onConflict = REPLACE)
+    abstract suspend fun insert(items: List<Notification>)
+
+    @Query("select * from notifications")
+    abstract fun getNotificationsList(): Flow<List<Notification>>
+
+    @Query("delete from notifications")
+    abstract suspend fun deleteAllNotifications()
+
+    @Transaction
+    open suspend fun cacheNotifications(items: List<Notification>) {
+        deleteAllNotifications()
+        insert(items)
+    }
+
+}
+
+@Dao
+abstract class CategoriesDao {
+
+    @Insert(onConflict = REPLACE)
+    abstract suspend fun insert(items: List<Category>)
+
+    @Query("select * from categories")
+    abstract fun getCategoriesList(): Flow<List<Category>>
+
+    @Query("delete from categories")
+    abstract suspend fun deleteAllCategories()
+
+    @Transaction
+    open suspend fun cacheCategories(items: List<Category>) {
+        deleteAllCategories()
+        insert(items)
+    }
+
+}
+
+@Dao
+abstract class AssocationsDao {
+
+    @Insert(onConflict = REPLACE)
+    abstract suspend fun insert(items: List<Assocation>)
+
+    @Query("select * from assocations")
+    abstract fun getAssocationsList(): Flow<List<Assocation>>
+
+    @Query("delete from assocations")
+    abstract suspend fun deleteAllAssocations()
+
+    @Transaction
+    open suspend fun cacheAssocations(items: List<Assocation>) {
+        deleteAllAssocations()
+        insert(items)
+    }
+
+}
+
+@Dao
+abstract class ReportDao {
+
+    @Insert(onConflict = REPLACE)
+    abstract suspend fun insert(item: Wallet)
+
+    @Query("select * from walletInfo where id = 1")
+    abstract fun getWalletInfo(): Flow<Wallet>
+
+    @Query("delete from walletInfo")
+    abstract suspend fun deleteWalletInfo()
+
+    @Transaction
+    open suspend fun cacheWalletInfo(item: Wallet) {
+        deleteWalletInfo()
+        insert(item)
+    }
+
+    @Insert(onConflict = REPLACE)
+    abstract suspend fun insert(item: FriendshipStats)
+
+    @Query("select * from friendshipStats where id = 1")
+    abstract fun getFriendshipStats(): Flow<FriendshipStats>
+
+    @Query("delete from friendshipStats")
+    abstract suspend fun deleteAllFriendshipStats()
+
+    @Transaction
+    open suspend fun cacheFriendshipStats(item: FriendshipStats) {
+        deleteAllFriendshipStats()
+        insert(item)
+    }
+
+    @Insert(onConflict = REPLACE)
+    abstract suspend fun insert(items: List<WeeklyStat>)
+
+    @Query("select * from weeklyStats")
+    abstract fun getWeeklyStats(): Flow<List<WeeklyStat>>
+
+    @Query("delete from weeklyStats")
+    abstract suspend fun deleteAllWeeklyStats()
+
+    @Transaction
+    open suspend fun cacheWeeklyStats(items: List<WeeklyStat>) {
+        deleteAllWeeklyStats()
+        insert(items)
+    }
+
+}
+
+@Dao
+abstract class ContentsDao {
+
+    @Insert(onConflict = REPLACE)
+    abstract suspend fun insert(items: List<Content>)
+
+    @Query("select * from contents where groupID = :groupId")
+    abstract fun getContents(groupId: Int): LiveData<List<Content>>
+
+    @Query("delete from contents where groupID = :groupId")
+    abstract suspend fun deleteContents(groupId: Int)
+
+    @Transaction
+    open suspend fun cacheContents(items: List<Content>, groupId: Int) {
+        deleteContents(groupId)
+        insert(items)
+    }
+
+    @Insert(onConflict = REPLACE)
+    abstract suspend fun insert(item: Content)
+
+    @Query("select * from contents where groupID = :groupId and contentKey = :key")
+    abstract fun getContent(groupId: Int, key: String): LiveData<Content>
+
+    @Query("delete from contents where groupID = :groupId and contentKey = :key")
+    abstract suspend fun deleteContent(groupId: Int, key: String)
+
+    @Transaction
+    open suspend fun cacheContent(item: Content, groupId: Int, key: String) {
+        deleteContent(groupId, key)
+        insert(item)
+    }
+
+}
+
+@Database(
+    entities = [
+        Category::class,
+        Assocation::class,
+        Wallet::class,
+        FriendshipStats::class,
+        PersonalInfo::class,
+        Content::class,
+        WeeklyStat::class,
+        Notification::class
+    ],
+    version = 5
+)
+abstract class AppDatabase : RoomDatabase() {
+    abstract val categoriesDao: CategoriesDao
+    abstract val assocationsDao: AssocationsDao
+    abstract val reportDao: ReportDao
+    abstract val usersDao: UsersDao
+    abstract val allContentsDao: ContentsDao
+    abstract val notificationsDao: NotificationsDao
+}
+
+private const val DATABASE_NAME = "LifeSteps"
+private lateinit var INSTANCE: AppDatabase
+
+fun getDatabase(context: Context): AppDatabase {
+    synchronized(AppDatabase::class.java) {
+        if (!::INSTANCE.isInitialized) {
+            INSTANCE = Room.databaseBuilder(
+                context.applicationContext,
+                AppDatabase::class.java,
+                DATABASE_NAME
+            )
+                .fallbackToDestructiveMigration()
+                .build()
+        }
+    }
+    return INSTANCE
+}

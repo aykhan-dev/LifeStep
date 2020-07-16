@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#6200EE</color>
+    <color name="colorPrimaryDark">#3700B3</color>
+    <color name="colorAccent">#03DAC5</color>
+
+    <color name="default_background_color">#F6F9FF</color>
+    <color name="authentication_background_color">#FF0055</color>
+
+    <color name="bottom_navigation_view_color">#FF0055</color>
+
+    <color name="progress_background_color">#60A2A7AD</color>
+
+    <color name="edit_text_bottom_line_color">#E5E5E5</color>
+
+    <color name="main_text_color">#012485</color>
+    <color name="gray_text_color">#7B8085</color>
+    <color name="light_gray_text_color">#E8E7E7</color>
+    <color name="dark_text_color">#314559</color>
+
+    <color name="balance_header_background_color">#353A85</color>
+
+    <color name="color_arc">@android:color/white</color>
+    <color name="color_text">@android:color/white</color>
+    <color name="color_progress">#58D4DE</color>
+    <color name="blue">#3756DF</color>
+
+    <color name="confirm_button_disabled">#CBD1D9</color>
+
+</resources>

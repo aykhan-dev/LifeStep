@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <data>
+
+        <variable
+            name="viewModel"
+            type="az.rabita.lifestep.viewModel.fragment.register.RegistrationViewModel" />
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:clipChildren="false"
+        android:clipToPadding="false"
+        android:orientation="vertical"
+        android:weightSum="7">
+
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
+
+        <com.google.android.material.textfield.TextInputLayout
+            style="@style/Widget.Design.TextInputLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/name"
+            android:textColorHint="@color/gray_text_color">
+
+            <EditText
+                android:id="@+id/edit_text_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:backgroundTint="@color/edit_text_bottom_line_color"
+                android:fontFamily="@font/gilroy_medium"
+                android:imeOptions="actionNext"
+                android:inputType="textCapWords"
+                android:paddingBottom="20dp"
+                android:text="@={viewModel.nameInput}" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
+
+        <com.google.android.material.textfield.TextInputLayout
+            style="@style/Widget.Design.TextInputLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/surname"
+            android:textColorHint="@color/gray_text_color">
+
+            <EditText
+                android:id="@+id/edit_text_full_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:backgroundTint="@color/edit_text_bottom_line_color"
+                android:fontFamily="@font/gilroy_medium"
+                android:imeOptions="actionNext"
+                android:inputType="textCapWords"
+                android:paddingBottom="20dp"
+                android:text="@={viewModel.surnameInput}" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
+
+        <com.google.android.material.textfield.TextInputLayout
+            style="@style/Widget.Design.TextInputLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/gender"
+            android:textColorHint="@color/gray_text_color">
+
+            <AutoCompleteTextView
+                android:id="@+id/edit_text_gender"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:backgroundTint="@color/edit_text_bottom_line_color"
+                android:clickable="true"
+                android:completionThreshold="0"
+                android:focusable="true"
+                android:fontFamily="@font/gilroy_medium"
+                android:imeOptions="actionNext"
+                android:inputType="textAutoComplete"
+                android:paddingBottom="20dp" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
+
+        <com.google.android.material.textfield.TextInputLayout
+            style="@style/Widget.Design.TextInputLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/phone"
+            android:textColorHint="@color/gray_text_color">
+
+            <EditText
+                android:id="@+id/edit_text_phone"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:backgroundTint="@color/edit_text_bottom_line_color"
+                android:fontFamily="@font/gilroy_medium"
+                android:imeOptions="actionNext"
+                android:inputType="phone"
+                android:paddingBottom="20dp"
+                android:text="@={viewModel.phoneInput}" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
+
+        <com.google.android.material.textfield.TextInputLayout
+            style="@style/Widget.Design.TextInputLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/invitation_code"
+            android:textColorHint="@color/gray_text_color">
+
+            <EditText
+                android:id="@+id/edit_text_invitation_code"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:backgroundTint="@color/edit_text_bottom_line_color"
+                android:fontFamily="@font/gilroy_medium"
+                android:imeOptions="actionDone"
+                android:inputType="textAutoComplete"
+                android:paddingBottom="20dp"
+                android:singleLine="true"
+                android:text="@={viewModel.invitationCodeInput}" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="2" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/button_back"
+            style="@style/Widget.MaterialComponents.Button.TextButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:fontFamily="@font/gilroy_semibold"
+            android:text="@string/back"
+            android:textAllCaps="false"
+            android:textAppearance="@style/TextAppearance.MaterialComponents.Body1"
+            android:textColor="@color/main_text_color" />
+
+    </LinearLayout>
+
+</layout>
