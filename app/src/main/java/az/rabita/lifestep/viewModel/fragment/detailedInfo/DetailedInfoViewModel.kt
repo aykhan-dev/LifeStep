@@ -70,7 +70,7 @@ class DetailedInfoViewModel(application: Application) : AndroidViewModel(applica
                 is NetworkState.ExpiredToken -> startExpireTokenProcess()
                 is NetworkState.HandledHttpError -> showMessageDialog(response.error)
                 is NetworkState.UnhandledHttpError -> showMessageDialog(response.error)
-                is NetworkState.NetworkException -> showMessageDialog(response.exception)
+                is NetworkState.NetworkException -> handleNetworkException(response.exception)
             }
 
             uiState.postValue(UiState.LoadingFinished)
@@ -92,7 +92,7 @@ class DetailedInfoViewModel(application: Application) : AndroidViewModel(applica
                 is NetworkState.ExpiredToken -> startExpireTokenProcess()
                 is NetworkState.HandledHttpError -> showMessageDialog(response.error)
                 is NetworkState.UnhandledHttpError -> showMessageDialog(response.error)
-                is NetworkState.NetworkException -> showMessageDialog(response.exception)
+                is NetworkState.NetworkException -> handleNetworkException(response.exception)
             }
 
         }
@@ -108,7 +108,7 @@ class DetailedInfoViewModel(application: Application) : AndroidViewModel(applica
                 is NetworkState.ExpiredToken -> startExpireTokenProcess()
                 is NetworkState.HandledHttpError -> showMessageDialog(response.error)
                 is NetworkState.UnhandledHttpError -> showMessageDialog(response.error)
-                is NetworkState.NetworkException -> showMessageDialog(response.exception)
+                is NetworkState.NetworkException -> handleNetworkException(response.exception)
             }
 
         }
@@ -137,13 +137,20 @@ class DetailedInfoViewModel(application: Application) : AndroidViewModel(applica
                     is NetworkState.ExpiredToken -> startExpireTokenProcess()
                     is NetworkState.HandledHttpError -> showMessageDialog(response.error)
                     is NetworkState.UnhandledHttpError -> showMessageDialog(response.error)
-                    is NetworkState.NetworkException -> showMessageDialog(response.exception)
+                    is NetworkState.NetworkException -> handleNetworkException(response.exception)
                 }
 
                 uiState.value = UiState.LoadingFinished
 
             } ?: showMessageDialog("Null argument")
 
+        }
+    }
+
+    private fun handleNetworkException(exception: String?) {
+        viewModelScope.launch {
+            if (context.isInternetConnectionAvailable()) showMessageDialog(exception)
+            else showMessageDialog(NO_INTERNET_CONNECTION)
         }
     }
 

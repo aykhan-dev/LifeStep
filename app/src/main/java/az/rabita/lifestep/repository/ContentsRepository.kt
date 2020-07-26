@@ -21,7 +21,7 @@ class ContentsRepository private constructor(database: AppDatabase) {
     val contactDetails = contentsDao.getContents(CONTACTS_GROUP_ID)
 
     val inviteFriendsContentBody =
-        contentsDao.getContent(INVITE_FRIENDS_GROUP_ID, CONTENT_TEXT_KEY)
+        contentsDao.getContentAsFlow(INVITE_FRIENDS_GROUP_ID, CONTENT_TEXT_KEY)
 
     val inviteFriendsContentMessage =
         contentsDao.getContent(INVITE_FRIENDS_GROUP_ID, INVITE_TEXT_KEY)

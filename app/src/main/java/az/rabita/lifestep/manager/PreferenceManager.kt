@@ -2,7 +2,7 @@ package az.rabita.lifestep.manager
 
 import android.content.Context
 import android.content.SharedPreferences
-import az.rabita.lifestep.manager.SingletonHolder
+import android.os.Parcelable
 import az.rabita.lifestep.R
 
 class PreferenceManager private constructor(val context: Context) {
@@ -38,6 +38,17 @@ class PreferenceManager private constructor(val context: Context) {
 
     fun getIntegerElement(key: String, defaultValue: Int): Int {
         return sharedPreferences?.getInt(key, defaultValue) ?: 0
+    }
+
+    fun setBooleanElement(key: String, value: Boolean) {
+        with(sharedPreferences?.edit()) {
+            this?.putBoolean(key, value)
+            this?.apply()
+        }
+    }
+
+    fun getBooleanElement(key: String, defaultValue: Boolean): Boolean {
+        return sharedPreferences?.getBoolean(key, defaultValue) ?: false
     }
 
 }

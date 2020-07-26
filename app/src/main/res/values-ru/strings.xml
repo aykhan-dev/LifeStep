@@ -154,4 +154,13 @@
 
     <string name="device_id_error_message">Cihazla əlaqəli xəta</string>
 
+    <string name="search">Axtar</string>
+    <string name="install">Yüklə</string>
+    <string name="life_steps">LifeSteps</string>
+
+    <string name="more">Daha çox</string>
+    <string name="search_results">Axtarış Nəticələri</string>
+
+    <string name="full_name_singleline">%1s %2s</string>
+
 </resources>

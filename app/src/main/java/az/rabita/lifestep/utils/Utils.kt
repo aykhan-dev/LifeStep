@@ -3,20 +3,27 @@ package az.rabita.lifestep.utils
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
+import android.net.Uri
+import android.os.Build
+import android.text.format.DateFormat
 import android.view.View
 import android.view.View.INVISIBLE
 import android.view.View.VISIBLE
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.core.text.isDigitsOnly
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.MutableLiveData
 import az.rabita.lifestep.network.NetworkState
 import az.rabita.lifestep.pojo.apiPOJO.ServerResponsePOJO
-import az.rabita.lifestep.pojo.apiPOJO.content.*
-import az.rabita.lifestep.pojo.apiPOJO.entity.*
+import az.rabita.lifestep.pojo.apiPOJO.content.AdsTransactionContentPOJO
+import az.rabita.lifestep.pojo.dataHolder.AdsTransactionInfoHolder
 import az.rabita.lifestep.ui.activity.auth.AuthActivity
 import retrofit2.Response
 import timber.log.Timber
+import java.util.*
 import kotlin.math.pow
 
 fun Activity.restart() {
@@ -25,6 +32,22 @@ fun Activity.restart() {
     i?.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
     startActivity(i)
     finish()
+}
+
+fun Fragment.openUrl(url: String) {
+    val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+    startActivity(browserIntent)
+}
+
+fun Activity.openUrl(url: String) {
+    val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+    startActivity(browserIntent)
+}
+
+fun Fragment.callNumber(number: String) {
+    val intent = Intent(Intent.ACTION_DIAL)
+    intent.data = Uri.parse("tel:$number")
+    startActivity(intent)
 }
 
 fun Activity.logout() {
@@ -73,144 +96,38 @@ fun View.hideKeyboard(context: Context?) {
     inputMethodManager.hideSoftInputFromWindow(this.windowToken, 0)
 }
 
-fun ContentContentPOJO.asContentEntityObject(groupId: Int) = Content(
-    id = id,
-    contentKey = transKey,
-    content = text,
-    imageUrl = url,
-    groupID = groupId
-)
-
-fun List<ContentContentPOJO>.asContentEntityObject(groupId: Int) = map {
-    Content(
-        id = it.id,
-        contentKey = it.transKey,
-        content = it.text,
-        imageUrl = it.url,
-        groupID = groupId
-    )
+fun getDateAndTime(): String {
+    val date = Calendar.getInstance().time
+    return DateFormat.format("yyyy-MM-dd hh:mm:ss", date).toString()
 }
 
-fun List<FriendContentPOJO>.asFriendEntityObject() = map {
-    Friend(
-        id = it.id,
-        surname = it.fullName.split(" ")[0],
-        name = it.fullName.split(" ")[1],
-        balance = it.balance
-    )
-}
+fun Context.isInternetConnectionAvailable(): Boolean {
+    var result = false
+    val cm = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+        val networkCapabilities = cm.activeNetwork ?: return false
+        val actNw =
+            cm.getNetworkCapabilities(networkCapabilities) ?: return false
+        result = when {
+            actNw.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) -> true
+            actNw.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) -> true
+            actNw.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET) -> true
+            else -> false
+        }
+    } else {
+        cm.run {
+            cm.activeNetworkInfo?.run {
+                result = when (type) {
+                    ConnectivityManager.TYPE_WIFI -> true
+                    ConnectivityManager.TYPE_MOBILE -> true
+                    ConnectivityManager.TYPE_ETHERNET -> true
+                    else -> false
+                }
 
-fun List<CategoriesContentPOJO>.asCategoryEntityObject() = map {
-    Category(
-        id = it.id,
-        name = it.name,
-        url = it.url,
-        isReady = it.isReady
-    )
-}
-
-fun List<AssocationContentPOJO>.asAssocationEntityObject() = map {
-    Assocation(
-        id = it.id,
-        name = it.name,
-        stepNeed = it.stepNeed.moreShortenString(),
-        balance = it.balance.moreShortenString(),
-        percent = it.percent,
-        url = it.url
-    )
-}
-
-fun List<WalletContentPOJO>.asWalletEntityObject() = map {
-    Wallet(
-        id = 1,
-        balance = it.balance.toString(),
-        balanceMoney = it.balanceMoney.toString(),
-        bonusSteps = it.bonusSteps?.littleShortenString(),
-        convertSteps = it.convertSteps?.littleShortenString(),
-        donationSteps = it.donationSteps?.littleShortenString(),
-        transferStepsIn = it.transferStepsIn?.littleShortenString(),
-        transferStepsOut = it.transferStepsOut?.littleShortenString()
-    )
-}
-
-fun List<FriendshipContentPOJO>.asFriendshipStatsEntityObject() = map {
-    FriendshipStats(
-        id = 1,
-        friendsCount = it.friendsCount,
-        requestCount = it.requestCount
-    )
-}
-
-fun List<PersonalInfoContentPOJO>.asPersonalInfoEntityObject() = map {
-    PersonalInfo(
-        saveId = 1,
-        id = it.id,
-        name = it.name,
-        phone = it.phone,
-        invitationCode = it.invitationCode,
-        fullName = it.fullName,
-        email = it.email,
-        url = it.url,
-        surname = it.surname,
-        createdDate = it.createdDate,
-        balance = it.balance,
-        friendsCount = it.friendsCount
-    )
-}
-
-fun List<OwnProfileInfoContentPOJO>.asOwnProfileInfoEntityObject() = map {
-    PersonalInfo(
-        saveId = 1,
-        id = it.id,
-        name = it.name,
-        phone = it.phone,
-        invitationCode = it.invitationCode,
-        fullName = it.fullName,
-        email = it.email,
-        url = it.url,
-        surname = it.surname,
-        createdDate = it.createdDate,
-        balance = it.balance,
-        friendsCount = it.friendsCount
-    )
-}
-
-fun List<DailyContentPOJO>.asDailyStatsEntityObject() = map {
-    DailyStat(
-        createdDate = it.createdDate,
-        count = it.count,
-        shortName = it.shortName
-    )
-}
-
-fun List<MonthlyContentPOJO>.asMonthlyStatsEntityObject() = map {
-    MonthlyStat(
-        month = it.month,
-        count = it.count,
-        monthName = it.monthName
-    )
-}
-
-fun List<NotificationContentPOJO>.asNotificationEntityObject() = map {
-    Notification(
-        id = it.id,
-        imageUrl = it.imageUrl,
-        messages = it.messages,
-        title = it.title
-    )
-}
-
-fun List<WeeklyContentPOJO>.asWeeklyStatsEntityObject() = map {
-    WeeklyStat(
-        date = it.date,
-        calories = it.calories,
-        convertedSteps = it.convertedSteps,
-        isSelected = it.isSelected,
-        kilometers = it.kilometers,
-        stepCount = it.stepCount,
-        unconvertedSteps = it.unconvertedSteps,
-        weekName = it.weekName
-    )
+            }
+        }
+    }
+    return result
 }
 
 fun Long.littleShortenString(): String {
@@ -228,6 +145,19 @@ fun Long.moreShortenString(): String {
         this >= 1000 -> "${this / 1000} min"
         else -> "$this"
     }
+}
+
+fun AdsTransactionContentPOJO.asAdsTransactionInfoHolderObject(): AdsTransactionInfoHolder {
+    return AdsTransactionInfoHolder(
+        transactionId,
+        videoUrl,
+        description,
+        logoUrl,
+        title,
+        subTitle,
+        url,
+        time
+    )
 }
 
 fun <T> checkNetworkRequestResponse(response: Response<ServerResponsePOJO<T>>): NetworkState {

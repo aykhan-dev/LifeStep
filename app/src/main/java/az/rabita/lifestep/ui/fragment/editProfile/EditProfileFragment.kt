@@ -1,15 +1,15 @@
 package az.rabita.lifestep.ui.fragment.editProfile
 
-import android.content.ActivityNotFoundException
+import android.app.Activity.RESULT_OK
 import android.content.Intent
 import android.graphics.Bitmap
-import android.net.Uri
+import android.graphics.ImageDecoder
+import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
@@ -19,10 +19,10 @@ import az.rabita.lifestep.ui.activity.forgotPassword.ForgotPasswordActivity
 import az.rabita.lifestep.ui.dialog.loading.LoadingDialog
 import az.rabita.lifestep.ui.dialog.message.MessageDialog
 import az.rabita.lifestep.ui.dialog.message.MessageType
-import az.rabita.lifestep.utils.ERROR_TAG
-import az.rabita.lifestep.utils.MAIN_TO_FORGOT_PASSWORD_KEY
-import az.rabita.lifestep.utils.logout
+import az.rabita.lifestep.utils.*
 import az.rabita.lifestep.viewModel.fragment.editProfile.EditProfileViewModel
+import com.theartofdev.edmodo.cropper.CropImage
+import com.theartofdev.edmodo.cropper.CropImageView
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.FileOutputStream
@@ -65,6 +65,9 @@ class EditProfileFragment : Fragment() {
             }
             editTextEmail.isEnabled = false
             editTextInvitationCode.isEnabled = false
+
+            root.setOnClickListener { root.hideKeyboard(context) }
+            constraintLayoutContent.setOnClickListener { root.hideKeyboard(context) }
         }
 
         return binding.root
@@ -124,59 +127,32 @@ class EditProfileFragment : Fragment() {
     }
 
     private fun onEditImageClick() {
-        val getIntent = Intent(Intent.ACTION_GET_CONTENT)
-        getIntent.type = "image/*"
-
-        val pickIntent = Intent(
-            Intent.ACTION_PICK,
-            MediaStore.Images.Media.EXTERNAL_CONTENT_URI
-        )
-        pickIntent.type = "image/*"
-
-        val chooserIntent = Intent.createChooser(getIntent, "Select Image")
-        chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS, arrayOf(pickIntent))
-
-        startActivityForResult(chooserIntent, PICK_IMAGE)
-    }
-
-    private fun sendImageToCrop(uri: Uri?) {
-        try {
-            val cropIntent = Intent("com.android.camera.action.CROP")
-            // indicate image type and Uri
-            cropIntent.setDataAndType(uri, "image/*")
-            // set crop properties here
-            cropIntent.putExtra("crop", true)
-            // indicate aspect of desired crop
-            cropIntent.putExtra("aspectX", 1)
-            cropIntent.putExtra("aspectY", 1)
-            // indicate output X and Y
-            cropIntent.putExtra("outputX", 128)
-            cropIntent.putExtra("outputY", 128)
-            // retrieve data on return
-            cropIntent.putExtra("return-data", true)
-            // start the activity - we handle returning in onActivityResult
-            startActivityForResult(cropIntent, PIC_CROP)
-        } // respond to users whose devices do not support the crop action
-        catch (anfe: ActivityNotFoundException) {
-            // display an error message
-            val errorMessage =
-                "Whoops - your device doesn't support the crop action!"
-            val toast: Toast = Toast.makeText(context, errorMessage, Toast.LENGTH_SHORT)
-            toast.show()
-        }
+        CropImage.activity()
+            .setGuidelines(CropImageView.Guidelines.ON)
+            .setAspectRatio(1, 1)
+            .start(requireContext(), this)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        when (requestCode) {
-            PICK_IMAGE -> sendImageToCrop(data?.data)
-            PIC_CROP -> {
-                val extras = data?.extras
-                val selectedBitmap = extras?.getParcelable<Bitmap>("data")
-                selectedBitmap?.let {
+        if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE) {
+            val result = CropImage.getActivityResult(data)
+            if (resultCode == RESULT_OK) {
+                val resultUri = result.uri
+                val bitmap = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                    val source: ImageDecoder.Source = ImageDecoder
+                        .createSource(requireContext().contentResolver, resultUri)
+                    ImageDecoder.decodeBitmap(source)
+                } else {
+                    MediaStore.Images.Media.getBitmap(
+                        requireContext().contentResolver,
+                        resultUri
+                    )
+                }
+                bitmap?.let {
                     context?.let {
                         val file = File(it.cacheDir, UUID.randomUUID().toString() + ".png")
                         val bos = ByteArrayOutputStream()
-                        selectedBitmap.compress(Bitmap.CompressFormat.PNG, 100, bos)
+                        bitmap.compress(Bitmap.CompressFormat.PNG, 100, bos)
                         val bitmapData = bos.toByteArray()
                         val fos = FileOutputStream(file)
                         fos.write(bitmapData)
@@ -184,7 +160,9 @@ class EditProfileFragment : Fragment() {
                         fos.close()
                         viewModel.updateProfileImage(file)
                     }
-                }
+                } ?: context?.toast("Bitmap null")
+            } else if (resultCode == CropImage.CROP_IMAGE_ACTIVITY_RESULT_ERROR_CODE) {
+                context?.toast("Error while cropping")
             }
         }
     }

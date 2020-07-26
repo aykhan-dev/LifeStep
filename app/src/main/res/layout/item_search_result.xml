@@ -4,6 +4,9 @@
 
     <data>
 
+        <variable
+            name="data"
+            type="az.rabita.lifestep.pojo.apiPOJO.content.SearchResultContentPOJO" />
     </data>
 
     <LinearLayout
@@ -25,7 +28,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:scaleType="centerCrop"
-                android:src="@drawable/img_friend_test" />
+                app:imageUrl="@{data.imageUrl}" />
 
         </com.google.android.material.card.MaterialCardView>
 
@@ -35,7 +38,6 @@
             android:layout_height="wrap_content"
             android:fontFamily="@font/gilroy_medium"
             android:padding="10dp"
-            android:text="Tural Xasıyev"
             android:textColor="@color/gray_text_color"
             android:textSize="18sp" />
 

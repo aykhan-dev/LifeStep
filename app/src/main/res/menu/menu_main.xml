@@ -15,7 +15,7 @@
         android:title="" />
 
     <item
-        android:id="@+id/adsFragment"
+        android:id="@+id/nav_graph_ads"
         android:title="" />
 
     <item

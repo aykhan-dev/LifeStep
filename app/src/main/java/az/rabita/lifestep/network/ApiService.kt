@@ -144,6 +144,31 @@ interface FriendshipService {
 
 }
 
+interface AdvertisementsService {
+
+    @POST("advetisements/createtransaction")
+    suspend fun createAdsTransaction(
+        @Header("token") token: String,
+        @Header("lang") lang: Int,
+        @Body model: DateModelPOJO
+    ): Response<ServerResponsePOJO<AdsTransactionContentPOJO>>
+
+    @POST("advetisements/convertsteps")
+    suspend fun sendAdsTransactionResult(
+        @Header("token") token: String,
+        @Header("lang") lang: Int,
+        @Body model: ConvertStepsModelPOJO
+    ): Response<ServerResponsePOJO<EmptyContentPOJO>>
+
+    @POST("advetisements/bonussteps")
+    suspend fun sendBonusAdsTransactionResult(
+        @Header("token") token: String,
+        @Header("lang") lang: Int,
+        @Body model: ConvertStepsModelPOJO
+    ): Response<ServerResponsePOJO<EmptyContentPOJO>>
+
+}
+
 interface ContentsService {
 
     @POST("contents/bypageid")
@@ -338,4 +363,9 @@ object ApiInitHelper {
     val transactionsService: TransactionsService by lazy { getClient().create(TransactionsService::class.java) }
     val notificationsService: NotificationsService by lazy { getClient().create(NotificationsService::class.java) }
     val reportService: ReportService by lazy { getClient().create(ReportService::class.java) }
+    val advertisementsService: AdvertisementsService by lazy {
+        getClient().create(
+            AdvertisementsService::class.java
+        )
+    }
 }

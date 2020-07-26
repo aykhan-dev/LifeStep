@@ -1,14 +1,12 @@
 package az.rabita.lifestep.viewModel.fragment.donation
 
 import android.app.Application
-import az.rabita.lifestep.utils.DEFAULT_LANG
 import androidx.lifecycle.*
 import az.rabita.lifestep.local.getDatabase
 import az.rabita.lifestep.manager.PreferenceManager
 import az.rabita.lifestep.network.NetworkState
 import az.rabita.lifestep.repository.AssocationsRepository
-import az.rabita.lifestep.utils.LANG_KEY
-import az.rabita.lifestep.utils.TOKEN_KEY
+import az.rabita.lifestep.utils.*
 import kotlinx.coroutines.launch
 
 class DonationViewModel(application: Application) : AndroidViewModel(application) {
@@ -36,12 +34,19 @@ class DonationViewModel(application: Application) : AndroidViewModel(application
                 is NetworkState.ExpiredToken -> startExpireTokenProcess()
                 is NetworkState.HandledHttpError -> showMessageDialog(response.error)
                 is NetworkState.UnhandledHttpError -> showMessageDialog(response.error)
-                is NetworkState.NetworkException -> showMessageDialog(response.exception)
+                is NetworkState.NetworkException -> handleNetworkException(response.exception)
             }
 
         }
     }
 
+    private fun handleNetworkException(exception: String?) {
+        viewModelScope.launch {
+            if (context.isInternetConnectionAvailable()) showMessageDialog(exception)
+            else showMessageDialog(NO_INTERNET_CONNECTION)
+        }
+    }
+    
     private fun showMessageDialog(message: String?) {
         _errorMessage.value = message
         _errorMessage.value = null

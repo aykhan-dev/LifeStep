@@ -3,10 +3,10 @@ package az.rabita.lifestep.ui.fragment.notifications
 import android.view.ViewGroup
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.RecyclerView
-import az.rabita.lifestep.pojo.apiPOJO.entity.Notification
+import az.rabita.lifestep.pojo.apiPOJO.entity.Notifications
 
 class NotificationRecyclerAdapter(
-    private val clickListener: () -> Unit
+    private val clickListener: (notification: Notifications) -> Unit
 ) : RecyclerView.Adapter<NotificationViewHolder>() {
 
     private val asyncListDiffer = AsyncListDiffer(this, NotificationDiffCallback)
@@ -22,7 +22,7 @@ class NotificationRecyclerAdapter(
 
     override fun getItemCount(): Int = asyncListDiffer.currentList.size
 
-    fun submitList(list: List<Notification>) {
+    fun submitList(list: List<Notifications>) {
         asyncListDiffer.submitList(list)
     }
 

@@ -15,13 +15,13 @@ buildscript {
 
         version_work = '2.3.4'
 
-        version_paging = '3.0.0-alpha02'
+        version_paging = '3.0.0-alpha03'
 
         version_glide = '4.11.0'
 
         version_nav = '2.3.0'
 
-        version_okhttp = '4.7.2'
+        version_okhttp = '4.8.0'
     }
     repositories {
         google()

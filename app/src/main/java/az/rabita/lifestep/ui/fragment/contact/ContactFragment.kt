@@ -11,10 +11,7 @@ import androidx.navigation.fragment.findNavController
 import az.rabita.lifestep.databinding.FragmentContactBinding
 import az.rabita.lifestep.ui.dialog.message.MessageDialog
 import az.rabita.lifestep.ui.dialog.message.MessageType
-import az.rabita.lifestep.utils.ERROR_TAG
-import az.rabita.lifestep.utils.VerticalSpaceItemDecoration
-import az.rabita.lifestep.utils.logout
-import az.rabita.lifestep.utils.pxFromDp
+import az.rabita.lifestep.utils.*
 import az.rabita.lifestep.viewModel.fragment.contact.ContactViewModel
 
 class ContactFragment : Fragment() {
@@ -23,7 +20,9 @@ class ContactFragment : Fragment() {
 
     private val viewModel: ContactViewModel by viewModels()
 
-    private val contactsAdapter = ContactRecyclerAdapter
+    private val contactsAdapter = ContactRecyclerAdapter {
+        if (it.contentKey == "mobilephone" || it.contentKey == "phone") callNumber(it.content)
+    }
     private val navController by lazy { findNavController() }
 
     override fun onCreateView(

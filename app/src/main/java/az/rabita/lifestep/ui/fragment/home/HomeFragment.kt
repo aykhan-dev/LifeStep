@@ -6,6 +6,8 @@ import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
+import android.view.View.GONE
+import android.view.View.VISIBLE
 import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
@@ -19,11 +21,6 @@ import az.rabita.lifestep.ui.dialog.message.MessageDialog
 import az.rabita.lifestep.ui.dialog.message.MessageType
 import az.rabita.lifestep.utils.*
 import az.rabita.lifestep.viewModel.fragment.home.HomeViewModel
-import com.google.android.gms.ads.AdRequest
-import com.google.android.gms.ads.rewarded.RewardItem
-import com.google.android.gms.ads.rewarded.RewardedAd
-import com.google.android.gms.ads.rewarded.RewardedAdCallback
-import com.google.android.gms.ads.rewarded.RewardedAdLoadCallback
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayout.OnTabSelectedListener
@@ -79,11 +76,17 @@ class HomeFragment : Fragment() {
 
         imageButtonSearch.setOnClickListener { showSearchBar() }
 
+        textViewMore.setOnClickListener {
+            navController.navigate(
+                HomeFragmentDirections.actionHomeFragmentToSearchResultsFragment(
+                    this@HomeFragment.viewModel.searchInput.value ?: ""
+                )
+            )
+        }
+
         buttonConvertSteps.setOnClickListener {
             activity?.let { loadingDialog.show(it.supportFragmentManager, "Loading") }
-            lifecycleScope.launch {
-                loadAnAd()
-            }
+            this@HomeFragment.viewModel.createAdsTransaction()
         }
 
         tabLayout.addOnTabSelectedListener(object : OnTabSelectedListener {
@@ -128,33 +131,9 @@ class HomeFragment : Fragment() {
         )
     }
 
-    private fun loadAnAd() {
-        val rewardedAd = RewardedAd(context, "ca-app-pub-3940256099942544/5224354917")
-        val callback = object : RewardedAdLoadCallback() {
-            override fun onRewardedAdLoaded() {
-                loadingDialog.dismiss()
-                showLoadedAd(rewardedAd)
-            }
-
-            override fun onRewardedAdFailedToLoad(p0: Int) {
-                loadingDialog.dismiss()
-                context?.toast("Error while ad loading")
-            }
-        }
-        rewardedAd.loadAd(AdRequest.Builder().build(), callback)
-    }
-
-    private fun showLoadedAd(ad: RewardedAd) {
-        ad.show(requireActivity(), object : RewardedAdCallback() {
-            override fun onUserEarnedReward(p0: RewardItem) {
-                viewModel.convertSteps()
-            }
-        })
-    }
-
     private fun observeStates(): Unit = with(viewModel) {
 
-        uiState.observe(viewLifecycleOwner, Observer {
+        searchingState.observe(viewLifecycleOwner, Observer {
             it?.let {
                 val flag = it is UiState.Loading
                 binding.recyclerViewResults.isVisible = !flag
@@ -165,6 +144,18 @@ class HomeFragment : Fragment() {
     }
 
     private fun observeData(): Unit = with(viewModel) {
+
+        adsTransaction.observe(viewLifecycleOwner, Observer {
+            it?.let {
+                loadingDialog.dismiss()
+                val transactionInfo = it.asAdsTransactionInfoHolderObject()
+                navController.navigate(
+                    HomeFragmentDirections.actionHomeFragmentToAdsDialogFragment(
+                        transactionInfo
+                    )
+                )
+            }
+        })
 
         weeklyStats.observe(viewLifecycleOwner, Observer {
             it?.let { list ->
@@ -191,7 +182,11 @@ class HomeFragment : Fragment() {
                     with(frameLayoutSearchResults) {
                         if (it.isNotEmpty()) {
                             isVisible = editTextSearchBar.isVisible
-                            if (isVisible) adapter.submitList(it)
+                            if (isVisible) {
+                                if (it.size > 5) binding.textViewMore.visibility = VISIBLE
+                                else binding.textViewMore.visibility = GONE
+                                adapter.submitList(it)
+                            }
                         } else {
                             isVisible = false
                         }
@@ -227,7 +222,7 @@ class HomeFragment : Fragment() {
     }
 
     private fun navigateToNotificationsPage() = with(navController) {
-        navigate(HomeFragmentDirections.actionHomeFragmentToNotificationsFragment())
+        navigate(HomeFragmentDirections.actionHomeFragmentToNavGraphNotifications())
     }
 
     private fun onSearchResultItemClick(userId: String) = with(navController) {
@@ -244,6 +239,7 @@ class HomeFragment : Fragment() {
         editTextSearchBar.makeInvisible()
         textViewTitle.makeVisible()
         if (frameLayoutSearchResults.isVisible) frameLayoutSearchResults.visibility = View.GONE
+        root.hideKeyboard(context)
     }
 
     private fun permissions() {

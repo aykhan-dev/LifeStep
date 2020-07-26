@@ -7,10 +7,14 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import az.rabita.lifestep.databinding.FragmentNotificationsBinding
 import az.rabita.lifestep.utils.logout
+import az.rabita.lifestep.utils.openUrl
 import az.rabita.lifestep.viewModel.fragment.notifications.NotificationsViewModel
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 
 
 class NotificationsFragment : Fragment() {
@@ -20,7 +24,20 @@ class NotificationsFragment : Fragment() {
     private val viewModel: NotificationsViewModel by viewModels()
 
     private val navController by lazy { findNavController() }
-    private val notificationsAdapter by lazy { NotificationRecyclerAdapter {} }
+    private val notificationsAdapter by lazy {
+        NotificationRecyclerAdapter { notification ->
+            when (notification.usersNotificationsTypesId) {
+                20 -> navController.navigate(NotificationsFragmentDirections.actionNotificationsFragmentToInviteFriendFragment())
+                30 -> navController.navigate(NotificationsFragmentDirections.actionNotificationsFragmentToFriendsFragment())
+                40 -> navController.navigate(
+                    NotificationsFragmentDirections.actionNotificationsFragmentToUserProfileFragment(
+                        notification.usersId
+                    )
+                )
+                else -> if (notification.url.isNotEmpty()) openUrl(notification.url)
+            }
+        }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -62,9 +79,11 @@ class NotificationsFragment : Fragment() {
 
     private fun observeData(): Unit = with(viewModel) {
 
-        listOfNotifications.observe(viewLifecycleOwner, Observer {
-            it?.let { notificationsAdapter.submitList(it) }
-        })
+        lifecycleScope.launch {
+            listOfNotifications.collectLatest {
+                notificationsAdapter.submitList(it)
+            }
+        }
 
     }
 

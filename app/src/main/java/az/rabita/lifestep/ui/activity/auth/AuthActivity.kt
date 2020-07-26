@@ -12,6 +12,7 @@ import az.rabita.lifestep.R
 import az.rabita.lifestep.databinding.ActivityAuthBinding
 import az.rabita.lifestep.manager.LocaleManager
 import az.rabita.lifestep.utils.DEFAULT_LANG_KEY
+import az.rabita.lifestep.utils.hideKeyboard
 import az.rabita.lifestep.viewModel.activity.auth.AuthViewModel
 import az.rabita.lifestep.viewModel.fragment.login.LoginViewModel
 import az.rabita.lifestep.viewModel.fragment.register.RegistrationViewModel
@@ -44,6 +45,7 @@ class AuthActivity : AppCompatActivity() {
 
         with(binding) {
             this@AuthActivity.motionLayout = motionLayout
+            root.setOnClickListener { root.hideKeyboard(applicationContext) }
         }
 
         observeClicks()

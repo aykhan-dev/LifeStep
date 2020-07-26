@@ -53,6 +53,12 @@ android {
         }
     }
 
+    testOptions {
+        unitTests {
+            includeAndroidResources = true
+        }
+    }
+
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
@@ -111,19 +117,18 @@ dependencies {
     implementation "com.jakewharton.timber:timber:$version_timber"
 
     // Lifecycle
-    implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.3.0-alpha05'
-    implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.3.0-alpha05'
-    implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.3.0-alpha05'
+    implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.3.0-alpha06'
+    implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.3.0-alpha06'
+    implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.3.0-alpha06'
 
     // Google Services
     implementation 'com.google.android.gms:play-services-fitness:18.0.0'
-    implementation 'com.google.android.gms:play-services-auth:18.0.0'
-    implementation 'com.google.android.gms:play-services-ads:19.2.0'
+    implementation 'com.google.android.gms:play-services-auth:18.1.0'
 
     // Firebase
     implementation 'com.google.firebase:firebase-analytics-ktx:17.4.4'
     implementation 'com.google.firebase:firebase-crashlytics:17.1.1'
-    implementation 'com.google.firebase:firebase-perf:19.0.7'
+    implementation 'com.google.firebase:firebase-perf:19.0.8'
 
     implementation "androidx.paging:paging-runtime:$version_paging"
 
@@ -131,11 +136,19 @@ dependencies {
     implementation "androidx.room:room-runtime:$version_room"
     kapt "androidx.room:room-compiler:$version_room"
     implementation "androidx.room:room-ktx:$version_room"
+    testImplementation "androidx.room:room-testing:$version_room"
 
     // WorkManager
     implementation "androidx.work:work-runtime-ktx:$version_work"
 
     // OneSignal
     implementation 'com.onesignal:OneSignal:3.15.0'
+
+    // ExoPlayer for media player
+    implementation 'com.google.android.exoplayer:exoplayer-core:2.11.5'
+    implementation 'com.google.android.exoplayer:exoplayer-dash:2.11.5'
+    implementation 'com.google.android.exoplayer:exoplayer-ui:2.11.5'
+
+    api 'com.theartofdev.edmodo:android-image-cropper:2.8.0'
 
 }

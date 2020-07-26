@@ -3,10 +3,11 @@ package az.rabita.lifestep.ui.fragment.contact
 import android.view.ViewGroup
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.RecyclerView
-import az.rabita.lifestep.pojo.apiPOJO.entity.ContactDetail
 import az.rabita.lifestep.pojo.apiPOJO.entity.Content
 
-object ContactRecyclerAdapter : RecyclerView.Adapter<ContactViewHolder>() {
+class ContactRecyclerAdapter(
+    private val clickListener: (content: Content) -> Unit
+) : RecyclerView.Adapter<ContactViewHolder>() {
 
     private val asyncListDiffer = AsyncListDiffer(this, ContactDiffCallback)
 
@@ -16,7 +17,7 @@ object ContactRecyclerAdapter : RecyclerView.Adapter<ContactViewHolder>() {
 
     override fun onBindViewHolder(holder: ContactViewHolder, position: Int) =
         with(asyncListDiffer.currentList) {
-            holder.bind(get(position))
+            holder.bind(get(position), clickListener)
         }
 
     override fun getItemCount(): Int = asyncListDiffer.currentList.size

@@ -46,6 +46,7 @@ class LoginFragment : Fragment() {
             buttonForgotPassword.setOnClickListener {
                 startActivity(Intent(requireActivity(), ForgotPasswordActivity::class.java))
             }
+            root.setOnClickListener { root.hideKeyboard(context) }
         }
 
         return binding.root

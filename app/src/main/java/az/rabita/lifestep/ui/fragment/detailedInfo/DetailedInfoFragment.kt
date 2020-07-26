@@ -25,7 +25,16 @@ class DetailedInfoFragment : Fragment() {
 
     private val args: DetailedInfoFragmentArgs by navArgs()
 
-    private val donorsAdapter by lazy { RankingRecyclerAdapter {} }
+    private val donorsAdapter by lazy {
+        RankingRecyclerAdapter { ranker ->
+            navController.navigate(
+                DetailedInfoFragmentDirections.actionDetailedInfoFragmentToUserProfileFragment(
+                    ranker.id
+                )
+            )
+        }
+    }
+
     private val navController by lazy { findNavController() }
 
     private val loadingDialog by lazy { LoadingDialog() }

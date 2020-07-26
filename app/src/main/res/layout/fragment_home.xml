@@ -43,7 +43,7 @@
             app:layout_constraintStart_toStartOf="@id/text_view_title"
             app:layout_constraintTop_toTopOf="@id/image_button_search" />
 
-        <FrameLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/frame_layout_search_results"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -62,15 +62,32 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
                 tools:listitem="@layout/item_search_result" />
 
             <ProgressBar
                 android:id="@+id/progress_bar"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center" />
+                android:layout_gravity="center"
+                app:layout_constraintBottom_toBottomOf="@id/recycler_view_results"
+                app:layout_constraintEnd_toEndOf="@id/recycler_view_results"
+                app:layout_constraintStart_toStartOf="@id/recycler_view_results"
+                app:layout_constraintTop_toTopOf="@id/recycler_view_results" />
 
-        </FrameLayout>
+            <TextView
+                android:id="@+id/text_view_more"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"
+                android:fontFamily="@font/gilroy_semibold"
+                android:text="@string/more"
+                android:visibility="gone"
+                app:layout_constraintTop_toBottomOf="@id/recycler_view_results" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
         <ImageButton
             android:id="@+id/image_button_search"

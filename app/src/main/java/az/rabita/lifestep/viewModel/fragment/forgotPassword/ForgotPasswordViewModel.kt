@@ -95,7 +95,7 @@ class ForgotPasswordViewModel(application: Application) : AndroidViewModel(appli
                 is NetworkState.ExpiredToken -> startExpireTokenProcess()
                 is NetworkState.HandledHttpError -> showMessageDialog(response.error)
                 is NetworkState.UnhandledHttpError -> showMessageDialog(response.error)
-                is NetworkState.NetworkException -> handleError(response.exception)
+                is NetworkState.NetworkException -> handleNetworkException(response.exception)
             }
 
             uiState.postValue(UiState.LoadingFinished)
@@ -125,7 +125,7 @@ class ForgotPasswordViewModel(application: Application) : AndroidViewModel(appli
                 is NetworkState.ExpiredToken -> startExpireTokenProcess()
                 is NetworkState.HandledHttpError -> showMessageDialog(response.error)
                 is NetworkState.UnhandledHttpError -> showMessageDialog(response.error)
-                is NetworkState.NetworkException -> handleError(response.exception)
+                is NetworkState.NetworkException -> handleNetworkException(response.exception)
             }
 
             uiState.postValue(UiState.LoadingFinished)
@@ -154,7 +154,7 @@ class ForgotPasswordViewModel(application: Application) : AndroidViewModel(appli
                 is NetworkState.ExpiredToken -> startExpireTokenProcess()
                 is NetworkState.HandledHttpError -> showMessageDialog(response.error)
                 is NetworkState.UnhandledHttpError -> showMessageDialog(response.error)
-                is NetworkState.NetworkException -> handleError(response.exception)
+                is NetworkState.NetworkException -> handleNetworkException(response.exception)
             }
 
             uiState.postValue(UiState.LoadingFinished)
@@ -168,7 +168,12 @@ class ForgotPasswordViewModel(application: Application) : AndroidViewModel(appli
 
     private fun checkPinCode(pin: String): Boolean = (pin == details?.otp)
 
-    private fun handleError(exception: String?) = Timber.e(exception)
+    private fun handleNetworkException(exception: String?) {
+        viewModelScope.launch {
+            if (context.isInternetConnectionAvailable()) showMessageDialog(exception)
+            else showMessageDialog(NO_INTERNET_CONNECTION)
+        }
+    }
 
     private fun showMessageDialog(message: String?) {
         _errorMessage.value = message

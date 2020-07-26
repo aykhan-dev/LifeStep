@@ -5,6 +5,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import az.rabita.lifestep.databinding.ItemSearchResultBinding
 import az.rabita.lifestep.pojo.apiPOJO.content.SearchResultContentPOJO
+import az.rabita.lifestep.utils.loadImage
 
 class SearchResultViewHolder private constructor(private val binding: ItemSearchResultBinding) :
     RecyclerView.ViewHolder(binding.root) {
@@ -12,7 +13,8 @@ class SearchResultViewHolder private constructor(private val binding: ItemSearch
     fun bind(data: SearchResultContentPOJO, clickListener: (userId: String) -> Unit) =
         with(binding) {
             textViewName.text = "${data.surname} ${data.name}"
-            root.setOnClickListener { clickListener(data.id) } //TODO update this part
+            imageViewProfile.loadImage(data.imageUrl)
+            root.setOnClickListener { clickListener(data.id) }
         }
 
     companion object {

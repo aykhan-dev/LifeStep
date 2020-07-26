@@ -95,8 +95,14 @@ class FriendsFragment : Fragment() {
 
     }
 
-    private fun configureViewPager() = with(binding) {
-        activity?.let { viewPager.adapter = FriendsPagerAdapter(it) }
+    private fun configureViewPager(): Unit = with(binding) {
+        activity?.let {
+            viewPager.adapter = FriendsPagerAdapter(it) { userId ->
+                navController.navigate(
+                    FriendsFragmentDirections.actionFriendsFragmentToUserProfileFragment(userId)
+                )
+            }
+        }
         TabLayoutMediator(tabLayoutFriends, viewPager) { _, _ -> }.attach()
     }
 

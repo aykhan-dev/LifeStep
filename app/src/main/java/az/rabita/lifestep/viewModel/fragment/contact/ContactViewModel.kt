@@ -1,7 +1,6 @@
 package az.rabita.lifestep.viewModel.fragment.contact
 
 import android.app.Application
-import az.rabita.lifestep.utils.DEFAULT_LANG
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -10,11 +9,8 @@ import az.rabita.lifestep.local.getDatabase
 import az.rabita.lifestep.manager.PreferenceManager
 import az.rabita.lifestep.network.NetworkState
 import az.rabita.lifestep.repository.ContentsRepository
-import az.rabita.lifestep.utils.CONTACTS_GROUP_ID
-import az.rabita.lifestep.utils.LANG_KEY
-import az.rabita.lifestep.utils.TOKEN_KEY
+import az.rabita.lifestep.utils.*
 import kotlinx.coroutines.launch
-import timber.log.Timber
 
 class ContactViewModel(application: Application) : AndroidViewModel(application) {
 
@@ -39,17 +35,22 @@ class ContactViewModel(application: Application) : AndroidViewModel(application)
 
             when (val response = contentsRepository.getContent(token, lang, CONTACTS_GROUP_ID)) {
                 is NetworkState.ExpiredToken -> startExpireTokenProcess()
-                is NetworkState.HandledHttpError -> showDialog(response.error)
-                is NetworkState.UnhandledHttpError -> showDialog(response.error)
-                is NetworkState.NetworkException -> handleError(response.exception)
+                is NetworkState.HandledHttpError -> showMessageDialog(response.error)
+                is NetworkState.UnhandledHttpError -> showMessageDialog(response.error)
+                is NetworkState.NetworkException -> handleNetworkException(response.exception)
             }
 
         }
     }
 
-    private fun handleError(exception: String?) = Timber.e(exception)
+    private fun handleNetworkException(exception: String?) {
+        viewModelScope.launch {
+            if (context.isInternetConnectionAvailable()) showMessageDialog(exception)
+            else showMessageDialog(NO_INTERNET_CONNECTION)
+        }
+    }
 
-    private fun showDialog(message: String?) {
+    private fun showMessageDialog(message: String?) {
         _errorMessage.value = message
         _errorMessage.value = null
     }

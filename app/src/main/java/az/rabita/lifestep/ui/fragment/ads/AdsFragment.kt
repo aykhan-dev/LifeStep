@@ -7,21 +7,14 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
-import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import az.rabita.lifestep.databinding.FragmentAdsBinding
+import az.rabita.lifestep.pojo.dataHolder.AdsTransactionInfoHolder
 import az.rabita.lifestep.ui.dialog.loading.LoadingDialog
 import az.rabita.lifestep.ui.dialog.message.MessageDialog
 import az.rabita.lifestep.ui.dialog.message.MessageType
-import az.rabita.lifestep.utils.ERROR_TAG
-import az.rabita.lifestep.utils.logout
-import az.rabita.lifestep.utils.toast
+import az.rabita.lifestep.utils.*
 import az.rabita.lifestep.viewModel.fragment.ads.AdsViewModel
-import com.google.android.gms.ads.AdRequest
-import com.google.android.gms.ads.rewarded.RewardItem
-import com.google.android.gms.ads.rewarded.RewardedAd
-import com.google.android.gms.ads.rewarded.RewardedAdCallback
-import com.google.android.gms.ads.rewarded.RewardedAdLoadCallback
-import kotlinx.coroutines.launch
 
 class AdsFragment : Fragment() {
 
@@ -30,6 +23,8 @@ class AdsFragment : Fragment() {
     private val viewModel: AdsViewModel by viewModels()
 
     private val loadingDialog by lazy { LoadingDialog() }
+
+    private val navController by lazy { findNavController() }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -52,6 +47,7 @@ class AdsFragment : Fragment() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         observeData()
+        observeStates()
         observeEvents()
     }
 
@@ -60,35 +56,8 @@ class AdsFragment : Fragment() {
         viewModel = this@AdsFragment.viewModel
 
         buttonWatchAds.setOnClickListener {
-            activity?.let { loadingDialog.show(it.supportFragmentManager, "Loading") }
-            lifecycleScope.launch {
-                loadAnAd()
-            }
+            this@AdsFragment.viewModel.createAdsTransaction()
         }
-    }
-
-    private fun loadAnAd() {
-        val rewardedAd = RewardedAd(context, "ca-app-pub-3940256099942544/5224354917")
-        val callback = object : RewardedAdLoadCallback() {
-            override fun onRewardedAdLoaded() {
-                loadingDialog.dismiss()
-                showLoadedAd(rewardedAd)
-            }
-
-            override fun onRewardedAdFailedToLoad(p0: Int) {
-                loadingDialog.dismiss()
-                context?.toast("Error while ad loading")
-            }
-        }
-        rewardedAd.loadAd(AdRequest.Builder().build(), callback)
-    }
-
-    private fun showLoadedAd(ad: RewardedAd) {
-        ad.show(requireActivity(), object : RewardedAdCallback() {
-            override fun onUserEarnedReward(p0: RewardItem) {
-                viewModel.getBonusSteps()
-            }
-        })
     }
 
     private fun observeData(): Unit = with(viewModel) {
@@ -100,6 +69,35 @@ class AdsFragment : Fragment() {
                         activity.supportFragmentManager,
                         ERROR_TAG
                     )
+                }
+            }
+        })
+
+        adsTransaction.observe(viewLifecycleOwner, Observer {
+            it?.let {
+                val dataHolder = it.asAdsTransactionInfoHolderObject()
+                navController.navigate(
+                    AdsFragmentDirections.actionAdsFragmentToAdsDialogFragment(
+                        dataHolder,
+                        true
+                    )
+                )
+            }
+        })
+
+    }
+
+    private fun observeStates(): Unit = with(viewModel) {
+
+        uiState.observe(viewLifecycleOwner, Observer {
+            it?.let {
+                when (it) {
+                    is UiState.Loading -> {
+                        activity?.let { activity ->
+                            loadingDialog.show(activity.supportFragmentManager, LOADING_TAG)
+                        }
+                    }
+                    is UiState.LoadingFinished -> loadingDialog.dismiss()
                 }
             }
         })

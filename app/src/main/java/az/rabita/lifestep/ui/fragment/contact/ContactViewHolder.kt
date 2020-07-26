@@ -4,15 +4,18 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import az.rabita.lifestep.databinding.ItemContactDetailsBinding
-import az.rabita.lifestep.pojo.apiPOJO.entity.ContactDetail
 import az.rabita.lifestep.pojo.apiPOJO.entity.Content
 
 class ContactViewHolder private constructor(
     private val binding: ItemContactDetailsBinding
 ) : RecyclerView.ViewHolder(binding.root) {
 
-    fun bind(data: Content) = with(binding) {
+    fun bind(
+        data: Content,
+        clickListener: (content: Content) -> Unit
+    ) = with(binding) {
         contactDetail = data
+        textView.setOnClickListener { clickListener(data) }
     }
 
     companion object {

@@ -2,6 +2,8 @@ package az.rabita.lifestep.local
 
 import android.content.Context
 import androidx.lifecycle.LiveData
+import androidx.paging.DataSource
+import androidx.paging.PagingSource
 import androidx.room.*
 import androidx.room.OnConflictStrategy.REPLACE
 import az.rabita.lifestep.pojo.apiPOJO.entity.*
@@ -23,26 +25,6 @@ abstract class UsersDao {
     open suspend fun cachePersonalInfo(item: PersonalInfo) {
         deletePersonalInfo()
         insert(item)
-    }
-
-}
-
-@Dao
-abstract class NotificationsDao {
-
-    @Insert(onConflict = REPLACE)
-    abstract suspend fun insert(items: List<Notification>)
-
-    @Query("select * from notifications")
-    abstract fun getNotificationsList(): Flow<List<Notification>>
-
-    @Query("delete from notifications")
-    abstract suspend fun deleteAllNotifications()
-
-    @Transaction
-    open suspend fun cacheNotifications(items: List<Notification>) {
-        deleteAllNotifications()
-        insert(items)
     }
 
 }
@@ -161,6 +143,9 @@ abstract class ContentsDao {
     @Query("select * from contents where groupID = :groupId and contentKey = :key")
     abstract fun getContent(groupId: Int, key: String): LiveData<Content>
 
+    @Query("select * from contents where groupID = :groupId and contentKey = :key")
+    abstract fun getContentAsFlow(groupId: Int, key: String): Flow<Content>
+
     @Query("delete from contents where groupID = :groupId and contentKey = :key")
     abstract suspend fun deleteContent(groupId: Int, key: String)
 
@@ -168,6 +153,32 @@ abstract class ContentsDao {
     open suspend fun cacheContent(item: Content, groupId: Int, key: String) {
         deleteContent(groupId, key)
         insert(item)
+    }
+
+}
+
+@Dao
+abstract class NotificationsDao {
+
+    @Insert(onConflict = REPLACE)
+    abstract suspend fun insert(items: List<Notifications>)
+
+    @Insert(onConflict = REPLACE)
+    abstract suspend fun insert(item: Notifications)
+
+    @Query("select * from notifications")
+    abstract fun getAllNotifications(): Flow<List<Notifications>>
+
+    @Query("select * from notifications")
+    abstract fun getAllNotificationsAsPaged(): DataSource.Factory<Int, Notifications>
+
+    @Query("delete from notifications")
+    abstract suspend fun deleteNotifications()
+
+    @Transaction
+    open suspend fun cacheNotifications(items: List<Notifications>) {
+        deleteNotifications()
+        insert(items)
     }
 
 }
@@ -181,9 +192,9 @@ abstract class ContentsDao {
         PersonalInfo::class,
         Content::class,
         WeeklyStat::class,
-        Notification::class
+        Notifications::class
     ],
-    version = 5
+    version = 1
 )
 abstract class AppDatabase : RoomDatabase() {
     abstract val categoriesDao: CategoriesDao
@@ -194,7 +205,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract val notificationsDao: NotificationsDao
 }
 
-private const val DATABASE_NAME = "LifeSteps"
+private const val DATABASE_NAME = "LifeSteps.db"
 private lateinit var INSTANCE: AppDatabase
 
 fun getDatabase(context: Context): AppDatabase {

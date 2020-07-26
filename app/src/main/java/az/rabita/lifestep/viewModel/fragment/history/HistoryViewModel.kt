@@ -1,7 +1,6 @@
 package az.rabita.lifestep.viewModel.fragment.history
 
 import android.app.Application
-import az.rabita.lifestep.utils.DEFAULT_LANG
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -12,8 +11,8 @@ import az.rabita.lifestep.manager.PreferenceManager
 import az.rabita.lifestep.pojo.apiPOJO.content.HistoryItemContentPOJO
 import az.rabita.lifestep.repository.TransactionsRepository
 import az.rabita.lifestep.ui.fragment.history.page.HistoryPageType
-import az.rabita.lifestep.utils.LANG_KEY
-import az.rabita.lifestep.utils.TOKEN_KEY
+import az.rabita.lifestep.utils.*
+import kotlinx.coroutines.launch
 
 class HistoryViewModel(application: Application) : AndroidViewModel(application) {
 
@@ -37,6 +36,13 @@ class HistoryViewModel(application: Application) : AndroidViewModel(application)
             onErrorListener = { showMessageDialog(it) },
             onExpireTokenListener = { startExpireTokenProcess() }
         ).cachedIn(viewModelScope)
+    }
+
+    private fun handleNetworkException(exception: String?) {
+        viewModelScope.launch {
+            if (context.isInternetConnectionAvailable()) showMessageDialog(exception)
+            else showMessageDialog(NO_INTERNET_CONNECTION)
+        }
     }
 
     private fun showMessageDialog(message: String?) {

@@ -8,13 +8,15 @@ import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
-import androidx.navigation.ui.setupWithNavController
 import az.rabita.lifestep.R
 import az.rabita.lifestep.databinding.ActivityMainBinding
 import az.rabita.lifestep.manager.LocaleManager
+import az.rabita.lifestep.pojo.dataHolder.NotificationInfoHolder
+import az.rabita.lifestep.ui.fragment.home.HomeFragmentDirections
 import az.rabita.lifestep.utils.DEFAULT_LANG_KEY
+import az.rabita.lifestep.utils.NOTIFICATION_INFO_KEY
 import az.rabita.lifestep.viewModel.activity.main.MainViewModel
-import com.google.android.gms.ads.MobileAds
+import timber.log.Timber
 
 class MainActivity : AppCompatActivity() {
 
@@ -41,10 +43,23 @@ class MainActivity : AppCompatActivity() {
             viewModel = this@MainActivity.viewModel
         }
 
-        MobileAds.initialize(this) {}
-
-        configurations()
+        analyzeIntentComingFromNotificationEvent()
         navigate()
+        configurations()
+    }
+
+    override fun onStart() {
+        super.onStart()
+    }
+
+    private fun analyzeIntentComingFromNotificationEvent() {
+        intent?.let {
+            val data = it.getParcelableExtra<NotificationInfoHolder>(NOTIFICATION_INFO_KEY)
+            data?.let {
+                Timber.e(data.type.toString())
+                navController.navigate(HomeFragmentDirections.actionHomeFragmentToNavGraphNotifications())
+            }
+        }
     }
 
     private fun configurations() = with(binding) {

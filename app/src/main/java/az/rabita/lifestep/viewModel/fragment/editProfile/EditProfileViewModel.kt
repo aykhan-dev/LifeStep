@@ -59,7 +59,7 @@ class EditProfileViewModel(application: Application) : AndroidViewModel(applicat
                 is NetworkState.ExpiredToken -> startExpireTokenProcess()
                 is NetworkState.HandledHttpError -> showMessageDialog(response.error)
                 is NetworkState.UnhandledHttpError -> showMessageDialog(response.error)
-                is NetworkState.NetworkException -> showMessageDialog(response.exception)
+                is NetworkState.NetworkException -> handleNetworkException(response.exception)
             }
 
             uiState.postValue(UiState.LoadingFinished)
@@ -88,7 +88,7 @@ class EditProfileViewModel(application: Application) : AndroidViewModel(applicat
                 is NetworkState.ExpiredToken -> startExpireTokenProcess()
                 is NetworkState.HandledHttpError -> showMessageDialog(response.error)
                 is NetworkState.UnhandledHttpError -> showMessageDialog(response.error)
-                is NetworkState.NetworkException -> showMessageDialog(response.exception)
+                is NetworkState.NetworkException -> handleNetworkException(response.exception)
             }
 
             uiState.postValue(UiState.LoadingFinished)
@@ -111,7 +111,7 @@ class EditProfileViewModel(application: Application) : AndroidViewModel(applicat
             is NetworkState.ExpiredToken -> startExpireTokenProcess()
             is NetworkState.HandledHttpError -> showMessageDialog(response.error)
             is NetworkState.UnhandledHttpError -> showMessageDialog(response.error)
-            is NetworkState.NetworkException -> showMessageDialog(response.exception)
+            is NetworkState.NetworkException -> handleNetworkException(response.exception)
         }
     }
 
@@ -131,6 +131,13 @@ class EditProfileViewModel(application: Application) : AndroidViewModel(applicat
         else -> true
     }
 
+    private fun handleNetworkException(exception: String?) {
+        viewModelScope.launch {
+            if (context.isInternetConnectionAvailable()) showMessageDialog(exception)
+            else showMessageDialog(NO_INTERNET_CONNECTION)
+        }
+    }
+    
     private fun showMessageDialog(message: String?) {
         _errorMessage.value = message
         _errorMessage.value = null

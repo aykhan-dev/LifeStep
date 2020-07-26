@@ -6,19 +6,21 @@
 
         <variable
             name="data"
-            type="az.rabita.lifestep.pojo.apiPOJO.entity.Notification" />
+            type="az.rabita.lifestep.pojo.apiPOJO.entity.Notifications" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:background="?android:selectableItemBackground"
+        android:paddingHorizontal="@dimen/page_padding_normal"
+        android:paddingTop="@dimen/page_padding_normal">
 
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/card_image_container"
             android:layout_width="40dp"
             android:layout_height="40dp"
-            android:layout_marginTop="15dp"
-            android:layout_marginBottom="15dp"
+            android:layout_marginBottom="@dimen/page_padding_normal"
             app:cardCornerRadius="10dp"
             app:cardElevation="0dp"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -31,7 +33,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:scaleType="centerCrop"
-                android:src="@drawable/img_friend_test"
                 app:imageUrl="@{data.imageUrl}" />
 
         </com.google.android.material.card.MaterialCardView>
@@ -41,9 +42,9 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="10dp"
+            android:layout_marginBottom="@dimen/page_padding_normal"
             android:fontFamily="@font/gilroy_medium"
             android:text="@{data.messages}"
-            android:layout_marginBottom="15dp"
             android:textColor="@color/dark_text_color"
             android:textSize="18sp"
             app:layout_constraintBottom_toBottomOf="parent"

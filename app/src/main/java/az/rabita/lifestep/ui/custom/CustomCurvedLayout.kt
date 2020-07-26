@@ -28,7 +28,7 @@ class CustomCurvedLayout @JvmOverloads constructor(
         R.id.nav_graph_categories,
         R.id.walletFragment,
         R.id.homeFragment,
-        R.id.adsFragment,
+        R.id.nav_graph_ads,
         R.id.nav_graph_settings
     )
 
@@ -134,7 +134,7 @@ class CustomCurvedLayout @JvmOverloads constructor(
         canvas.drawPath(mPath!!, mPaint!!)
     }
 
-    fun navigate(index: Int) = viewScope.launch {
+    fun navigate(index: Int) {
         navController?.let {
 
             if (it.currentDestination?.id != ids[index]) {

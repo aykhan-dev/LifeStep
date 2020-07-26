@@ -37,16 +37,22 @@
         <action
             android:id="@+id/action_detailedInfoFragment_to_donateStepDialog"
             app:destination="@id/donateStepDialog" />
+        <action
+            android:id="@+id/action_detailedInfoFragment_to_userProfileFragment"
+            app:destination="@id/userProfileFragment4" />
     </fragment>
     <fragment
         android:id="@+id/rankingFragment"
         android:name="az.rabita.lifestep.ui.fragment.ranking.RankingFragment"
         android:label="RankingFragment"
-        tools:layout="@layout/fragment_ranking" >
+        tools:layout="@layout/fragment_ranking">
         <argument
             android:name="postId"
             app:argType="string"
             app:nullable="true" />
+        <action
+            android:id="@+id/action_rankingFragment_to_userProfileFragment"
+            app:destination="@id/userProfileFragment4" />
     </fragment>
     <dialog
         android:id="@+id/donateStepDialog"
@@ -56,7 +62,7 @@
         <action
             android:id="@+id/action_donateStepDialog_to_congratsDialog"
             app:destination="@id/congratsDialog"
-            app:popUpTo="@id/detailedInfoFragment"/>
+            app:popUpTo="@id/detailedInfoFragment" />
         <argument
             android:name="postId"
             app:argType="string" />
@@ -66,4 +72,25 @@
         android:name="az.rabita.lifestep.ui.dialog.congrats.CongratsDialog"
         android:label="CongratsDialog"
         tools:layout="@layout/fragment_congrats_dialog" />
+    <fragment
+        android:id="@+id/userProfileFragment4"
+        android:name="az.rabita.lifestep.ui.fragment.userProfile.UserProfileFragment"
+        android:label="UserProfileFragment"
+        tools:layout="@layout/fragment_user_profile">
+        <argument
+            android:name="userId"
+            app:argType="string" />
+        <action
+            android:id="@+id/action_userProfileFragment4_to_sendStepDialogFragment3"
+            app:destination="@id/sendStepDialogFragment3" />
+    </fragment>
+    <dialog
+        android:id="@+id/sendStepDialogFragment3"
+        android:name="az.rabita.lifestep.ui.dialog.sendStep.SendStepDialogFragment"
+        android:label="SendStepDialogFragment"
+        tools:layout="@layout/fragment_send_step_dialog">
+        <argument
+            android:name="userId"
+            app:argType="string" />
+    </dialog>
 </navigation>

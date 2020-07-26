@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import az.rabita.lifestep.databinding.FragmentRegisterOneBinding
+import az.rabita.lifestep.utils.hideKeyboard
 import az.rabita.lifestep.viewModel.fragment.register.RegistrationViewModel
 
 class FirstRegisterFragment : Fragment() {
@@ -27,6 +28,7 @@ class FirstRegisterFragment : Fragment() {
 
         with(binding) {
             buttonHaveAccount.setOnClickListener { activity?.onBackPressed() }
+            root.setOnClickListener { root.hideKeyboard(context) }
         }
 
         return binding.root

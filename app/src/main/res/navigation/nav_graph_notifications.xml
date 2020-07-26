@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph_notifications"
+    app:startDestination="@id/notificationsFragment2">
+    <fragment
+        android:id="@+id/notificationsFragment2"
+        android:name="az.rabita.lifestep.ui.fragment.notifications.NotificationsFragment"
+        android:label="NotificationsFragment"
+        tools:layout="@layout/fragment_notifications">
+        <action
+            android:id="@+id/action_notificationsFragment_to_friendsFragment"
+            app:destination="@id/friendsFragment3" />
+        <action
+            android:id="@+id/action_notificationsFragment_to_inviteFriendFragment"
+            app:destination="@id/inviteFriendFragment2" />
+        <action
+            android:id="@+id/action_notificationsFragment_to_userProfileFragment"
+            app:destination="@id/userProfileFragment2" />
+    </fragment>
+    <fragment
+        android:id="@+id/friendsFragment3"
+        android:name="az.rabita.lifestep.ui.fragment.friends.FriendsFragment"
+        android:label="FriendsFragment"
+        tools:layout="@layout/fragment_friends" />
+    <fragment
+        android:id="@+id/inviteFriendFragment2"
+        android:name="az.rabita.lifestep.ui.fragment.inviteFriend.InviteFriendFragment"
+        android:label="InviteFriendFragment"
+        tools:layout="@layout/fragment_invite_friend" />
+    <fragment
+        android:id="@+id/userProfileFragment2"
+        android:name="az.rabita.lifestep.ui.fragment.userProfile.UserProfileFragment"
+        android:label="UserProfileFragment"
+        tools:layout="@layout/fragment_user_profile">
+        <argument
+            android:name="userId"
+            app:argType="string" />
+    </fragment>
+</navigation>

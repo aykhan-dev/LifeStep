@@ -5,10 +5,10 @@ import androidx.lifecycle.*
 import az.rabita.lifestep.local.getDatabase
 import az.rabita.lifestep.manager.PreferenceManager
 import az.rabita.lifestep.network.NetworkState
-import az.rabita.lifestep.pojo.apiPOJO.content.ContentContentPOJO
 import az.rabita.lifestep.repository.ContentsRepository
 import az.rabita.lifestep.repository.UsersRepository
 import az.rabita.lifestep.utils.*
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
 
 @Suppress("UNCHECKED_CAST")
@@ -28,10 +28,9 @@ class InviteFriendViewModel(application: Application) : AndroidViewModel(applica
 
     val personalInfo = usersRepository.personalInfo.asLiveData()
 
-    val inviteFriendContentsBody = contentsRepository.inviteFriendsContentBody
+    val inviteFriendContentsBody = contentsRepository.inviteFriendsContentBody.asLiveData()
 
-    private val _inviteFriendContentsMessage = MutableLiveData<String>()
-    val inviteFriendContentsMessage get() = _inviteFriendContentsMessage
+    val inviteFriendContentMessage = contentsRepository.inviteFriendsContentMessage
 
     private var _errorMessage = MutableLiveData<String?>()
     val errorMessage: LiveData<String?> get() = _errorMessage
@@ -46,7 +45,7 @@ class InviteFriendViewModel(application: Application) : AndroidViewModel(applica
                 is NetworkState.ExpiredToken -> startExpireTokenProcess()
                 is NetworkState.HandledHttpError -> showMessageDialog(response.error)
                 is NetworkState.UnhandledHttpError -> showMessageDialog(response.error)
-                is NetworkState.NetworkException -> showMessageDialog(response.exception)
+                is NetworkState.NetworkException -> handleNetworkException(response.exception)
             }
 
         }
@@ -60,22 +59,24 @@ class InviteFriendViewModel(application: Application) : AndroidViewModel(applica
 
             when (val response =
                 contentsRepository.getContent(token, lang, INVITE_FRIENDS_GROUP_ID)) {
-                is NetworkState.Success<*> -> {
-                    val data = response.data as List<ContentContentPOJO>
-                    _inviteFriendContentsMessage.value = data[1].text
-                }
                 is NetworkState.ExpiredToken -> startExpireTokenProcess()
                 is NetworkState.HandledHttpError -> showMessageDialog(response.error)
                 is NetworkState.UnhandledHttpError -> showMessageDialog(response.error)
-                is NetworkState.NetworkException -> showMessageDialog(response.exception)
+                is NetworkState.NetworkException -> handleNetworkException(response.exception)
             }
 
         }
     }
 
-    fun onSendInvitation() = viewModelScope.launch {
-        if (!inviteFriendContentsMessage.value.isNullOrEmpty()) _eventSendSharingMessage.onOff()
-        else showMessageDialog(NO_INTERNET_CONNECTION)
+    fun onSendInvitation() {
+        if (!inviteFriendContentMessage.value?.content.isNullOrEmpty()) _eventSendSharingMessage.onOff()
+    }
+
+    private fun handleNetworkException(exception: String?) {
+        viewModelScope.launch {
+            if (context.isInternetConnectionAvailable()) showMessageDialog(exception)
+            else showMessageDialog(NO_INTERNET_CONNECTION)
+        }
     }
 
     fun showMessageDialog(message: String?) {

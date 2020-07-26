@@ -3,10 +3,10 @@ package az.rabita.lifestep.ui.activity.splash
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.os.Handler
 import android.view.WindowManager
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
-import androidx.lifecycle.lifecycleScope
 import az.rabita.lifestep.R
 import az.rabita.lifestep.databinding.ActivitySplashBinding
 import az.rabita.lifestep.manager.LocaleManager
@@ -14,9 +14,9 @@ import az.rabita.lifestep.manager.PreferenceManager
 import az.rabita.lifestep.ui.activity.auth.AuthActivity
 import az.rabita.lifestep.ui.activity.main.MainActivity
 import az.rabita.lifestep.utils.DEFAULT_LANG_KEY
+import az.rabita.lifestep.utils.NOTIFICATION_CLICKED_KEY
 import az.rabita.lifestep.utils.TOKEN_KEY
 import com.bumptech.glide.Glide
-import kotlinx.coroutines.delay
 
 class SplashActivity : AppCompatActivity() {
 
@@ -40,8 +40,7 @@ class SplashActivity : AppCompatActivity() {
 
         setUpLogoGIF()
 
-        lifecycleScope.launchWhenCreated {
-            delay(1000)
+        Handler().postDelayed({
             val intent =
                 if (sharedPreferences.getStringElement(TOKEN_KEY, "").isEmpty())
                     Intent(applicationContext, AuthActivity::class.java)
@@ -49,7 +48,8 @@ class SplashActivity : AppCompatActivity() {
                     Intent(applicationContext, MainActivity::class.java)
             startActivity(intent)
             finish()
-        }
+        }, 1500)
+
     }
 
     private fun setUpLogoGIF() = with(binding) {

@@ -1,7 +1,6 @@
 package az.rabita.lifestep.viewModel.fragment.ranking
 
 import android.app.Application
-import az.rabita.lifestep.utils.DEFAULT_LANG
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -14,8 +13,7 @@ import az.rabita.lifestep.network.NetworkState
 import az.rabita.lifestep.pojo.apiPOJO.content.RankerContentPOJO
 import az.rabita.lifestep.repository.ReportRepository
 import az.rabita.lifestep.repository.UsersRepository
-import az.rabita.lifestep.utils.LANG_KEY
-import az.rabita.lifestep.utils.TOKEN_KEY
+import az.rabita.lifestep.utils.*
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 
@@ -62,8 +60,15 @@ class RankingViewModel(application: Application) : AndroidViewModel(application)
                 is NetworkState.ExpiredToken -> startExpireTokenProcess()
                 is NetworkState.HandledHttpError -> showMessageDialog(response.error)
                 is NetworkState.UnhandledHttpError -> showMessageDialog(response.error)
-                is NetworkState.NetworkException -> showMessageDialog(response.exception)
+                is NetworkState.NetworkException -> handleNetworkException(response.exception)
             }
+        }
+    }
+
+    private fun handleNetworkException(exception: String?) {
+        viewModelScope.launch {
+            if (context.isInternetConnectionAvailable()) showMessageDialog(exception)
+            else showMessageDialog(NO_INTERNET_CONNECTION)
         }
     }
 

@@ -4,13 +4,13 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.View.OnFocusChangeListener
-import android.view.View.OnTouchListener
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import az.rabita.lifestep.R
 import az.rabita.lifestep.databinding.FragmentRegisterTwoBinding
+import az.rabita.lifestep.utils.hideKeyboard
 import az.rabita.lifestep.viewModel.fragment.register.RegistrationViewModel
 
 
@@ -38,7 +38,10 @@ class SecondRegisterFragment(private val buttonBackClickListener: () -> Unit) : 
                 editTextGender.setAdapter(adapter)
             }
 
-            editTextGender.onFocusChangeListener = OnFocusChangeListener { _, hasFocus -> if (hasFocus) editTextGender.showDropDown() }
+            editTextGender.onFocusChangeListener =
+                OnFocusChangeListener { _, hasFocus -> if (hasFocus) editTextGender.showDropDown() }
+
+            root.setOnClickListener { root.hideKeyboard(context) }
 
         }
 

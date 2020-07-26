@@ -1,7 +1,6 @@
 package az.rabita.lifestep.viewModel.fragment.profileDetails
 
 import android.app.Application
-import az.rabita.lifestep.utils.DEFAULT_LANG
 import androidx.lifecycle.*
 import az.rabita.lifestep.local.getDatabase
 import az.rabita.lifestep.manager.PreferenceManager
@@ -11,9 +10,7 @@ import az.rabita.lifestep.pojo.apiPOJO.content.MonthlyContentPOJO
 import az.rabita.lifestep.repository.ReportRepository
 import az.rabita.lifestep.repository.UsersRepository
 import az.rabita.lifestep.ui.custom.BarDiagram
-import az.rabita.lifestep.utils.LANG_KEY
-import az.rabita.lifestep.utils.TOKEN_KEY
-import az.rabita.lifestep.utils.UiState
+import az.rabita.lifestep.utils.*
 import kotlinx.coroutines.launch
 
 @Suppress("UNCHECKED_CAST")
@@ -52,7 +49,7 @@ class ProfileDetailsViewModel(application: Application) : AndroidViewModel(appli
             is NetworkState.ExpiredToken -> startExpireTokenProcess()
             is NetworkState.UnhandledHttpError -> showMessageDialog(response.error)
             is NetworkState.HandledHttpError -> showMessageDialog(response.error)
-            is NetworkState.NetworkException -> showMessageDialog(response.exception)
+            is NetworkState.NetworkException -> handleNetworkException(response.exception)
         }
 
     }
@@ -90,7 +87,7 @@ class ProfileDetailsViewModel(application: Application) : AndroidViewModel(appli
                 is NetworkState.ExpiredToken -> startExpireTokenProcess()
                 is NetworkState.UnhandledHttpError -> showMessageDialog(response.error)
                 is NetworkState.HandledHttpError -> showMessageDialog(response.error)
-                is NetworkState.NetworkException -> showMessageDialog(response.exception)
+                is NetworkState.NetworkException -> handleNetworkException(response.exception)
             }
 
         }
@@ -113,7 +110,7 @@ class ProfileDetailsViewModel(application: Application) : AndroidViewModel(appli
                 is NetworkState.ExpiredToken -> startExpireTokenProcess()
                 is NetworkState.UnhandledHttpError -> showMessageDialog(response.error)
                 is NetworkState.HandledHttpError -> showMessageDialog(response.error)
-                is NetworkState.NetworkException -> showMessageDialog(response.exception)
+                is NetworkState.NetworkException -> handleNetworkException(response.exception)
             }
 
         }
@@ -145,6 +142,13 @@ class ProfileDetailsViewModel(application: Application) : AndroidViewModel(appli
             columnTexts = columns,
             values = values
         )
+    }
+
+    private fun handleNetworkException(exception: String?) {
+        viewModelScope.launch {
+            if (context.isInternetConnectionAvailable()) showMessageDialog(exception)
+            else showMessageDialog(NO_INTERNET_CONNECTION)
+        }
     }
 
     private fun showMessageDialog(message: String?) {

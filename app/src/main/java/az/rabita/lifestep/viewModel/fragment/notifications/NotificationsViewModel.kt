@@ -1,13 +1,18 @@
 package az.rabita.lifestep.viewModel.fragment.notifications
 
 import android.app.Application
-import androidx.lifecycle.*
+import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.viewModelScope
 import az.rabita.lifestep.local.getDatabase
 import az.rabita.lifestep.manager.PreferenceManager
 import az.rabita.lifestep.network.NetworkState
 import az.rabita.lifestep.repository.NotificationsRepository
 import az.rabita.lifestep.utils.LANG_KEY
+import az.rabita.lifestep.utils.NO_INTERNET_CONNECTION
 import az.rabita.lifestep.utils.TOKEN_KEY
+import az.rabita.lifestep.utils.isInternetConnectionAvailable
 import kotlinx.coroutines.launch
 
 class NotificationsViewModel(application: Application) : AndroidViewModel(application) {
@@ -23,7 +28,7 @@ class NotificationsViewModel(application: Application) : AndroidViewModel(applic
     private var _errorMessage = MutableLiveData<String?>()
     val errorMessage: LiveData<String?> get() = _errorMessage
 
-    val listOfNotifications = notificationsRepository.listOfNotifications.asLiveData()
+    val listOfNotifications = notificationsRepository.listOfNotifications
 
     fun fetchListOfNotifications() {
         viewModelScope.launch {
@@ -34,8 +39,15 @@ class NotificationsViewModel(application: Application) : AndroidViewModel(applic
                 is NetworkState.ExpiredToken -> startExpireTokenProcess()
                 is NetworkState.HandledHttpError -> showMessageDialog(response.error)
                 is NetworkState.UnhandledHttpError -> showMessageDialog(response.error)
-                is NetworkState.NetworkException -> showMessageDialog(response.exception)
+                is NetworkState.NetworkException -> handleNetworkException(response.exception)
             }
+        }
+    }
+
+    private fun handleNetworkException(exception: String?) {
+        viewModelScope.launch {
+            if (context.isInternetConnectionAvailable()) showMessageDialog(exception)
+            else showMessageDialog(NO_INTERNET_CONNECTION)
         }
     }
 

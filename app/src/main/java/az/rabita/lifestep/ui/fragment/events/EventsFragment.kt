@@ -58,13 +58,6 @@ class EventsFragment : Fragment() {
 
     private fun configureRecyclerView() = with(binding.recyclerViewEvents) {
         adapter = this@EventsFragment.adapter
-
-        activity?.let {
-            addItemDecoration(
-                VerticalSpaceItemDecoration(pxFromDp(it, 20f), pxFromDp(it, 90f))
-            )
-        }
-
     }
 
     private fun navigateTo(eventId: Int) = when (eventId) {

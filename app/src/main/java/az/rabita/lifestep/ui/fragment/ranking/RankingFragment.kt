@@ -8,6 +8,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import az.rabita.lifestep.R
 import az.rabita.lifestep.databinding.FragmentRankingBinding
@@ -26,8 +27,23 @@ class RankingFragment : Fragment() {
 
     private val args by navArgs<RankingFragmentArgs>()
 
-    private val rankingAdapter = RankingRecyclerAdapter(showMedals = true) {}
-    private val rankingPagedAdapter = RankingPagedRecyclerAdapter {}
+    private val navController by lazy { findNavController() }
+
+    private val rankingAdapter = RankingRecyclerAdapter(showMedals = true) { ranker ->
+        navController.navigate(
+            RankingFragmentDirections.actionRankingFragmentToUserProfileFragment(
+                ranker.id
+            )
+        )
+    }
+
+    private val rankingPagedAdapter = RankingPagedRecyclerAdapter { ranker ->
+        navController.navigate(
+            RankingFragmentDirections.actionRankingFragmentToUserProfileFragment(
+                ranker.id
+            )
+        )
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,

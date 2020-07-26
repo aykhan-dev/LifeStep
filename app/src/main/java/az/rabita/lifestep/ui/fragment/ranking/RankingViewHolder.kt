@@ -13,7 +13,7 @@ class RankingViewHolder private constructor(
 
     fun bind(
         rankerContentPOJO: RankerContentPOJO,
-        clickListener: () -> Unit,
+        clickListener: (ranker: RankerContentPOJO) -> Unit,
         position: Int,
         showMedals: Boolean
     ) = with(binding) {
@@ -27,7 +27,7 @@ class RankingViewHolder private constructor(
             }
         }
 
-        root.setOnClickListener { clickListener() }
+        root.setOnClickListener { clickListener(rankerContentPOJO) }
     }
 
     companion object {

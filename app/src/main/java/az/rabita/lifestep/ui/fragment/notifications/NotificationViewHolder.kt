@@ -4,15 +4,18 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import az.rabita.lifestep.databinding.ItemNotificationBinding
-import az.rabita.lifestep.pojo.apiPOJO.entity.Notification
+import az.rabita.lifestep.pojo.apiPOJO.entity.Notifications
 
 class NotificationViewHolder private constructor(private val binding: ItemNotificationBinding) :
     RecyclerView.ViewHolder(binding.root) {
 
-    fun bind(notificationContentPOJO: Notification, clickListener: () -> Unit) =
+    fun bind(
+        notificationContentPOJO: Notifications,
+        clickListener: (notification: Notifications) -> Unit
+    ) =
         with(binding) {
             data = notificationContentPOJO
-            root.setOnClickListener { clickListener() }
+            root.setOnClickListener { clickListener(notificationContentPOJO) }
         }
 
     companion object {

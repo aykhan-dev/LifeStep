@@ -71,6 +71,9 @@ class InviteFriendFragment : Fragment() {
             }
         })
 
+        //It is needed, else inviteFriendContent's value will be null
+        inviteFriendContentMessage.observe(viewLifecycleOwner, Observer { })
+
     }
 
     private fun observeEvents(): Unit = with(viewModel) {
@@ -96,7 +99,7 @@ class InviteFriendFragment : Fragment() {
         shareIntent.type = "text/plain"
         shareIntent.putExtra(Intent.EXTRA_SUBJECT, INVITE_TEXT_KEY)
 
-        val message = viewModel.inviteFriendContentsMessage.value ?: NO_MESSAGE
+        val message = viewModel.inviteFriendContentMessage.value?.content ?: NO_MESSAGE
 
         shareIntent.putExtra(Intent.EXTRA_TEXT, message)
         startActivity(Intent.createChooser(shareIntent, getString(R.string.sharing_method)))

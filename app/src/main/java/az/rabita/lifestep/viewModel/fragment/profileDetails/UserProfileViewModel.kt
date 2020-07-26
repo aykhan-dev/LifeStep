@@ -30,7 +30,13 @@ class UserProfileViewModel(application: Application) : AndroidViewModel(applicat
     private val usersRepository = UsersRepository.getInstance(getDatabase(context))
     private val reportRepository = ReportRepository.getInstance(getDatabase(context))
     private val transactionsRepository = TransactionsRepository
-    private val friendshipRepository = FriendshipRepository.getInstance(PaginationListeners({}, {}))
+    private val friendshipRepository = FriendshipRepository.getInstance(
+        PaginationListeners(
+            {},
+            {},
+            { handleNetworkException(it) }
+        )
+    )
 
     private val _eventExpiredToken = MutableLiveData<Boolean>().apply { value = false }
     val eventExpiredToken: LiveData<Boolean> get() = _eventExpiredToken
@@ -77,7 +83,7 @@ class UserProfileViewModel(application: Application) : AndroidViewModel(applicat
             is NetworkState.ExpiredToken -> startExpireTokenProcess()
             is NetworkState.HandledHttpError -> showMessageDialog(response.error)
             is NetworkState.UnhandledHttpError -> showMessageDialog(response.error)
-            is NetworkState.NetworkException -> showMessageDialog(response.exception)
+            is NetworkState.NetworkException -> handleNetworkException(response.exception)
         }
 
     }
@@ -106,49 +112,53 @@ class UserProfileViewModel(application: Application) : AndroidViewModel(applicat
             is NetworkState.ExpiredToken -> startExpireTokenProcess()
             is NetworkState.HandledHttpError -> showMessageDialog(response.error)
             is NetworkState.UnhandledHttpError -> showMessageDialog(response.error)
-            is NetworkState.NetworkException -> showMessageDialog(response.exception)
+            is NetworkState.NetworkException -> handleNetworkException(response.exception)
         }
 
     }
 
-    fun sendFriendRequest() = viewModelScope.launch {
+    fun sendFriendRequest() {
+        viewModelScope.launch {
 
-        val token = sharedPreferences.getStringElement(TOKEN_KEY, "")
-        val lang = sharedPreferences.getIntegerElement(LANG_KEY, DEFAULT_LANG)
-        val model = FriendRequestModelPOJO(friendId = profileInfo.value?.id ?: "")
+            val token = sharedPreferences.getStringElement(TOKEN_KEY, "")
+            val lang = sharedPreferences.getIntegerElement(LANG_KEY, DEFAULT_LANG)
+            val model = FriendRequestModelPOJO(friendId = profileInfo.value?.id ?: "")
 
-        when (val response = friendshipRepository.sendFriendRequest(token, lang, model)) {
-            is NetworkState.Success<*> -> fetchUserProfileDetails(profileInfo.value?.id ?: "")
-            is NetworkState.ExpiredToken -> startExpireTokenProcess()
-            is NetworkState.HandledHttpError -> showMessageDialog(response.error)
-            is NetworkState.UnhandledHttpError -> showMessageDialog(response.error)
-            is NetworkState.NetworkException -> showMessageDialog(response.exception)
+            when (val response = friendshipRepository.sendFriendRequest(token, lang, model)) {
+                is NetworkState.Success<*> -> fetchUserProfileDetails(profileInfo.value?.id ?: "")
+                is NetworkState.ExpiredToken -> startExpireTokenProcess()
+                is NetworkState.HandledHttpError -> showMessageDialog(response.error)
+                is NetworkState.UnhandledHttpError -> showMessageDialog(response.error)
+                is NetworkState.NetworkException -> handleNetworkException(response.exception)
+            }
+
         }
-
     }
 
-    fun sendStep(userId: String) = viewModelScope.launch {
+    fun sendStep(userId: String) {
+        viewModelScope.launch {
 
-        val token = sharedPreferences.getStringElement(TOKEN_KEY, "")
-        val lang = sharedPreferences.getIntegerElement(LANG_KEY, DEFAULT_LANG)
+            val token = sharedPreferences.getStringElement(TOKEN_KEY, "")
+            val lang = sharedPreferences.getIntegerElement(LANG_KEY, DEFAULT_LANG)
 
-        val date = Calendar.getInstance().time
-        val formatted = DateFormat.format("yyyy-MM-dd hh:mm:ss", date)
+            val date = Calendar.getInstance().time
+            val formatted = DateFormat.format("yyyy-MM-dd hh:mm:ss", date)
 
-        val model = SendStepModelPOJO(
-            userId = userId,
-            count = (sendStepInput.value ?: "0").toLong(),
-            date = formatted.toString()
-        )
+            val model = SendStepModelPOJO(
+                userId = userId,
+                count = (sendStepInput.value ?: "0").toLong(),
+                date = formatted.toString()
+            )
 
-        when (val response = transactionsRepository.transferSteps(token, lang, model)) {
-            is NetworkState.Success<*> -> _eventDismissDialog.onOff()
-            is NetworkState.ExpiredToken -> startExpireTokenProcess()
-            is NetworkState.HandledHttpError -> showMessageDialog(response.error)
-            is NetworkState.UnhandledHttpError -> showMessageDialog(response.error)
-            is NetworkState.NetworkException -> showMessageDialog(response.exception)
+            when (val response = transactionsRepository.transferSteps(token, lang, model)) {
+                is NetworkState.Success<*> -> _eventDismissDialog.onOff()
+                is NetworkState.ExpiredToken -> startExpireTokenProcess()
+                is NetworkState.HandledHttpError -> showMessageDialog(response.error)
+                is NetworkState.UnhandledHttpError -> showMessageDialog(response.error)
+                is NetworkState.NetworkException -> handleNetworkException(response.exception)
+            }
+
         }
-
     }
 
     fun onDailyTextClick() {
@@ -168,48 +178,52 @@ class UserProfileViewModel(application: Application) : AndroidViewModel(applicat
         if (_monthlyTextSelected.value!!) refreshMonthlyStats()
     }
 
-    private fun refreshDailyStats() = viewModelScope.launch {
+    private fun refreshDailyStats() {
+        viewModelScope.launch {
 
-        profileInfo.value?.let { info ->
+            profileInfo.value?.let { info ->
 
-            val token = sharedPreferences.getStringElement(TOKEN_KEY, "")
-            val lang = sharedPreferences.getIntegerElement(LANG_KEY, DEFAULT_LANG)
+                val token = sharedPreferences.getStringElement(TOKEN_KEY, "")
+                val lang = sharedPreferences.getIntegerElement(LANG_KEY, DEFAULT_LANG)
 
-            when (val response =
-                reportRepository.getDailyStats(token, lang, info.id)) {
-                is NetworkState.Success<*> -> run {
-                    val data = response.data as List<DailyContentPOJO>
-                    extractDiagramData(data)
+                when (val response =
+                    reportRepository.getDailyStats(token, lang, info.id)) {
+                    is NetworkState.Success<*> -> run {
+                        val data = response.data as List<DailyContentPOJO>
+                        extractDiagramData(data)
+                    }
+                    is NetworkState.UnhandledHttpError -> showMessageDialog(response.error)
+                    is NetworkState.HandledHttpError -> showMessageDialog(response.error)
+                    is NetworkState.NetworkException -> handleNetworkException(response.exception)
                 }
-                is NetworkState.UnhandledHttpError -> showMessageDialog(response.error)
-                is NetworkState.HandledHttpError -> showMessageDialog(response.error)
-                is NetworkState.NetworkException -> showMessageDialog(response.exception)
+
             }
 
         }
-
     }
 
-    private fun refreshMonthlyStats() = viewModelScope.launch {
+    private fun refreshMonthlyStats() {
+        viewModelScope.launch {
 
-        profileInfo.value?.let { info ->
+            profileInfo.value?.let { info ->
 
-            val token = sharedPreferences.getStringElement(TOKEN_KEY, "")
-            val lang = sharedPreferences.getIntegerElement(LANG_KEY, DEFAULT_LANG)
+                val token = sharedPreferences.getStringElement(TOKEN_KEY, "")
+                val lang = sharedPreferences.getIntegerElement(LANG_KEY, DEFAULT_LANG)
 
-            when (val response =
-                reportRepository.getMonthlyStats(token, lang, info.id)) {
-                is NetworkState.Success<*> -> run {
-                    val data = response.data as List<MonthlyContentPOJO>
-                    extractDiagramData(data)
+                when (val response =
+                    reportRepository.getMonthlyStats(token, lang, info.id)) {
+                    is NetworkState.Success<*> -> run {
+                        val data = response.data as List<MonthlyContentPOJO>
+                        extractDiagramData(data)
+                    }
+                    is NetworkState.UnhandledHttpError -> showMessageDialog(response.error)
+                    is NetworkState.HandledHttpError -> showMessageDialog(response.error)
+                    is NetworkState.NetworkException -> handleNetworkException(response.exception)
                 }
-                is NetworkState.UnhandledHttpError -> showMessageDialog(response.error)
-                is NetworkState.HandledHttpError -> showMessageDialog(response.error)
-                is NetworkState.NetworkException -> showMessageDialog(response.exception)
+
             }
 
         }
-
     }
 
     private fun extractDiagramData(data: List<*>) {
@@ -237,6 +251,13 @@ class UserProfileViewModel(application: Application) : AndroidViewModel(applicat
             columnTexts = columns,
             values = values
         )
+    }
+
+    private fun handleNetworkException(exception: String?) {
+        viewModelScope.launch {
+            if (context.isInternetConnectionAvailable()) showMessageDialog(exception)
+            else showMessageDialog(NO_INTERNET_CONNECTION)
+        }
     }
 
     private fun showMessageDialog(message: String?) {

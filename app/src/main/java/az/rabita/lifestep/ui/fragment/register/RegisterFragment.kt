@@ -11,6 +11,7 @@ import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import az.rabita.lifestep.R
 import az.rabita.lifestep.databinding.FragmentRegisterBinding
+import az.rabita.lifestep.ui.activity.auth.AuthActivity
 import az.rabita.lifestep.ui.activity.main.MainActivity
 import az.rabita.lifestep.ui.dialog.loading.LoadingDialog
 import az.rabita.lifestep.ui.dialog.message.MessageDialog
@@ -18,6 +19,7 @@ import az.rabita.lifestep.ui.dialog.message.MessageType
 import az.rabita.lifestep.utils.ERROR_TAG
 import az.rabita.lifestep.utils.LOADING_TAG
 import az.rabita.lifestep.utils.UiState
+import az.rabita.lifestep.utils.hideKeyboard
 import az.rabita.lifestep.viewModel.activity.auth.AuthViewModel
 import az.rabita.lifestep.viewModel.fragment.register.RegistrationViewModel
 
@@ -44,6 +46,10 @@ class RegisterFragment : Fragment() {
             lifecycleOwner = this@RegisterFragment
             viewModel = this@RegisterFragment.viewModel
             pagerAdapter = this@RegisterFragment.pagerAdapter
+        }
+
+        with(binding) {
+            root.setOnClickListener { root.hideKeyboard(context) }
         }
 
         return binding.root
