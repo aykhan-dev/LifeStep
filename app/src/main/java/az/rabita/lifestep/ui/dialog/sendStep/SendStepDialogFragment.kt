@@ -18,6 +18,7 @@ import az.rabita.lifestep.databinding.FragmentSendStepDialogBinding
 import az.rabita.lifestep.ui.dialog.message.MessageDialog
 import az.rabita.lifestep.ui.dialog.message.MessageType
 import az.rabita.lifestep.utils.ERROR_TAG
+import az.rabita.lifestep.utils.hideKeyboard
 import az.rabita.lifestep.utils.logout
 import az.rabita.lifestep.viewModel.fragment.profileDetails.UserProfileViewModel
 
@@ -58,6 +59,7 @@ class SendStepDialogFragment : DialogFragment() {
                 this@SendStepDialogFragment.viewModel.sendStep(args.userId)
             }
             root.setOnClickListener { dismiss() }
+            content.setOnClickListener { it.hideKeyboard(context) }
         }
 
         return binding.root
@@ -74,7 +76,7 @@ class SendStepDialogFragment : DialogFragment() {
         errorMessage.observe(viewLifecycleOwner, Observer {
             it?.let {
                 activity?.let { activity ->
-                    MessageDialog(MessageType.ERROR, it).show(
+                    MessageDialog(it).show(
                         activity.supportFragmentManager,
                         ERROR_TAG
                     )

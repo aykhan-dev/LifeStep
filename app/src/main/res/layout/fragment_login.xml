@@ -24,7 +24,7 @@
             android:layout_height="wrap_content"
             android:fontFamily="@font/gilroy_bold"
             android:text="@string/login"
-            android:textSize="30sp" />
+            android:textSize="@dimen/extra_large" />
 
         <Space
             android:layout_width="match_parent"
@@ -43,6 +43,7 @@
                 android:hint="@string/email"
                 android:inputType="textEmailAddress"
                 android:paddingBottom="20dp"
+                android:textSize="@dimen/normal"
                 android:text="@={viewModel.emailInput}"
                 android:textAppearance="@style/authenticationInputTextAppearance"
                 android:textColorHint="@color/gray_text_color" />
@@ -66,6 +67,7 @@
                 android:backgroundTint="@color/edit_text_bottom_line_color"
                 android:fontFamily="@font/gilroy_medium"
                 android:hint="@string/password"
+                android:textSize="@dimen/normal"
                 android:inputType="textPassword"
                 android:paddingBottom="20dp"
                 android:text="@={viewModel.passwordInput}" />
@@ -89,6 +91,7 @@
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/gilroy_semibold"
                 android:text="@string/forgot_password"
+                android:textSize="@dimen/small"
                 android:textAllCaps="false"
                 android:textAppearance="@style/TextAppearance.MaterialComponents.Body1"
                 android:textColor="@color/bottom_navigation_view_color" />
@@ -103,6 +106,7 @@
                 style="@style/Widget.MaterialComponents.Button.TextButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:textSize="@dimen/small"
                 android:fontFamily="@font/gilroy_semibold"
                 android:onClick="@{()->viewModel.onToRegisterButtonClick()}"
                 android:text="@string/register"

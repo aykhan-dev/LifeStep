@@ -19,72 +19,49 @@
 
         <ImageButton
             android:id="@+id/image_button_back"
-            android:layout_width="20dp"
+            android:layout_width="0dp"
             android:layout_height="0dp"
-            android:background="?selectableItemBackgroundBorderless"
             android:scaleType="center"
             android:src="@drawable/ic_back"
             app:layout_constraintBottom_toBottomOf="@id/text_view_title"
+            app:layout_constraintDimensionRatio="1:1"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.05"
+            app:layout_constraintHorizontal_bias="0"
+            android:background="@android:color/transparent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@id/text_view_title" />
+            app:layout_constraintTop_toTopOf="@id/text_view_title"
+            app:layout_constraintWidth_percent="0.15" />
 
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/text_view_title"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/page_padding_large"
+            android:layout_marginEnd="@dimen/page_padding_large"
             android:fontFamily="@font/gilroy_bold"
             android:text="@string/notifications"
-            android:textSize="29sp"
+            android:textSize="@dimen/extra_large"
+            app:layout_constraintBottom_toTopOf="@id/guideline"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.05"
             app:layout_constraintStart_toEndOf="@id/image_button_back"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.65" />
 
-        <ImageButton
-            android:id="@+id/image_button_search"
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="?selectableItemBackgroundBorderless"
-            android:src="@drawable/ic_search"
-            app:layout_constraintBottom_toBottomOf="@id/text_view_title"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.8"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@id/text_view_title" />
-
-        <View
-            android:id="@+id/seperator"
-            android:layout_width="2dp"
-            android:layout_height="0dp"
-            android:background="@color/main_text_color"
-            app:layout_constraintBottom_toBottomOf="@id/image_button_search"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.15"
-            app:layout_constraintStart_toEndOf="@id/image_button_search"
-            app:layout_constraintTop_toTopOf="@id/image_button_search" />
-
-        <ImageButton
-            android:id="@+id/image_button_notification"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="?selectableItemBackgroundBorderless"
-            android:src="@drawable/ic_notification"
-            app:layout_constraintBottom_toBottomOf="@+id/seperator"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.25"
-            app:layout_constraintStart_toEndOf="@id/seperator"
-            app:layout_constraintTop_toTopOf="@+id/seperator" />
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="0.1" />
 
         <androidx.core.widget.NestedScrollView
+            android:theme="@style/ScrollableTheme"
             android:id="@+id/scroll_content"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:fillViewport="true"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintHeight_percent="0.89"
+            app:layout_constraintHeight_percent="0.9"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="1">
 
@@ -98,6 +75,7 @@
                 android:elevation="20dp">
 
                 <androidx.recyclerview.widget.RecyclerView
+            android:theme="@style/ScrollableTheme"
                     android:id="@+id/recycler_view_notifications"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"

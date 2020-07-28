@@ -46,7 +46,7 @@
             android:fontFamily="@font/gilroy_medium"
             android:text="@{data.messages}"
             android:textColor="@color/dark_text_color"
-            android:textSize="18sp"
+            android:textSize="@dimen/normal"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/card_image_container"

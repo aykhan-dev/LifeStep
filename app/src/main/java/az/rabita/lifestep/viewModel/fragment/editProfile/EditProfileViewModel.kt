@@ -134,7 +134,7 @@ class EditProfileViewModel(application: Application) : AndroidViewModel(applicat
     private fun handleNetworkException(exception: String?) {
         viewModelScope.launch {
             if (context.isInternetConnectionAvailable()) showMessageDialog(exception)
-            else showMessageDialog(NO_INTERNET_CONNECTION)
+            else showMessageDialog(context.getString(R.string.no_internet_connection))
         }
     }
     

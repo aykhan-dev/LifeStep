@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import az.rabita.lifestep.R
 import az.rabita.lifestep.databinding.FragmentAdsDialogBinding
@@ -42,6 +43,8 @@ class AdsDialogFragment : DialogFragment() {
 
     private val args by navArgs<AdsDialogFragmentArgs>()
     private val loadingDialog by lazy { LoadingDialog() }
+
+    private val navController by lazy { findNavController() }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -126,7 +129,12 @@ class AdsDialogFragment : DialogFragment() {
         })
 
         eventCloseAdsPage.observe(viewLifecycleOwner, Observer {
-            it?.let { if (it) dismiss() }
+            it?.let {
+                if (it) {
+                    if (args.isForBonusSteps) navController.navigate(AdsDialogFragmentDirections.actionAdsDialogFragment2ToBonusStepDialog())
+                    else dismiss()
+                }
+            }
         })
 
     }

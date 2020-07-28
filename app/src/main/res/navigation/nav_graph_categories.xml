@@ -81,7 +81,7 @@
             android:name="userId"
             app:argType="string" />
         <action
-            android:id="@+id/action_userProfileFragment4_to_sendStepDialogFragment3"
+            android:id="@+id/action_userProfileFragment_to_sendStepDialogFragment"
             app:destination="@id/sendStepDialogFragment3" />
     </fragment>
     <dialog

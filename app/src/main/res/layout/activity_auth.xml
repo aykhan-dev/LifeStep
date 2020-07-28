@@ -26,7 +26,7 @@
             android:fontFamily="@font/gilroy_extrabold"
             android:text="@string/auth_title"
             android:textColor="@android:color/white"
-            android:textSize="40sp"
+            android:textSize="@dimen/very_large"
             app:layout_constraintBottom_toTopOf="@+id/frame_layout_container"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.15"

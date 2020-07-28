@@ -39,7 +39,8 @@
                 android:inputType="textEmailAddress"
                 android:paddingBottom="20dp"
                 android:text="@={viewModel.emailInput}"
-                android:textColorHint="@color/gray_text_color" />
+                android:textColorHint="@color/gray_text_color"
+                android:textSize="@dimen/normal" />
 
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -64,7 +65,8 @@
                 android:inputType="textPassword"
                 android:paddingBottom="20dp"
                 android:text="@={viewModel.passwordInput}"
-                android:textColorHint="@color/gray_text_color" />
+                android:textColorHint="@color/gray_text_color"
+                android:textSize="@dimen/normal" />
 
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -89,7 +91,8 @@
                 android:inputType="textPassword"
                 android:paddingBottom="20dp"
                 android:text="@={viewModel.passwordConfirmInput}"
-                android:textColorHint="@color/gray_text_color" />
+                android:textColorHint="@color/gray_text_color"
+                android:textSize="@dimen/normal" />
 
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -107,7 +110,8 @@
             android:text="@string/have_account"
             android:textAllCaps="false"
             android:textAppearance="@style/TextAppearance.MaterialComponents.Body1"
-            android:textColor="@color/bottom_navigation_view_color" />
+            android:textColor="@color/bottom_navigation_view_color"
+            android:textSize="@dimen/small" />
 
     </LinearLayout>
 

@@ -18,21 +18,25 @@
 
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/text_view_title"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_margin="@dimen/page_padding_large"
             android:fontFamily="@font/gilroy_bold"
+            android:paddingHorizontal="@dimen/page_padding_large"
             android:text="@string/main"
             android:textAppearance="@style/TextAppearance.MaterialComponents.Headline5"
-            android:textSize="29sp"
+            android:textSize="@dimen/extra_large"
             android:textStyle="bold"
+            app:layout_constraintBottom_toTopOf="@id/guideline"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.65" />
 
         <EditText
             android:id="@+id/edit_text_search_bar"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/page_padding_large"
             android:fontFamily="@font/gilroy_regular"
             android:hint="@string/search"
             android:inputType="textCapWords"
@@ -53,10 +57,11 @@
             android:padding="20dp"
             android:visibility="gone"
             app:layout_constraintEnd_toEndOf="@id/image_button_notification"
-            app:layout_constraintStart_toStartOf="@id/text_view_title"
+            app:layout_constraintStart_toStartOf="@id/edit_text_search_bar"
             app:layout_constraintTop_toBottomOf="@id/edit_text_search_bar">
 
             <androidx.recyclerview.widget.RecyclerView
+            android:theme="@style/ScrollableTheme"
                 android:id="@+id/recycler_view_results"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -124,12 +129,22 @@
             app:layout_constraintStart_toEndOf="@id/seperator"
             app:layout_constraintTop_toTopOf="@+id/seperator" />
 
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="0.1" />
+
         <androidx.core.widget.NestedScrollView
+            android:theme="@style/ScrollableTheme"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_marginTop="15dp"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/text_view_title">
+            app:layout_constraintHeight_percent="0.9"
+            app:layout_constraintTop_toBottomOf="@id/text_view_title"
+            app:layout_constraintVertical_bias="1">
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/scrollable_content"
@@ -178,7 +193,7 @@
                     android:fontFamily="@font/gilroy_semibold"
                     android:text="@string/today"
                     android:textColor="@color/gray_text_color"
-                    android:textSize="14sp"
+                    android:textSize="@dimen/smaller"
                     android:textStyle="bold"
                     app:layout_constraintBottom_toTopOf="@+id/text_view_count"
                     app:layout_constraintEnd_toEndOf="@+id/seek_bar"
@@ -191,7 +206,7 @@
                     android:fontFamily="@font/gilroy_bold"
                     android:text="0"
                     android:textAlignment="center"
-                    android:textSize="54sp"
+                    android:textSize="@dimen/ultra_large"
                     android:textStyle="bold"
                     app:layout_constraintBottom_toBottomOf="@+id/seek_bar"
                     app:layout_constraintEnd_toEndOf="@id/seek_bar"
@@ -205,7 +220,7 @@
                     android:text="@string/steps"
                     android:textAppearance="@style/TextAppearance.MaterialComponents.Body1"
                     android:textColor="@color/gray_text_color"
-                    android:textSize="14sp"
+                    android:textSize="@dimen/smaller"
                     android:textStyle="bold"
                     app:layout_constraintEnd_toEndOf="@+id/seek_bar"
                     app:layout_constraintStart_toStartOf="@+id/seek_bar"
@@ -307,7 +322,7 @@
                     android:text="@string/convert_life_step"
                     android:textAllCaps="false"
                     android:textColor="@android:color/white"
-                    android:textSize="18sp"
+                    android:textSize="@dimen/normal"
                     app:backgroundTint="@color/balance_header_background_color"
                     app:cornerRadius="10dp"
                     app:icon="@drawable/ic_heart_white"

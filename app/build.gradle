@@ -117,9 +117,9 @@ dependencies {
     implementation "com.jakewharton.timber:timber:$version_timber"
 
     // Lifecycle
-    implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.3.0-alpha06'
-    implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.3.0-alpha06'
-    implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.3.0-alpha06'
+    implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.3.0-alpha05'
+    implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.3.0-alpha05'
+    implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.3.0-alpha05'
 
     // Google Services
     implementation 'com.google.android.gms:play-services-fitness:18.0.0'

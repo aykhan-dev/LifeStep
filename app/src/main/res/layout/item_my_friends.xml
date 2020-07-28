@@ -35,9 +35,10 @@
 
             <ImageView
                 android:id="@+id/image_view_profile"
+                imageUrl="@{data.imageUrl}"
+                android:scaleType="centerCrop"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:src="@drawable/img_friend_test" />
+                android:layout_height="match_parent" />
 
         </com.google.android.material.card.MaterialCardView>
 
@@ -51,7 +52,7 @@
             android:fontFamily="@font/gilroy_semibold"
             android:text="@{data.fullName}"
             android:textColor="@color/dark_text_color"
-            android:textSize="18sp"
+            android:textSize="@dimen/normal"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/card_image_container"
             app:layout_constraintTop_toTopOf="parent"
@@ -67,7 +68,7 @@
             android:fontFamily="@font/gilroy_semibold"
             android:text="@{@string/friends_balance(data.balance)}"
             android:textColor="@color/gray_text_color"
-            android:textSize="16sp"
+            android:textSize="@dimen/small"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="@id/text_view_full_name"
             app:layout_constraintStart_toStartOf="@id/text_view_full_name"

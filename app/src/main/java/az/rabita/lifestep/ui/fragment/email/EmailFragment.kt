@@ -12,6 +12,7 @@ import az.rabita.lifestep.databinding.FragmentEmailBinding
 import az.rabita.lifestep.ui.dialog.message.MessageDialog
 import az.rabita.lifestep.ui.dialog.message.MessageType
 import az.rabita.lifestep.utils.ERROR_TAG
+import az.rabita.lifestep.utils.hideKeyboard
 import az.rabita.lifestep.viewModel.fragment.forgotPassword.ForgotPasswordViewModel
 
 class EmailFragment : Fragment() {
@@ -35,6 +36,7 @@ class EmailFragment : Fragment() {
 
         with(binding) {
             imageButtonBack.setOnClickListener { activity?.finish() }
+            root.setOnClickListener { it.hideKeyboard(context) }
         }
 
         return binding.root
@@ -51,7 +53,7 @@ class EmailFragment : Fragment() {
         errorMessage.observe(viewLifecycleOwner, Observer {
             it?.let {
                 activity?.let { activity ->
-                    MessageDialog(MessageType.ERROR, it).show(
+                    MessageDialog(it).show(
                         activity.supportFragmentManager,
                         ERROR_TAG
                     )

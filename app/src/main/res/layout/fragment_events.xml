@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
+
         <variable
             name="viewModel"
             type="az.rabita.lifestep.viewModel.fragment.events.EventsViewModel" />
@@ -15,30 +16,43 @@
         tools:context=".ui.fragment.events.EventsFragment">
 
         <com.google.android.material.textview.MaterialTextView
-            android:id="@+id/text_view_donate_steps"
-            android:layout_width="wrap_content"
+            android:id="@+id/text_view_title"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_margin="@dimen/page_padding_large"
             android:fontFamily="@font/gilroy_bold"
+            android:paddingHorizontal="@dimen/page_padding_large"
             android:text="@string/donate_step"
-            android:textSize="29sp"
+            android:textSize="@dimen/extra_large"
+            app:layout_constraintBottom_toTopOf="@id/guideline"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.05"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.65" />
 
         <androidx.recyclerview.widget.RecyclerView
+            android:theme="@style/ScrollableTheme"
             android:id="@+id/recycler_view_events"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_marginTop="10dp"
             android:clipToPadding="false"
             android:orientation="vertical"
-            android:paddingTop="@dimen/page_padding_normal"
             android:paddingHorizontal="@dimen/page_padding_normal"
+            android:paddingTop="15dp"
             android:paddingBottom="110dp"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/text_view_donate_steps"
+            app:layout_constraintHeight_percent="0.9"
+            app:layout_constraintTop_toBottomOf="@+id/text_view_title"
+            app:layout_constraintVertical_bias="1"
             tools:listitem="@layout/item_events" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="0.1" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

@@ -19,10 +19,7 @@ import az.rabita.lifestep.databinding.FragmentDonateStepDialogBinding
 import az.rabita.lifestep.ui.dialog.loading.LoadingDialog
 import az.rabita.lifestep.ui.dialog.message.MessageDialog
 import az.rabita.lifestep.ui.dialog.message.MessageType
-import az.rabita.lifestep.utils.ERROR_TAG
-import az.rabita.lifestep.utils.LOADING_TAG
-import az.rabita.lifestep.utils.UiState
-import az.rabita.lifestep.utils.logout
+import az.rabita.lifestep.utils.*
 import az.rabita.lifestep.viewModel.fragment.detailedInfo.DetailedInfoViewModel
 
 class DonateStepDialog : DialogFragment() {
@@ -70,6 +67,7 @@ class DonateStepDialog : DialogFragment() {
                 )
             }
             root.setOnClickListener { dismiss() }
+            content.setOnClickListener { it.hideKeyboard(context) }
         }
 
         return binding.root
@@ -92,7 +90,7 @@ class DonateStepDialog : DialogFragment() {
         errorMessage.observe(viewLifecycleOwner, Observer {
             it?.let {
                 activity?.let { activity ->
-                    MessageDialog(MessageType.ERROR, it).show(
+                    MessageDialog(it).show(
                         activity.supportFragmentManager,
                         ERROR_TAG
                     )

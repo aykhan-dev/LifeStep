@@ -69,12 +69,6 @@ class DonationFragment : Fragment() {
 
     private fun configureRecyclerView() = with(binding.recyclerViewDonation) {
         adapter = donationAdapter
-
-        context?.let {
-            addItemDecoration(
-                VerticalSpaceItemDecoration(pxFromDp(it, 20f), pxFromDp(it, 90f))
-            )
-        }
     }
 
     private fun observeData(): Unit = with(viewModel) {
@@ -86,7 +80,7 @@ class DonationFragment : Fragment() {
         errorMessage.observe(viewLifecycleOwner, Observer {
             it?.let {
                 activity?.let { activity ->
-                    MessageDialog(MessageType.ERROR, it).show(
+                    MessageDialog(it).show(
                         activity.supportFragmentManager,
                         ERROR_TAG
                     )

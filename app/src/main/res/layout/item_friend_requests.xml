@@ -14,10 +14,10 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
+        android:layout_marginBottom="15dp"
         android:background="@drawable/background_friends_item"
         android:clipChildren="false"
         android:clipToPadding="false"
-        android:layout_marginBottom="15dp"
         android:elevation="20dp">
 
         <com.google.android.material.card.MaterialCardView
@@ -35,9 +35,10 @@
 
             <ImageView
                 android:id="@+id/image_view_profile"
+                imageUrl="@{data.imageUrl}"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:src="@drawable/img_friend_test" />
+                android:scaleType="centerCrop" />
 
         </com.google.android.material.card.MaterialCardView>
 
@@ -48,10 +49,10 @@
             android:layout_marginStart="15dp"
             android:layout_marginTop="22.5dp"
             android:layout_marginEnd="15dp"
-            android:text="@{data.fullName}"
             android:fontFamily="@font/gilroy_semibold"
+            android:text="@{data.fullName}"
             android:textColor="@color/dark_text_color"
-            android:textSize="18sp"
+            android:textSize="@dimen/normal"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/card_image_container"
             app:layout_constraintTop_toTopOf="parent"
@@ -62,17 +63,17 @@
             style="@style/OutlinedButton"
             android:layout_width="wrap_content"
             android:layout_height="@dimen/button_height_32"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"
             android:fontFamily="@font/gilroy_semibold"
             android:text="@string/decline"
             android:textColor="@color/dark_text_color"
-            android:textSize="13sp"
+            android:textSize="@dimen/smallest"
             app:cornerRadius="6dp"
-            android:layout_marginTop="10dp"
-            android:layout_marginBottom="10dp"
-            app:layout_constraintVertical_bias="0"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="@id/text_view_full_name"
-            app:layout_constraintTop_toBottomOf="@id/text_view_full_name" />
+            app:layout_constraintTop_toBottomOf="@id/text_view_full_name"
+            app:layout_constraintVertical_bias="0" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/button_accept"
@@ -83,7 +84,7 @@
             android:fontFamily="@font/gilroy_semibold"
             android:text="@string/accept"
             android:textColor="@android:color/white"
-            android:textSize="13sp"
+            android:textSize="@dimen/smallest"
             app:backgroundTint="@color/main_text_color"
             app:cornerRadius="6dp"
             app:layout_constraintBottom_toBottomOf="@+id/button_decline"

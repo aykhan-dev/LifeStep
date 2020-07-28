@@ -12,6 +12,7 @@ import az.rabita.lifestep.databinding.FragmentPinBinding
 import az.rabita.lifestep.ui.dialog.message.MessageDialog
 import az.rabita.lifestep.ui.dialog.message.MessageType
 import az.rabita.lifestep.utils.ERROR_TAG
+import az.rabita.lifestep.utils.hideKeyboard
 import az.rabita.lifestep.viewModel.fragment.forgotPassword.ForgotPasswordViewModel
 
 class PinFragment : Fragment() {
@@ -35,6 +36,7 @@ class PinFragment : Fragment() {
 
         with(binding) {
             imageButtonBack.setOnClickListener { navController.popBackStack() }
+            root.setOnClickListener { it.hideKeyboard(context) }
         }
 
         return binding.root
@@ -64,7 +66,7 @@ class PinFragment : Fragment() {
         errorMessage.observe(viewLifecycleOwner, Observer {
             it?.let {
                 activity?.let { activity ->
-                    MessageDialog(MessageType.ERROR, it).show(
+                    MessageDialog(it).show(
                         activity.supportFragmentManager,
                         ERROR_TAG
                     )

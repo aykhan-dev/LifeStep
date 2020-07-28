@@ -1,9 +1,9 @@
 package az.rabita.lifestep.viewModel.fragment.home
 
-import android.app.Activity
 import android.app.Application
 import android.text.format.DateFormat
 import androidx.lifecycle.*
+import az.rabita.lifestep.R
 import az.rabita.lifestep.local.getDatabase
 import az.rabita.lifestep.manager.PreferenceManager
 import az.rabita.lifestep.network.NetworkState
@@ -176,10 +176,10 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-    fun accessGoogleFit(activity: Activity) {
+    fun accessGoogleFit() {
         viewModelScope.launch {
-            val account = GoogleSignIn.getAccountForExtension(activity, FITNESS_OPTIONS)
-            val historyClient = Fitness.getHistoryClient(activity, account)
+            val account = GoogleSignIn.getAccountForExtension(context, FITNESS_OPTIONS)
+            val historyClient = Fitness.getHistoryClient(context, account)
             fetchStepCountFromGoogleFit(historyClient)
         }
     }
@@ -203,11 +203,11 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
     private fun handleNetworkException(exception: String?) {
         viewModelScope.launch {
             if (context.isInternetConnectionAvailable()) showMessageDialog(exception)
-            else showMessageDialog(NO_INTERNET_CONNECTION)
+            else showMessageDialog(context.getString(R.string.no_internet_connection))
         }
     }
 
-    private fun showMessageDialog(message: String?) {
+    fun showMessageDialog(message: String?) {
         _errorMessage.value = message
         _errorMessage.value = null
     }

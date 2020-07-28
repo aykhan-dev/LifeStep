@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
+
         <variable
             name="viewModel"
             type="az.rabita.lifestep.viewModel.fragment.detailedInfo.DetailedInfoViewModel" />
@@ -20,37 +21,49 @@
 
         <ImageButton
             android:id="@+id/image_button_back"
-            android:layout_width="20dp"
+            android:layout_width="0dp"
             android:layout_height="0dp"
-            android:background="?selectableItemBackgroundBorderless"
+            android:background="@android:color/transparent"
             android:scaleType="center"
             android:src="@drawable/ic_back"
             app:layout_constraintBottom_toBottomOf="@id/text_view_title"
+            app:layout_constraintDimensionRatio="1:1"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.05"
+            app:layout_constraintHorizontal_bias="0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@id/text_view_title" />
+            app:layout_constraintTop_toTopOf="@id/text_view_title"
+            app:layout_constraintWidth_percent="0.15" />
 
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/text_view_title"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/page_padding_large"
+            android:layout_marginEnd="@dimen/page_padding_large"
             android:fontFamily="@font/gilroy_bold"
             android:text="@string/text_detailed_info"
-            android:textSize="29sp"
+            android:textSize="@dimen/extra_large"
+            app:layout_constraintBottom_toTopOf="@id/guideline"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.05"
             app:layout_constraintStart_toEndOf="@id/image_button_back"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.65" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="0.1" />
 
         <androidx.core.widget.NestedScrollView
             android:id="@+id/scroll_content"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:fillViewport="true"
+            android:theme="@style/ScrollableTheme"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintHeight_percent="0.89"
+            app:layout_constraintHeight_percent="0.9"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="1">
 
@@ -62,7 +75,9 @@
                 android:clipChildren="false"
                 android:clipToPadding="false"
                 android:elevation="20dp"
-                android:padding="@dimen/page_padding_normal">
+                android:paddingHorizontal="@dimen/page_padding_normal"
+                android:paddingTop="@dimen/page_padding_normal"
+                android:paddingBottom="110dp">
 
                 <com.google.android.material.card.MaterialCardView
                     android:id="@+id/card_image_container"
@@ -76,11 +91,11 @@
 
                     <ImageView
                         android:id="@+id/image_view_contact"
+                        imageUrl="@{viewModel.assocationDetails.url}"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:adjustViewBounds="true"
                         android:scaleType="centerCrop"
-                        imageUrl="@{viewModel.assocationDetails.url}"
                         app:layout_constraintTop_toTopOf="parent" />
 
                 </com.google.android.material.card.MaterialCardView>
@@ -102,13 +117,13 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/gilroy_semibold"
-                    tools:text="345 min"
                     android:textColor="@color/dark_text_color"
-                    android:textSize="16sp"
+                    android:textSize="@dimen/small"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintHorizontal_bias="0.025"
                     app:layout_constraintStart_toEndOf="@id/image_view_donated"
-                    app:layout_constraintTop_toTopOf="@id/image_view_donated" />
+                    app:layout_constraintTop_toTopOf="@id/image_view_donated"
+                    tools:text="345 min" />
 
                 <com.google.android.material.textview.MaterialTextView
                     android:id="@+id/text_view_donated_steps"
@@ -117,7 +132,7 @@
                     android:fontFamily="@font/gilroy_medium"
                     android:text="@string/donated_steps"
                     android:textColor="@color/gray_text_color"
-                    android:textSize="14sp"
+                    android:textSize="@dimen/smaller"
                     app:layout_constraintBottom_toBottomOf="@id/image_view_donated"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintHorizontal_bias="0"
@@ -141,13 +156,13 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="10dp"
                     android:fontFamily="@font/gilroy_semibold"
-                    tools:text="1000 min"
                     android:textColor="@color/dark_text_color"
-                    android:textSize="16sp"
+                    android:textSize="@dimen/small"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintHorizontal_bias="0.025"
                     app:layout_constraintStart_toEndOf="@id/image_view_target"
-                    app:layout_constraintTop_toTopOf="@id/image_view_target" />
+                    app:layout_constraintTop_toTopOf="@id/image_view_target"
+                    tools:text="1000 min" />
 
                 <com.google.android.material.textview.MaterialTextView
                     android:id="@+id/text_view_target_steps"
@@ -156,7 +171,7 @@
                     android:fontFamily="@font/gilroy_medium"
                     android:text="@string/target_steps"
                     android:textColor="@color/gray_text_color"
-                    android:textSize="14sp"
+                    android:textSize="@dimen/smaller"
                     app:layout_constraintBottom_toBottomOf="@+id/image_view_target"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintHorizontal_bias="0"
@@ -183,10 +198,10 @@
                     android:layout_marginTop="@dimen/page_padding_large"
                     android:fontFamily="@font/gilroy_bold"
                     android:text="@{viewModel.assocationDetails.name}"
-                    tools:text="16 yaşlı Nərminə dəstək olaq"
                     android:textColor="@color/dark_text_color"
-                    android:textSize="20sp"
-                    app:layout_constraintTop_toBottomOf="@id/seek_bar" />
+                    android:textSize="@dimen/large"
+                    app:layout_constraintTop_toBottomOf="@id/seek_bar"
+                    tools:text="16 yaşlı Nərminə dəstək olaq" />
 
                 <com.google.android.material.textview.MaterialTextView
                     android:id="@+id/text_view_date"
@@ -195,10 +210,10 @@
                     android:layout_marginTop="5dp"
                     android:fontFamily="@font/gilroy_regular"
                     android:text="@{viewModel.assocationDetails.createdDate}"
-                    tools:text="2 aprel 2020"
                     android:textColor="@color/gray_text_color"
-                    android:textSize="12sp"
-                    app:layout_constraintTop_toBottomOf="@id/text_view_content_title" />
+                    android:textSize="@dimen/smallest"
+                    app:layout_constraintTop_toBottomOf="@id/text_view_content_title"
+                    tools:text="2 aprel 2020" />
 
                 <com.google.android.material.textview.MaterialTextView
                     android:id="@+id/text_view_body"
@@ -208,10 +223,10 @@
                     android:fontFamily="@font/gilroy_medium"
                     android:lineSpacingExtra="7.5dp"
                     android:text="@{viewModel.assocationDetails.description}"
-                    tools:text="@string/lorem_impuls"
                     android:textColor="@color/gray_text_color"
-                    android:textSize="14sp"
-                    app:layout_constraintTop_toBottomOf="@id/text_view_date" />
+                    android:textSize="@dimen/smaller"
+                    app:layout_constraintTop_toBottomOf="@id/text_view_date"
+                    tools:text="@string/lorem_impuls" />
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/button_donate_steps"
@@ -227,7 +242,7 @@
                     android:paddingEnd="20dp"
                     android:text="@string/donate_step"
                     android:textAllCaps="false"
-                    android:textSize="16sp"
+                    android:textSize="@dimen/small"
                     app:backgroundTint="@color/balance_header_background_color"
                     app:cornerRadius="15dp"
                     app:layout_constraintBottom_toBottomOf="@+id/text_view_deadline"
@@ -238,12 +253,12 @@
                     android:id="@+id/text_view_last_date"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
                     android:layout_marginEnd="10dp"
                     android:fontFamily="@font/gilroy_medium"
                     android:text="@string/last_date_for_help"
-                    android:layout_marginTop="20dp"
                     android:textColor="@color/gray_text_color"
-                    android:textSize="14sp"
+                    android:textSize="@dimen/smaller"
                     app:layout_constraintEnd_toStartOf="@+id/button_donate_steps"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/text_view_body"
@@ -256,13 +271,13 @@
                     android:layout_marginEnd="10dp"
                     android:fontFamily="@font/gilroy_semibold"
                     android:text="@{viewModel.assocationDetails.expireDate}"
-                    tools:text="30 aprel, 2020"
                     android:textColor="@color/dark_text_color"
-                    android:textSize="20sp"
+                    android:textSize="@dimen/large"
                     app:layout_constraintEnd_toStartOf="@id/button_donate_steps"
                     app:layout_constraintHorizontal_bias="1.0"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/text_view_last_date" />
+                    app:layout_constraintTop_toBottomOf="@id/text_view_last_date"
+                    tools:text="30 aprel, 2020" />
 
                 <View
                     android:id="@+id/seperator"
@@ -280,7 +295,7 @@
                     android:fontFamily="@font/gilroy_bold"
                     android:text="@string/step_donors"
                     android:textColor="@color/dark_text_color"
-                    android:textSize="20sp"
+                    android:textSize="@dimen/large"
                     app:layout_constraintBottom_toBottomOf="@+id/text_view_all"
                     app:layout_constraintEnd_toStartOf="@id/text_view_all"
                     app:layout_constraintStart_toStartOf="parent"
@@ -296,7 +311,7 @@
                     android:fontFamily="@font/gilroy_medium"
                     android:text="@string/all"
                     android:textColor="@color/gray_text_color"
-                    android:textSize="16sp"
+                    android:textSize="@dimen/small"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/seperator" />
 
@@ -308,12 +323,12 @@
                     android:clipChildren="false"
                     android:clipToPadding="false"
                     android:orientation="vertical"
+                    android:theme="@style/ScrollableTheme"
                     app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                     app:layout_constraintTop_toBottomOf="@id/text_view_donated_persons"
                     tools:listitem="@layout/item_my_friends" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
-
 
         </androidx.core.widget.NestedScrollView>
 

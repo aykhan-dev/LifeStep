@@ -42,7 +42,7 @@
                 android:fontFamily="@font/gilroy_bold"
                 android:text="@string/desired_steps_count_donate"
                 android:textAlignment="center"
-                android:textSize="20sp"
+                android:textSize="@dimen/large"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -58,7 +58,7 @@
                 android:text="@string/text_view_last_step"
                 android:textAlignment="center"
                 android:textColor="@color/gray_text_color"
-                android:textSize="12sp"
+                android:textSize="@dimen/smallest"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/text_view_wanted_steps" />
@@ -86,7 +86,7 @@
                     android:text="@={viewModel.donatedStepInput}"
                     android:textAlignment="center"
                     android:textColor="@color/bottom_navigation_view_color"
-                    android:textSize="40sp"
+                    android:textSize="@dimen/very_large"
                     app:hint="@{viewModel.profileInfo.balance}" />
 
             </com.google.android.material.textfield.TextInputLayout>
@@ -101,7 +101,7 @@
                 android:text="@string/show_name_image"
                 android:textAlignment="center"
                 android:textColor="@color/gray_text_color"
-                android:textSize="14sp"
+                android:textSize="@dimen/smaller"
                 app:layout_constraintEnd_toEndOf="@id/input_layout_steps"
                 app:layout_constraintHorizontal_bias="0"
                 app:layout_constraintStart_toStartOf="parent"
@@ -136,7 +136,7 @@
                 android:textAlignment="center"
                 android:textAllCaps="false"
                 android:textColor="@android:color/white"
-                android:textSize="16sp"
+                android:textSize="@dimen/small"
                 app:backgroundTint="@color/bottom_navigation_view_color"
                 app:cornerRadius="15dp"
                 app:icon="@drawable/ic_heart_white"

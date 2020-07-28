@@ -39,7 +39,7 @@
             android:fontFamily="@font/gilroy_medium"
             android:padding="10dp"
             android:textColor="@color/gray_text_color"
-            android:textSize="18sp" />
+            android:textSize="@dimen/normal" />
 
     </LinearLayout>
 </layout>

@@ -37,7 +37,8 @@
                 android:imeOptions="actionNext"
                 android:inputType="textCapWords"
                 android:paddingBottom="20dp"
-                android:text="@={viewModel.nameInput}" />
+                android:text="@={viewModel.nameInput}"
+                android:textSize="@dimen/normal" />
 
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -62,7 +63,8 @@
                 android:imeOptions="actionNext"
                 android:inputType="textCapWords"
                 android:paddingBottom="20dp"
-                android:text="@={viewModel.surnameInput}" />
+                android:text="@={viewModel.surnameInput}"
+                android:textSize="@dimen/normal" />
 
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -89,7 +91,8 @@
                 android:fontFamily="@font/gilroy_medium"
                 android:imeOptions="actionNext"
                 android:inputType="textAutoComplete"
-                android:paddingBottom="20dp" />
+                android:paddingBottom="20dp"
+                android:textSize="@dimen/normal" />
 
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -114,7 +117,8 @@
                 android:imeOptions="actionNext"
                 android:inputType="phone"
                 android:paddingBottom="20dp"
-                android:text="@={viewModel.phoneInput}" />
+                android:text="@={viewModel.phoneInput}"
+                android:textSize="@dimen/normal" />
 
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -140,7 +144,8 @@
                 android:inputType="textAutoComplete"
                 android:paddingBottom="20dp"
                 android:singleLine="true"
-                android:text="@={viewModel.invitationCodeInput}" />
+                android:text="@={viewModel.invitationCodeInput}"
+                android:textSize="@dimen/normal" />
 
         </com.google.android.material.textfield.TextInputLayout>
 

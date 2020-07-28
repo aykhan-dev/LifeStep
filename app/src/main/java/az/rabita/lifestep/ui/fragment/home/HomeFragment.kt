@@ -15,6 +15,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import az.rabita.lifestep.R
 import az.rabita.lifestep.databinding.FragmentHomeBinding
 import az.rabita.lifestep.ui.dialog.loading.LoadingDialog
 import az.rabita.lifestep.ui.dialog.message.MessageDialog
@@ -198,7 +199,7 @@ class HomeFragment : Fragment() {
         errorMessage.observe(viewLifecycleOwner, Observer {
             it?.let {
                 activity?.let { activity ->
-                    MessageDialog(MessageType.ERROR, it).show(
+                    MessageDialog(it).show(
                         activity.supportFragmentManager,
                         ERROR_TAG
                     )
@@ -268,9 +269,7 @@ class HomeFragment : Fragment() {
                 FITNESS_OPTIONS
             )
 
-        } else {
-            viewModel.accessGoogleFit(requireActivity())
-        }
+        } else viewModel.accessGoogleFit()
 
     }
 
@@ -278,8 +277,15 @@ class HomeFragment : Fragment() {
         super.onActivityResult(requestCode, resultCode, data)
         when (requestCode) {
             GOOGLE_FIT_PERMISSIONS_REQUEST_CODE -> {
-                Timber.i("Google fit permission accepted")
-                viewModel.accessGoogleFit(requireActivity())
+                val result = GoogleSignIn.getSignedInAccountFromIntent(data)
+                result?.let {
+                    if (result.isSuccessful) {
+                        Timber.i("Google fit permission accepted")
+                        viewModel.accessGoogleFit()
+                    } else {
+                        viewModel.showMessageDialog(getString(R.string.google_auth_fail_message))
+                    }
+                }
             }
         }
     }

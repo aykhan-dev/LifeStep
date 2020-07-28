@@ -99,15 +99,16 @@ class DetailedInfoFragment : Fragment() {
 
     private fun configureRecyclerView(): Unit = with(binding.recyclerViewDonors) {
         adapter = donorsAdapter
-
-        context?.let {
-            addItemDecoration(
-                VerticalSpaceItemDecoration(0, pxFromDp(it, 90f))
-            )
-        }
     }
 
     private fun observeData(): Unit = with(viewModel) {
+
+        navController.currentBackStackEntry
+            ?.savedStateHandle
+            ?.getLiveData<Boolean>("Donated")
+            ?.observe(viewLifecycleOwner, Observer {
+                viewModel.fetchDetailedInfo(args.assocationId)
+            })
 
         assocationDetails.observe(viewLifecycleOwner, Observer {
             it?.let {
@@ -127,7 +128,7 @@ class DetailedInfoFragment : Fragment() {
         errorMessage.observe(viewLifecycleOwner, Observer {
             it?.let {
                 activity?.let { activity ->
-                    MessageDialog(MessageType.ERROR, it).show(
+                    MessageDialog(it).show(
                         activity.supportFragmentManager,
                         ERROR_TAG
                     )

@@ -19,29 +19,40 @@
 
         <ImageButton
             android:id="@+id/image_button_back"
-            android:layout_width="20dp"
+            android:layout_width="0dp"
             android:layout_height="0dp"
-            android:background="?selectableItemBackgroundBorderless"
             android:scaleType="center"
             android:src="@drawable/ic_back"
             app:layout_constraintBottom_toBottomOf="@id/text_view_title"
+            app:layout_constraintDimensionRatio="1:1"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.05"
+            app:layout_constraintHorizontal_bias="0"
+            android:background="@android:color/transparent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@id/text_view_title" />
+            app:layout_constraintTop_toTopOf="@id/text_view_title"
+            app:layout_constraintWidth_percent="0.15" />
 
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/text_view_title"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/page_padding_large"
+            android:layout_marginEnd="10dp"
             android:fontFamily="@font/gilroy_bold"
-            android:text="@string/text_profile"
-            android:textSize="29sp"
-            app:layout_constraintEnd_toEndOf="parent"
+            android:text="@string/profile_details"
+            android:textSize="@dimen/extra_large"
+            app:layout_constraintBottom_toTopOf="@id/guideline"
+            app:layout_constraintEnd_toStartOf="@id/image_button_edit_profile"
             app:layout_constraintHorizontal_bias="0.05"
             app:layout_constraintStart_toEndOf="@id/image_button_back"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.65" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="0.1" />
 
         <ImageButton
             android:id="@+id/image_button_edit_profile"
@@ -49,19 +60,20 @@
             android:layout_height="wrap_content"
             android:background="@android:color/transparent"
             android:src="@drawable/ic_edit_profile"
-            app:layout_constraintBottom_toBottomOf="@id/text_view_title"
+            app:layout_constraintBottom_toTopOf="@+id/guideline"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.85"
-            app:layout_constraintStart_toEndOf="@id/text_view_title"
-            app:layout_constraintTop_toTopOf="@id/text_view_title" />
+            app:layout_constraintHorizontal_bias="0.925"
+            app:layout_constraintStart_toEndOf="@id/image_button_back"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.6" />
 
         <androidx.core.widget.NestedScrollView
+            android:theme="@style/ScrollableTheme"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_marginTop="20dp"
             android:fillViewport="true"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/text_view_title">
+            app:layout_constraintTop_toBottomOf="@id/guideline">
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/constraint_layout_content"
@@ -100,9 +112,8 @@
                     android:layout_marginStart="30dp"
                     android:layout_marginEnd="30dp"
                     android:fontFamily="@font/gilroy_bold"
-                    android:text="@{@string/two_lined_format(viewModel.profileInfo.name, viewModel.profileInfo.surname)}"
                     android:textColor="@color/dark_text_color"
-                    android:textSize="22sp"
+                    android:textSize="@dimen/larger"
 
                     app:layout_constraintBottom_toBottomOf="@+id/card_image_container"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -111,14 +122,14 @@
 
                 <LinearLayout
                     android:id="@+id/linear_layout_status"
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="100dp"
                     android:layout_marginTop="40dp"
                     android:background="@drawable/ic_bg_status"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/card_image_container"
-                    app:layout_constraintWidth_percent="0.8">
+                    app:layout_constraintWidth_percent="0.9">
 
                     <com.google.android.material.textview.MaterialTextView
                         android:id="@+id/text_view_friends"
@@ -129,7 +140,7 @@
                         android:fontFamily="@font/gilroy_medium"
                         android:textAlignment="center"
                         android:textColor="@android:color/white"
-                        android:textSize="16sp" />
+                        android:textSize="@dimen/small" />
 
                     <com.google.android.material.textview.MaterialTextView
                         android:id="@+id/text_view_total_steps"
@@ -140,7 +151,7 @@
                         android:fontFamily="@font/gilroy_medium"
                         android:textAlignment="center"
                         android:textColor="@android:color/white"
-                        android:textSize="16sp" />
+                        android:textSize="@dimen/small" />
 
                 </LinearLayout>
 
@@ -153,7 +164,7 @@
                     android:text="@{@string/join_date_text(viewModel.profileInfo.createdDate)}"
                     android:textAlignment="center"
                     android:textColor="@color/gray_text_color"
-                    android:textSize="16sp"
+                    android:textSize="@dimen/small"
                     app:layout_constraintEnd_toEndOf="@id/linear_layout_status"
                     app:layout_constraintStart_toStartOf="@id/linear_layout_status"
                     app:layout_constraintTop_toBottomOf="@id/linear_layout_status" />

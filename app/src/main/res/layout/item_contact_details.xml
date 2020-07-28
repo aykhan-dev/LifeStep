@@ -30,7 +30,7 @@
             android:fontFamily="@font/gilroy_semibold"
             android:text="@{contactDetail.content}"
             android:textColor="@color/gray_text_color"
-            android:textSize="18sp" />
+            android:textSize="@dimen/normal" />
 
     </LinearLayout>
 

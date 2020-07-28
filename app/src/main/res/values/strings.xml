@@ -157,6 +157,12 @@
     <string name="search_results">Axtarış Nəticələri</string>
 
     <string name="full_name_singleline">%1s %2s</string>
+    <string name="congrats">Təbriklər</string>
+    <string name="quote_congrats_bonus">200 Bonus addım qazandınız</string>
+
+    <string name="google_auth_fail_message">Google Fit hesabınızı qoşmalısınız</string>
+
+    <string name="no_internet_connection">Internet əlaqəsi yoxdur</string>
 
     <!-- Strings used for fragments for navigation -->
 </resources>

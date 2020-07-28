@@ -5,6 +5,7 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import az.rabita.lifestep.R
 import az.rabita.lifestep.local.getDatabase
 import az.rabita.lifestep.manager.PreferenceManager
 import az.rabita.lifestep.network.NetworkState
@@ -103,7 +104,7 @@ class AdsViewModel(application: Application) : AndroidViewModel(application) {
     private fun handleNetworkException(exception: String?) {
         viewModelScope.launch {
             if (context.isInternetConnectionAvailable()) showMessageDialog(exception)
-            else showMessageDialog(NO_INTERNET_CONNECTION)
+            else showMessageDialog(context.getString(R.string.no_internet_connection))
         }
     }
 

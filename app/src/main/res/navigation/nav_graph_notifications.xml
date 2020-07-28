@@ -23,7 +23,11 @@
         android:id="@+id/friendsFragment3"
         android:name="az.rabita.lifestep.ui.fragment.friends.FriendsFragment"
         android:label="FriendsFragment"
-        tools:layout="@layout/fragment_friends" />
+        tools:layout="@layout/fragment_friends" >
+        <action
+            android:id="@+id/action_friendsFragment_to_userProfileFragment"
+            app:destination="@id/userProfileFragment2" />
+    </fragment>
     <fragment
         android:id="@+id/inviteFriendFragment2"
         android:name="az.rabita.lifestep.ui.fragment.inviteFriend.InviteFriendFragment"

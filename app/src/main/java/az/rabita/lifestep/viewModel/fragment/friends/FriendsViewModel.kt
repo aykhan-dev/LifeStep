@@ -4,15 +4,14 @@ import android.app.Application
 import androidx.lifecycle.*
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
-import androidx.paging.PagingData
 import androidx.paging.cachedIn
+import az.rabita.lifestep.R
 import az.rabita.lifestep.local.getDatabase
 import az.rabita.lifestep.manager.PreferenceManager
 import az.rabita.lifestep.network.ApiInitHelper
 import az.rabita.lifestep.network.NetworkState
 import az.rabita.lifestep.pagingSource.FriendRequestsPagingSource
 import az.rabita.lifestep.pagingSource.FriendsPagingSource
-import az.rabita.lifestep.pojo.apiPOJO.content.FriendContentPOJO
 import az.rabita.lifestep.pojo.apiPOJO.model.FriendshipActionModelPOJO
 import az.rabita.lifestep.repository.FriendshipRepository
 import az.rabita.lifestep.repository.ReportRepository
@@ -106,7 +105,7 @@ class FriendsViewModel(application: Application) : AndroidViewModel(application)
     private fun handleNetworkException(exception: String?) {
         viewModelScope.launch {
             if (context.isInternetConnectionAvailable()) showMessageDialog(exception)
-            else showMessageDialog(NO_INTERNET_CONNECTION)
+            else showMessageDialog(context.getString(R.string.no_internet_connection))
         }
     }
 

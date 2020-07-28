@@ -10,6 +10,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
@@ -18,7 +19,6 @@ import androidx.navigation.fragment.navArgs
 import az.rabita.lifestep.R
 import az.rabita.lifestep.databinding.FragmentUserProfileBinding
 import az.rabita.lifestep.ui.dialog.message.MessageDialog
-import az.rabita.lifestep.ui.dialog.message.MessageType
 import az.rabita.lifestep.utils.ERROR_TAG
 import az.rabita.lifestep.utils.logout
 import az.rabita.lifestep.viewModel.fragment.profileDetails.UserProfileViewModel
@@ -38,18 +38,12 @@ class UserProfileFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         binding = FragmentUserProfileBinding.inflate(inflater)
-
-        binding.apply {
-            lifecycleOwner = this@UserProfileFragment
-            viewModel = this@UserProfileFragment.viewModel
-        }
-
-        with(binding) {
-            imageButtonBack.setOnClickListener { activity?.onBackPressed() }
-            buttonSendSteps.setOnClickListener { this@UserProfileFragment.viewModel.fetchPersonalInfo() }
-        }
-
         return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        bindUI()
     }
 
     override fun onStart() {
@@ -61,6 +55,14 @@ class UserProfileFragment : Fragment() {
         super.onActivityCreated(savedInstanceState)
         observeData()
         observeEvents()
+    }
+
+    private fun bindUI(): Unit = with(binding) {
+        lifecycleOwner = this@UserProfileFragment
+        viewModel = this@UserProfileFragment.viewModel
+
+        imageButtonBack.setOnClickListener { activity?.onBackPressed() }
+        buttonSendSteps.setOnClickListener { this@UserProfileFragment.viewModel.fetchPersonalInfo() }
     }
 
     private fun observeEvents(): Unit = with(viewModel) {
@@ -92,6 +94,9 @@ class UserProfileFragment : Fragment() {
 
     private fun observeData(): Unit = with(viewModel) {
 
+        //DON'T REMOVE THIS LINE
+        personalInfo.observe(viewLifecycleOwner, Observer { })
+
         friendshipStatus.observe(viewLifecycleOwner, Observer {
             it?.let {
                 with(binding) {
@@ -108,6 +113,15 @@ class UserProfileFragment : Fragment() {
 
         profileInfo.observe(viewLifecycleOwner, Observer {
             it?.let {
+
+                binding.textViewFullName.text =
+                    getString(R.string.two_lined_format, it.surname, it.name)
+
+                if (it.id == personalInfo.value?.id ?: "") {
+                    binding.buttonSendFriendRequest.isVisible = false
+                    binding.buttonSendSteps.isVisible = false
+                }
+
                 val spannableFriends =
                     SpannableString("${it.friendsCount}\n${getString(R.string.friends)}")
                 val spannableSteps =
@@ -145,7 +159,7 @@ class UserProfileFragment : Fragment() {
         errorMessage.observe(viewLifecycleOwner, Observer {
             it?.let {
                 activity?.let { activity ->
-                    MessageDialog(MessageType.ERROR, it).show(
+                    MessageDialog(it).show(
                         activity.supportFragmentManager,
                         ERROR_TAG
                     )

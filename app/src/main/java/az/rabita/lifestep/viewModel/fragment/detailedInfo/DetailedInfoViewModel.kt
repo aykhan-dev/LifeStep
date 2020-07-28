@@ -2,6 +2,7 @@ package az.rabita.lifestep.viewModel.fragment.detailedInfo
 
 import android.app.Application
 import androidx.lifecycle.*
+import az.rabita.lifestep.R
 import az.rabita.lifestep.local.getDatabase
 import az.rabita.lifestep.manager.PreferenceManager
 import az.rabita.lifestep.network.NetworkState
@@ -150,7 +151,7 @@ class DetailedInfoViewModel(application: Application) : AndroidViewModel(applica
     private fun handleNetworkException(exception: String?) {
         viewModelScope.launch {
             if (context.isInternetConnectionAvailable()) showMessageDialog(exception)
-            else showMessageDialog(NO_INTERNET_CONNECTION)
+            else showMessageDialog(context.getString(R.string.no_internet_connection))
         }
     }
 

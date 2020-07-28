@@ -15,7 +15,6 @@ import az.rabita.lifestep.ui.activity.forgotPassword.ForgotPasswordActivity
 import az.rabita.lifestep.ui.activity.main.MainActivity
 import az.rabita.lifestep.ui.dialog.loading.LoadingDialog
 import az.rabita.lifestep.ui.dialog.message.MessageDialog
-import az.rabita.lifestep.ui.dialog.message.MessageType
 import az.rabita.lifestep.utils.*
 import az.rabita.lifestep.viewModel.activity.auth.AuthViewModel
 import az.rabita.lifestep.viewModel.fragment.login.LoginViewModel
@@ -81,17 +80,6 @@ class LoginFragment : Fragment() {
             }
         })
 
-        stateInternetConnection.observe(viewLifecycleOwner, Observer {
-            it?.let {
-                if (it) activity?.let { activity ->
-                    MessageDialog(MessageType.ERROR, NO_INTERNET_CONNECTION).show(
-                        activity.supportFragmentManager,
-                        "No Internet"
-                    )
-                }
-            }
-        })
-
         uiState.observe(viewLifecycleOwner, Observer {
             it?.let {
                 when (it) {
@@ -116,7 +104,7 @@ class LoginFragment : Fragment() {
         errorMessage.observe(viewLifecycleOwner, Observer {
             it?.let {
                 activity?.let { activity ->
-                    MessageDialog(MessageType.ERROR, it).show(
+                    MessageDialog(it).show(
                         activity.supportFragmentManager,
                         ERROR_TAG
                     )

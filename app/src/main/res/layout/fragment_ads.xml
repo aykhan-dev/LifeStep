@@ -19,16 +19,27 @@
 
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/text_view_title"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_margin="@dimen/page_padding_large"
             android:fontFamily="@font/gilroy_bold"
+            android:paddingHorizontal="@dimen/page_padding_large"
             android:text="@string/earn_steps"
             android:textSize="29sp"
+            app:layout_constraintBottom_toTopOf="@id/guideline"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.65" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="0.1" />
 
         <androidx.core.widget.NestedScrollView
+            android:theme="@style/ScrollableTheme"
             android:id="@+id/scroll_content"
             android:layout_width="match_parent"
             android:layout_height="0dp"
@@ -36,7 +47,7 @@
             android:elevation="20dp"
             android:fillViewport="true"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintHeight_percent="0.89"
+            app:layout_constraintHeight_percent="0.9"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="1">
 
@@ -66,7 +77,7 @@
                     android:fontFamily="@font/gilroy_extrabold"
                     android:text="@{viewModel.title.content}"
                     android:textColor="@color/dark_text_color"
-                    android:textSize="35sp"
+                    android:textSize="@dimen/very_large"
                     app:layout_constraintTop_toBottomOf="@id/image_view_watch_ads" />
 
                 <com.google.android.material.textview.MaterialTextView
@@ -78,7 +89,7 @@
                     android:lineSpacingExtra="7.5dp"
                     android:text="@{viewModel.body.content}"
                     android:textColor="@color/gray_text_color"
-                    android:textSize="14sp"
+                    android:textSize="@dimen/smaller"
                     app:layout_constraintTop_toBottomOf="@id/text_view_content_title" />
 
                 <com.google.android.material.button.MaterialButton
@@ -97,7 +108,7 @@
                     android:paddingEnd="30dp"
                     android:text="@string/watch_ads"
                     android:textAllCaps="false"
-                    android:textSize="16sp"
+                    android:textSize="@dimen/small"
                     app:backgroundTint="@color/balance_header_background_color"
                     app:cornerRadius="10dp"
                     app:layout_constraintBottom_toBottomOf="parent"

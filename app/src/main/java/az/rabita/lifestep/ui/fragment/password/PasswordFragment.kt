@@ -12,6 +12,7 @@ import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import az.rabita.lifestep.R
 import az.rabita.lifestep.databinding.FragmentPasswordBinding
+import az.rabita.lifestep.utils.hideKeyboard
 import az.rabita.lifestep.viewModel.fragment.forgotPassword.ForgotPasswordViewModel
 import az.rabita.lifestep.viewModel.fragment.password.PasswordViewModel
 
@@ -43,6 +44,7 @@ class PasswordFragment : Fragment() {
 
         with(binding) {
             imageButtonBack.setOnClickListener { activity?.onBackPressed() }
+            root.setOnClickListener { it.hideKeyboard(context) }
         }
 
         return binding.root

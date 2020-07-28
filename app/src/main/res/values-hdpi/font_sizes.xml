@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <dimen name="smallest">11sp</dimen>
+    <dimen name="smaller">13sp</dimen>
+    <dimen name="small">15sp</dimen>
+
+    <dimen name="normal">17sp</dimen>
+
+    <dimen name="large">19sp</dimen>
+    <dimen name="larger">21sp</dimen>
+    <dimen name="largest">23sp</dimen>
+
+    <dimen name="extra_large">28sp</dimen>
+    <dimen name="ultra_large">47sp</dimen>
+
+</resources>

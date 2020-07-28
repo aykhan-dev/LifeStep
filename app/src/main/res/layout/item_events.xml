@@ -29,7 +29,7 @@
                 android:layout_height="match_parent"
                 android:fontFamily="@font/gilroy_bold"
                 android:text="@{data.name}"
-                android:textSize="21sp"
+                android:textSize="@dimen/larger"
                 app:layout_constraintBottom_toTopOf="@id/text_view_preparing"
                 app:layout_constraintEnd_toStartOf="@id/image_view"
                 app:layout_constraintStart_toStartOf="parent" />
@@ -42,7 +42,7 @@
                 android:paddingTop="5dp"
                 android:text="@string/preparing"
                 android:textColor="@color/dark_text_color"
-                android:textSize="14sp"
+                android:textSize="@dimen/smaller"
                 android:visibility="gone"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@id/image_view"

@@ -10,12 +10,15 @@ import android.view.Window
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
 import androidx.fragment.app.DialogFragment
+import androidx.navigation.fragment.findNavController
 import az.rabita.lifestep.R
 import az.rabita.lifestep.databinding.FragmentCongratsDialogBinding
 
 class CongratsDialog : DialogFragment() {
 
     private lateinit var binding: FragmentCongratsDialogBinding
+
+    private val navController by lazy { findNavController() }
 
     private val openAnimation: Animation by lazy {
         AnimationUtils.loadAnimation(context, R.anim.fade_in)
@@ -40,7 +43,11 @@ class CongratsDialog : DialogFragment() {
         }
 
         with(binding) {
-            root.setOnClickListener { dismiss() }
+            root.setOnClickListener {
+                val savedState = navController.previousBackStackEntry!!.savedStateHandle
+                savedState.set("Donated", true)
+                navController.popBackStack()
+            }
         }
 
         return binding.root

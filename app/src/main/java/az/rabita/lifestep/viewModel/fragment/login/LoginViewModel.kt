@@ -25,9 +25,6 @@ class LoginViewModel(application: Application) : AndroidViewModel(application) {
 
     private val usersRepository = UsersRepository.getInstance(getDatabase(context))
 
-    private val _stateInternetConnection = MutableLiveData<Boolean>()
-    val stateInternetConnection: LiveData<Boolean> get() = _stateInternetConnection
-
     private var _stateToRegisterButtonClick = MutableLiveData<Boolean>()
     val stateToRegisterButtonClick: LiveData<Boolean> get() = _stateToRegisterButtonClick
 
@@ -100,7 +97,7 @@ class LoginViewModel(application: Application) : AndroidViewModel(application) {
     private fun handleNetworkException(exception: String?) {
         viewModelScope.launch {
             if (context.isInternetConnectionAvailable()) showMessageDialog(exception)
-            else showMessageDialog(NO_INTERNET_CONNECTION)
+            else showMessageDialog(context.getString(R.string.no_internet_connection))
         }
     }
 

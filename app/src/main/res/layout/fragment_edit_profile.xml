@@ -17,31 +17,42 @@
 
         <ImageButton
             android:id="@+id/image_button_back"
-            android:layout_width="20dp"
+            android:layout_width="0dp"
             android:layout_height="0dp"
-            android:background="?selectableItemBackgroundBorderless"
             android:scaleType="center"
             android:src="@drawable/ic_back"
             app:layout_constraintBottom_toBottomOf="@id/text_view_title"
+            app:layout_constraintDimensionRatio="1:1"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.05"
+            app:layout_constraintHorizontal_bias="0"
+            android:background="@android:color/transparent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@id/text_view_title" />
+            app:layout_constraintTop_toTopOf="@id/text_view_title"
+            app:layout_constraintWidth_percent="0.15" />
 
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/text_view_title"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/page_padding_large"
+            android:layout_marginEnd="@dimen/page_padding_large"
             android:fontFamily="@font/gilroy_bold"
             android:text="@string/profile_details"
-            android:textSize="29sp"
+            android:textSize="@dimen/extra_large"
+            app:layout_constraintBottom_toTopOf="@id/guideline"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.05"
             app:layout_constraintStart_toEndOf="@id/image_button_back"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.65" />
 
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="0.1" />
         <androidx.core.widget.NestedScrollView
+            android:theme="@style/ScrollableTheme"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_marginTop="20dp"
@@ -92,7 +103,7 @@
                     android:fontFamily="@font/gilroy_bold"
                     android:text="@{@string/two_lined_format(viewModel.profileInfo.name, viewModel.profileInfo.surname)}"
                     android:textColor="@color/dark_text_color"
-                    android:textSize="22sp"
+                    android:textSize="@dimen/larger"
                     app:layout_constraintBottom_toBottomOf="@id/card_image_container"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toEndOf="@id/card_image_container"
@@ -116,7 +127,7 @@
                     android:fontFamily="@font/gilroy_semibold"
                     android:text="@string/surname"
                     android:textColor="@color/gray_text_color"
-                    android:textSize="16sp"
+                    android:textSize="@dimen/small"
                     app:layout_constraintTop_toBottomOf="@id/seperator" />
 
                 <EditText
@@ -125,13 +136,12 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
                     android:background="@drawable/edit_text_background"
-                    android:elevation="20dp"
                     android:fontFamily="@font/gilroy_medium"
                     android:inputType="text"
                     android:padding="20dp"
                     android:text="@={viewModel.surnameInput}"
                     android:textColor="@color/dark_text_color"
-                    android:textSize="16sp"
+                    android:textSize="@dimen/small"
                     app:layout_constraintEnd_toEndOf="@id/text_view_full_name"
                     app:layout_constraintStart_toStartOf="@id/text_view_full_name"
                     app:layout_constraintTop_toBottomOf="@id/text_view_full_name"
@@ -147,7 +157,7 @@
                     android:fontFamily="@font/gilroy_semibold"
                     android:text="@string/name"
                     android:textColor="@color/gray_text_color"
-                    android:textSize="16sp"
+                    android:textSize="@dimen/small"
                     app:layout_constraintTop_toBottomOf="@id/edit_text_fullname" />
 
                 <EditText
@@ -156,13 +166,12 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
                     android:background="@drawable/edit_text_background"
-                    android:elevation="20dp"
                     android:fontFamily="@font/gilroy_medium"
                     android:inputType="text"
                     android:padding="20dp"
                     android:text="@={viewModel.nameInput}"
                     android:textColor="@color/dark_text_color"
-                    android:textSize="16sp"
+                    android:textSize="@dimen/small"
                     app:layout_constraintEnd_toEndOf="@id/text_view_full_name"
                     app:layout_constraintStart_toStartOf="@id/text_view_full_name"
                     app:layout_constraintTop_toBottomOf="@id/text_view_name"
@@ -178,7 +187,7 @@
                     android:fontFamily="@font/gilroy_semibold"
                     android:text="@string/email"
                     android:textColor="@color/gray_text_color"
-                    android:textSize="16sp"
+                    android:textSize="@dimen/small"
                     app:layout_constraintTop_toBottomOf="@id/edit_text_name" />
 
                 <EditText
@@ -187,13 +196,12 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
                     android:background="@drawable/edit_text_background"
-                    android:elevation="20dp"
                     android:fontFamily="@font/gilroy_medium"
                     android:inputType="textEmailAddress"
                     android:padding="20dp"
                     android:text="@{viewModel.profileInfo.email}"
                     android:textColor="@color/dark_text_color"
-                    android:textSize="16sp"
+                    android:textSize="@dimen/small"
                     app:layout_constraintEnd_toEndOf="@id/text_view_full_name"
                     app:layout_constraintStart_toStartOf="@id/text_view_full_name"
                     app:layout_constraintTop_toBottomOf="@id/text_view_email"
@@ -209,7 +217,7 @@
                     android:fontFamily="@font/gilroy_semibold"
                     android:text="@string/phone"
                     android:textColor="@color/gray_text_color"
-                    android:textSize="16sp"
+                    android:textSize="@dimen/small"
                     app:layout_constraintTop_toBottomOf="@id/edit_text_email" />
 
                 <EditText
@@ -218,13 +226,12 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
                     android:background="@drawable/edit_text_background"
-                    android:elevation="20dp"
                     android:fontFamily="@font/gilroy_medium"
                     android:inputType="phone"
                     android:padding="20dp"
                     android:text="@={viewModel.phoneInput}"
                     android:textColor="@color/dark_text_color"
-                    android:textSize="16sp"
+                    android:textSize="@dimen/small"
                     app:layout_constraintEnd_toEndOf="@id/text_view_full_name"
                     app:layout_constraintStart_toStartOf="@id/text_view_full_name"
                     app:layout_constraintTop_toBottomOf="@id/text_view_phone"
@@ -240,7 +247,7 @@
                     android:fontFamily="@font/gilroy_semibold"
                     android:text="@string/code"
                     android:textColor="@color/gray_text_color"
-                    android:textSize="16sp"
+                    android:textSize="@dimen/small"
                     app:layout_constraintTop_toBottomOf="@id/edit_text_phone" />
 
                 <EditText
@@ -249,14 +256,13 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
                     android:background="@drawable/edit_text_background"
-                    android:elevation="20dp"
                     android:fontFamily="@font/gilroy_medium"
                     android:inputType="text"
                     android:padding="20dp"
                     android:text="@{viewModel.profileInfo.invitationCode}"
                     android:textAllCaps="true"
                     android:textColor="@color/dark_text_color"
-                    android:textSize="16sp"
+                    android:textSize="@dimen/small"
                     app:layout_constraintEnd_toEndOf="@id/text_view_full_name"
                     app:layout_constraintStart_toStartOf="@id/text_view_full_name"
                     app:layout_constraintTop_toBottomOf="@id/text_view_invitation_code"
@@ -272,7 +278,7 @@
                     android:text="@string/refresh_password"
                     android:textAllCaps="false"
                     android:textColor="@color/bottom_navigation_view_color"
-                    android:textSize="16sp"
+                    android:textSize="@dimen/small"
                     app:layout_constraintStart_toStartOf="@+id/edit_text_invitation_code"
                     app:layout_constraintTop_toBottomOf="@id/edit_text_invitation_code" />
 
@@ -291,7 +297,7 @@
                     android:padding="15dp"
                     android:text="@string/save"
                     android:textAllCaps="false"
-                    android:textSize="18sp"
+                    android:textSize="@dimen/normal"
                     app:backgroundTint="@color/balance_header_background_color"
                     app:cornerRadius="10dp"
                     app:elevation="0dp"

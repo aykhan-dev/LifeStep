@@ -15,51 +15,57 @@
 
         <ImageButton
             android:id="@+id/image_button_back"
-            android:layout_width="20dp"
+            android:layout_width="0dp"
             android:layout_height="0dp"
-            android:background="?selectableItemBackgroundBorderless"
             android:scaleType="center"
             android:src="@drawable/ic_back"
-            app:layout_constraintBottom_toBottomOf="@id/text_view_coming_to_you"
+            app:layout_constraintBottom_toBottomOf="@id/text_view_title"
+            app:layout_constraintDimensionRatio="1:1"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.05"
+            app:layout_constraintHorizontal_bias="0"
+            android:background="@android:color/transparent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@id/text_view_coming_to_you" />
+            app:layout_constraintTop_toTopOf="@id/text_view_title"
+            app:layout_constraintWidth_percent="0.15" />
 
         <com.google.android.material.textview.MaterialTextView
-            android:id="@+id/text_view_coming_to_you"
-            android:layout_width="wrap_content"
+            android:id="@+id/text_view_title"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/page_padding_large"
+            android:layout_marginEnd="@dimen/page_padding_large"
             android:fontFamily="@font/gilroy_bold"
             android:text="@string/coming_to_you"
-            android:textSize="29sp"
-
+            android:textSize="@dimen/extra_large"
+            app:layout_constraintBottom_toTopOf="@id/guideline"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.05"
             app:layout_constraintStart_toEndOf="@id/image_button_back"
-            app:layout_constraintTop_toTopOf="parent">
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.65" />
 
-        </com.google.android.material.textview.MaterialTextView>
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="0.1" />
 
         <androidx.recyclerview.widget.RecyclerView
+            android:theme="@style/ScrollableTheme"
             android:id="@+id/recycler_view_donation"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:layout_marginTop="10dp"
-            android:clipChildren="false"
             android:clipToPadding="false"
             android:orientation="vertical"
+            android:paddingHorizontal="@dimen/page_padding_normal"
             android:paddingTop="12.5dp"
-            android:paddingStart="@dimen/page_padding_normal"
-            android:paddingEnd="@dimen/page_padding_normal"
-            android:paddingBottom="@dimen/page_padding_normal"
+            android:paddingBottom="110dp"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="1.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/text_view_coming_to_you"
+            app:layout_constraintTop_toBottomOf="@+id/guideline"
             app:layout_constraintVertical_bias="0.0"
             tools:listitem="@layout/item_coming_to_you" />
 

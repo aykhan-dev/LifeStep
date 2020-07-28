@@ -69,6 +69,10 @@ class ProfileDetailsFragment : Fragment() {
 
         profileInfo.observe(viewLifecycleOwner, Observer {
             it?.let {
+
+                binding.textViewFullName.text =
+                    getString(R.string.two_lined_format, it.surname, it.name)
+
                 val spannableFriends =
                     SpannableString("${it.friendsCount}\n${getString(R.string.friends)}")
                 val spannableSteps =
@@ -106,7 +110,7 @@ class ProfileDetailsFragment : Fragment() {
         errorMessage.observe(viewLifecycleOwner, Observer {
             it?.let {
                 activity?.let { activity ->
-                    MessageDialog(MessageType.ERROR, it).show(
+                    MessageDialog(it).show(
                         activity.supportFragmentManager,
                         ERROR_TAG
                     )

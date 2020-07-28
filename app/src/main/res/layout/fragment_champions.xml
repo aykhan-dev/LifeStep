@@ -40,6 +40,7 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <androidx.recyclerview.widget.RecyclerView
+            android:theme="@style/ScrollableTheme"
             android:id="@+id/recycler_view_champions"
             android:layout_width="0dp"
             android:layout_height="0dp"
