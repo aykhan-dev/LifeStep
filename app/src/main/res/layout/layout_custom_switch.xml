@@ -8,11 +8,11 @@
     android:clipChildren="false"
     android:clipToPadding="false">
 
-    <com.google.android.material.card.MaterialCardView
+    <View
         android:id="@+id/thumb"
         android:layout_width="0dp"
         android:layout_height="match_parent"
-        app:cardCornerRadius="100dp"
+        android:background="@drawable/bg_white_round"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintDimensionRatio="1:1"
         app:layout_constraintEnd_toEndOf="parent"

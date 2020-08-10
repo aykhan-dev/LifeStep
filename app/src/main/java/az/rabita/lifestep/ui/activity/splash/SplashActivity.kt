@@ -3,57 +3,73 @@ package az.rabita.lifestep.ui.activity.splash
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.os.Handler
-import android.view.WindowManager
+import android.os.CountDownTimer
+import android.view.animation.AnimationUtils
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.lifecycleScope
 import az.rabita.lifestep.R
-import az.rabita.lifestep.databinding.ActivitySplashBinding
+import az.rabita.lifestep.databinding.ActivitySplashNewBinding
 import az.rabita.lifestep.manager.LocaleManager
 import az.rabita.lifestep.manager.PreferenceManager
 import az.rabita.lifestep.ui.activity.auth.AuthActivity
 import az.rabita.lifestep.ui.activity.main.MainActivity
 import az.rabita.lifestep.utils.DEFAULT_LANG_KEY
-import az.rabita.lifestep.utils.NOTIFICATION_CLICKED_KEY
 import az.rabita.lifestep.utils.TOKEN_KEY
-import com.bumptech.glide.Glide
 
 class SplashActivity : AppCompatActivity() {
 
-    private lateinit var binding: ActivitySplashBinding
+    private lateinit var binding: ActivitySplashNewBinding
+    private lateinit var timer: CountDownTimer
+    private lateinit var mIntent: Intent
 
     private val sharedPreferences by lazy { PreferenceManager.getInstance(applicationContext) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        window.setFlags(
-            WindowManager.LayoutParams.FLAG_FULLSCREEN,
-            WindowManager.LayoutParams.FLAG_FULLSCREEN
-        )
-
-        binding = DataBindingUtil.setContentView(this, R.layout.activity_splash)
-
-        binding.apply {
-            lifecycleOwner = this@SplashActivity
-        }
-
-        setUpLogoGIF()
-
-        Handler().postDelayed({
-            val intent =
+        binding = DataBindingUtil.setContentView(this, R.layout.activity_splash_new)
+        bindUI()
+        lifecycleScope.launchWhenCreated {
+            mIntent = Intent(
+                applicationContext,
                 if (sharedPreferences.getStringElement(TOKEN_KEY, "").isEmpty())
-                    Intent(applicationContext, AuthActivity::class.java)
+                    AuthActivity::class.java
                 else
-                    Intent(applicationContext, MainActivity::class.java)
-            startActivity(intent)
-            finish()
-        }, 1500)
+                    MainActivity::class.java
+            )
+            timer = object : CountDownTimer(1500L, 1500L) {
+                override fun onFinish() {
+                    startActivity(mIntent)
+                    finish()
+                }
 
+                override fun onTick(p0: Long) {}
+            }
+            timer.start()
+
+            setUpLogoGIF()
+        }
     }
 
-    private fun setUpLogoGIF() = with(binding) {
-        Glide.with(applicationContext).load(R.raw.logo_gif).into(imageViewLogo)
+    private fun bindUI(): Unit = with(binding) {
+        lifecycleOwner = this@SplashActivity
+    }
+
+    private fun setUpLogoGIF(): Unit = with(binding) {
+        imageViewLogo.startAnimation(
+            AnimationUtils.loadAnimation(
+                applicationContext,
+                R.anim.beat_anim
+            )
+        )
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        if (::timer.isInitialized) {
+            timer.cancel()
+            binding.imageViewLogo.clearAnimation()
+        }
     }
 
     override fun attachBaseContext(newBase: Context?) {

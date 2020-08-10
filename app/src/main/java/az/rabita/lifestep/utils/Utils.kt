@@ -50,12 +50,6 @@ fun Fragment.callNumber(number: String) {
     startActivity(intent)
 }
 
-fun Activity.logout() {
-    val intent = Intent(this, AuthActivity::class.java)
-    startActivity(intent)
-    finish()
-}
-
 fun pxFromDp(context: Context, dp: Float): Int {
     return (dp * context.resources.displayMetrics.density).toInt()
 }

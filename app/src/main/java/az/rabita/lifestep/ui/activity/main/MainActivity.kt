@@ -48,10 +48,6 @@ class MainActivity : AppCompatActivity() {
         configurations()
     }
 
-    override fun onStart() {
-        super.onStart()
-    }
-
     private fun analyzeIntentComingFromNotificationEvent() {
         intent?.let {
             val data = it.getParcelableExtra<NotificationInfoHolder>(NOTIFICATION_INFO_KEY)

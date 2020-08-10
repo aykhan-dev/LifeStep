@@ -109,6 +109,14 @@ fun MaterialTextView.setText(data: Any) {
     text = data.toString()
 }
 
+@BindingAdapter("app:nullableTextContent")
+fun MaterialTextView.setNullableContent(data: Any?) {
+    data?.let {
+        isVisible = true
+        text = data.toString()
+    } ?: run { this.isVisible = false }
+}
+
 @BindingAdapter("count")
 fun DailyStatCard.setCount(data: Any) {
     count = data.toString()

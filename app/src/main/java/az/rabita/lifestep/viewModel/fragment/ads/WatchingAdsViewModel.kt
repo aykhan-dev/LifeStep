@@ -1,4 +1,4 @@
-package az.rabita.lifestep.viewModel.activity.ads
+package az.rabita.lifestep.viewModel.fragment.ads
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
@@ -25,6 +25,8 @@ class WatchingAdsViewModel(application: Application) : AndroidViewModel(applicat
     private val adsRepository = AdsRepository
     private val reportRepository = ReportRepository.getInstance(getDatabase(context))
 
+    private lateinit var timer: ExtendedCountDownTimer
+
     private val _adsTransaction = MutableLiveData<AdsTransactionContentPOJO>()
     val adsTransaction: LiveData<AdsTransactionContentPOJO> get() = _adsTransaction
 
@@ -37,6 +39,8 @@ class WatchingAdsViewModel(application: Application) : AndroidViewModel(applicat
     private val _errorMessage = MutableLiveData<String>()
     val errorMessage: LiveData<String> get() = _errorMessage
 
+    val isClosingEnable = MutableLiveData<Boolean>().apply { value = false }
+    val remainingTime = MutableLiveData<String>()
     val uiState = MutableLiveData<UiState>()
 
     fun sendAdsTransactionResult(
@@ -45,6 +49,8 @@ class WatchingAdsViewModel(application: Application) : AndroidViewModel(applicat
         forBonusSteps: Boolean
     ) {
         viewModelScope.launch {
+
+            uiState.postValue(UiState.Loading)
 
             val token = sharedPreferences.getStringElement(TOKEN_KEY, "")
             val lang = sharedPreferences.getIntegerElement(LANG_KEY, 10)
@@ -63,7 +69,9 @@ class WatchingAdsViewModel(application: Application) : AndroidViewModel(applicat
                 ) {
                 is NetworkState.Success<*> -> {
                     reportRepository.getWeeklyStats(token, lang, getDateAndTime())
+                    uiState.postValue(UiState.LoadingFinished)
                     _eventCloseAdsPage.onOff()
+                    return@launch
                 }
                 is NetworkState.ExpiredToken -> startExpireTokenProcess()
                 is NetworkState.HandledHttpError -> showMessageDialog(response.error)
@@ -71,7 +79,26 @@ class WatchingAdsViewModel(application: Application) : AndroidViewModel(applicat
                 is NetworkState.NetworkException -> handleNetworkException(response.exception)
             }
 
+            uiState.postValue(UiState.LoadingFinished)
+
         }
+    }
+
+    fun setupTimer(timeMillis: Long = 15000L, tickMillis: Long = 1000L) {
+        timer = ExtendedCountDownTimer(
+            timeMillis,
+            tickMillis,
+            { remainingTime.value = null; isClosingEnable.value = true },
+            { remainingTime.value = "${it / 1000} ${context.getString(R.string.remaining)}" }
+        )
+    }
+
+    fun startTimer() {
+        timer.start()
+    }
+
+    fun pauseTimer() {
+        timer.cancel()
     }
 
     private fun handleNetworkException(exception: String?) {
@@ -91,6 +118,11 @@ class WatchingAdsViewModel(application: Application) : AndroidViewModel(applicat
 
     fun endExpireTokenProcess() {
         _eventExpireToken.value = false
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        if (::timer.isInitialized) timer.cancel()
     }
 
 }

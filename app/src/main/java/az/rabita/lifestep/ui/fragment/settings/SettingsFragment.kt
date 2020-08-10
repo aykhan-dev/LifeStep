@@ -9,15 +9,12 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import az.rabita.lifestep.databinding.FragmentSettingsBinding
-import az.rabita.lifestep.manager.PreferenceManager
+import az.rabita.lifestep.ui.dialog.loading.LoadingDialog
 import az.rabita.lifestep.ui.dialog.message.MessageDialog
-import az.rabita.lifestep.ui.dialog.message.MessageType
 import az.rabita.lifestep.utils.ERROR_TAG
-import az.rabita.lifestep.utils.TOKEN_KEY
+import az.rabita.lifestep.utils.LOADING_TAG
 import az.rabita.lifestep.utils.logout
 import az.rabita.lifestep.viewModel.fragment.settings.SettingsViewModel
-import com.google.android.gms.auth.api.signin.GoogleSignIn
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 
 class SettingsFragment : Fragment() {
 
@@ -26,31 +23,19 @@ class SettingsFragment : Fragment() {
     private val viewModel: SettingsViewModel by viewModels()
 
     private val navController by lazy { findNavController() }
+    private val loadingDialog = LoadingDialog()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         binding = FragmentSettingsBinding.inflate(inflater)
-
-        binding.apply {
-            lifecycleOwner = this@SettingsFragment
-            viewModel = this@SettingsFragment.viewModel
-        }
-
-        with(binding) {
-            cardInfo.setOnClickListener { navigateTo(SettingsPageDirections.INFO) }
-            cardLogout.setOnClickListener { navigateTo(SettingsPageDirections.LOGOUT) }
-            cardContact.setOnClickListener { navigateTo(SettingsPageDirections.CONTACT) }
-            cardLanguage.setOnClickListener { navigateTo(SettingsPageDirections.LANGUAGE) }
-            cardFriends.setOnClickListener { navigateTo(SettingsPageDirections.FRIENDS) }
-            cardInvitation.setOnClickListener { navigateTo(SettingsPageDirections.INVITATION) }
-            cardChampions.setOnClickListener { navigateTo(SettingsPageDirections.CHAMPIONS) }
-            cardHistory.setOnClickListener { navigateTo(SettingsPageDirections.HISTORY) }
-            cardProfile.setOnClickListener { navigateTo(SettingsPageDirections.PROFILE) }
-        }
-
         return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        bindUI()
     }
 
     override fun onStart() {
@@ -64,28 +49,42 @@ class SettingsFragment : Fragment() {
         observeEvents()
     }
 
-    private fun navigateTo(direction: SettingsPageDirections) {
-        val destination = when (direction) {
-            SettingsPageDirections.FRIENDS -> SettingsFragmentDirections.actionSettingsFragmentToFriendsFragment()
-            SettingsPageDirections.PROFILE -> SettingsFragmentDirections.actionSettingsFragmentToNavGraphProfile()
-            SettingsPageDirections.INVITATION -> SettingsFragmentDirections.actionSettingsFragmentToInviteFriendFragment()
-            SettingsPageDirections.HISTORY -> SettingsFragmentDirections.actionSettingsFragmentToHistoryFragment()
-            SettingsPageDirections.CONTACT -> SettingsFragmentDirections.actionSettingsFragmentToContactFragment()
-            SettingsPageDirections.CHAMPIONS -> SettingsFragmentDirections.actionSettingsFragmentToRankingFragment(
-                postId = null
-            )
-            SettingsPageDirections.LANGUAGE -> SettingsFragmentDirections.actionSettingsFragmentToLanguageFragment()
-            SettingsPageDirections.INFO -> SettingsFragmentDirections.actionSettingsFragmentToAboutUsFragment()
-            SettingsPageDirections.LOGOUT -> {
-                context?.let {
-                    signOutGoogle()
-                    PreferenceManager.getInstance(it).setStringElement(TOKEN_KEY, "")
-                    requireActivity().logout()
-                }
-                return
-            }
+    private fun bindUI(): Unit = with(binding) {
+        lifecycleOwner = this@SettingsFragment
+        viewModel = this@SettingsFragment.viewModel
+
+        cardFriends.setOnClickListener {
+            navController.navigate(SettingsFragmentDirections.actionSettingsFragmentToFriendsFragment())
         }
-        navController.navigate(destination)
+        cardProfile.setOnClickListener {
+            navController.navigate(SettingsFragmentDirections.actionSettingsFragmentToNavGraphProfile())
+        }
+        cardInvitation.setOnClickListener {
+            navController.navigate(SettingsFragmentDirections.actionSettingsFragmentToInviteFriendFragment())
+        }
+        cardHistory.setOnClickListener {
+            navController.navigate(SettingsFragmentDirections.actionSettingsFragmentToHistoryFragment())
+        }
+        cardContact.setOnClickListener {
+            navController.navigate(SettingsFragmentDirections.actionSettingsFragmentToContactFragment())
+        }
+        cardChampions.setOnClickListener {
+            navController.navigate(
+                SettingsFragmentDirections.actionSettingsFragmentToRankingFragment(
+                    postId = null
+                )
+            )
+        }
+        cardLanguage.setOnClickListener {
+            navController.navigate(SettingsFragmentDirections.actionSettingsFragmentToLanguageFragment())
+        }
+        cardInfo.setOnClickListener {
+            navController.navigate(SettingsFragmentDirections.actionSettingsFragmentToContactFragment())
+        }
+        cardLogout.setOnClickListener {
+            loadingDialog.show(requireActivity().supportFragmentManager, LOADING_TAG)
+            this@SettingsFragment.viewModel.logOut()
+        }
     }
 
     private fun observeData(): Unit = with(viewModel) {
@@ -108,18 +107,22 @@ class SettingsFragment : Fragment() {
         eventExpiredToken.observe(viewLifecycleOwner, Observer {
             it?.let {
                 if (it) {
-                    activity?.logout()
                     endExpireTokenProcess()
+                    requireActivity().logout()
                 }
             }
         })
 
-    }
+        eventLogOut.observe(viewLifecycleOwner, Observer {
+            it?.let {
+                if (it) {
+                    endLogOut()
+                    loadingDialog.dismiss()
+                    requireActivity().logout()
+                }
+            }
+        })
 
-    private fun signOutGoogle() {
-        val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).build()
-        val googleSignInClient = GoogleSignIn.getClient(requireContext(), gso)
-        googleSignInClient.signOut()
     }
 
 }

@@ -4,6 +4,8 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.launch
 
 class MainViewModel(application: Application) : AndroidViewModel(application) {
 
@@ -14,8 +16,10 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     val isAllowed = _isAllowed
 
     fun changePage(index: Int) {
-        _isAllowed = false
-        _indexOfSelectedPage.postValue(index)
+        viewModelScope.launch {
+            _isAllowed = false
+            _indexOfSelectedPage.postValue(index)
+        }
     }
 
 }

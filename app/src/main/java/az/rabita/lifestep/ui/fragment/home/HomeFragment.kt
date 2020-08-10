@@ -1,7 +1,9 @@
 package az.rabita.lifestep.ui.fragment.home
 
 import android.Manifest
+import android.animation.ValueAnimator
 import android.content.Intent
+import android.content.pm.PackageManager.PERMISSION_DENIED
 import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -9,6 +11,7 @@ import android.view.View
 import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -19,7 +22,6 @@ import az.rabita.lifestep.R
 import az.rabita.lifestep.databinding.FragmentHomeBinding
 import az.rabita.lifestep.ui.dialog.loading.LoadingDialog
 import az.rabita.lifestep.ui.dialog.message.MessageDialog
-import az.rabita.lifestep.ui.dialog.message.MessageType
 import az.rabita.lifestep.utils.*
 import az.rabita.lifestep.viewModel.fragment.home.HomeViewModel
 import com.google.android.gms.auth.api.signin.GoogleSignIn
@@ -62,7 +64,7 @@ class HomeFragment : Fragment() {
 
     override fun onStart() {
         super.onStart()
-        lifecycleScope.launch { permissions() }
+        lifecycleScope.launchWhenStarted { permissions() }
         viewModel.fetchWeeklyStats()
     }
 
@@ -105,10 +107,10 @@ class HomeFragment : Fragment() {
                 if (list.isNotEmpty()) {
                     with(binding) {
                         textViewCount.text = list[position].stepCount.toString()
-                        cardConvertedSteps.count = list[position].convertedSteps.toString()
-                        cardUnconvertedSteps.count = list[position].unconvertedSteps.toString()
-                        cardDistance.count = list[position].kilometers.toString()
-                        cardCalorie.count = list[position].calories.toString()
+                        textViewConvertedCount.text = list[position].convertedSteps.toString()
+                        textViewUnconvertedCount.text = list[position].unconvertedSteps.toString()
+                        textViewDistanceCount.text = list[position].kilometers.toString()
+                        textViewCalorieCount.text = list[position].calories.toString()
                         configureSeekBar(list[position].convertedSteps, list[position].stepCount)
                     }
                 }
@@ -126,10 +128,17 @@ class HomeFragment : Fragment() {
         }
     }
 
-    private fun configureSeekBar(converted: Long, totalSteps: Long) = with(binding) {
-        seekBar.setProgressDisplayAndInvalidate(
-            if (totalSteps != 0L) ((converted * 100) / totalSteps).toInt() else 0
-        )
+    private fun configureSeekBar(converted: Long, totalSteps: Long): Unit = with(binding) {
+        ValueAnimator.ofInt(
+            seekBar.progressDisplay,
+            if (totalSteps != 0L) ((converted / totalSteps.toFloat()) * 100).toInt() else 0
+        ).apply {
+            duration = 300L
+            repeatCount = 0
+            addUpdateListener {
+                seekBar.setProgressDisplayAndInvalidate(it.animatedValue as Int)
+            }
+        }.start()
     }
 
     private fun observeStates(): Unit = with(viewModel) {
@@ -245,13 +254,17 @@ class HomeFragment : Fragment() {
 
     private fun permissions() {
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && ContextCompat.checkSelfPermission(
+                requireContext(),
+                Manifest.permission.ACTIVITY_RECOGNITION
+            ) == PERMISSION_DENIED
+        ) {
             requestPermissions(
                 arrayOf(Manifest.permission.ACTIVITY_RECOGNITION),
                 ACTIVITY_RECOGNITION_REQUEST_CODE
             )
         } else {
-            googleAuthFlow()
+//            googleAuthFlow()
         }
 
     }

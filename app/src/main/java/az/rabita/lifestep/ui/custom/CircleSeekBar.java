@@ -200,7 +200,6 @@ public class CircleSeekBar extends View {
             mMax = typedArray.getInteger(R.styleable.CircleSeekBar_csb_max, mMax);
             mStep = typedArray.getInteger(R.styleable.CircleSeekBar_csb_step, mStep);
 
-
             mTextSize = (int) typedArray.getDimension(R.styleable.CircleSeekBar_csb_textSize, mTextSize);
             textColor = typedArray.getColor(R.styleable.CircleSeekBar_csb_textColor, textColor);
             mIsShowText = typedArray.getBoolean(R.styleable.CircleSeekBar_csb_isShowText, mIsShowText);
@@ -261,7 +260,6 @@ public class CircleSeekBar extends View {
         // save circle coordinates
         mCenterX = alignRight / 2 + (w - alignRight) / 2;
         mCenterY = alignBottom / 2 + (h - alignBottom) / 2;
-
 
         float progressDiameter = min - mPadding;
         mCircleRadius = (int) (progressDiameter / 2);
@@ -479,6 +477,5 @@ public class CircleSeekBar extends View {
 
         void onStopTrackingTouch(CircleSeekBar circleSeekBar);
     }
-
 
 }

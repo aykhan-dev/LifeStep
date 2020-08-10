@@ -13,9 +13,9 @@ buildscript {
 
         version_room = '2.2.5'
 
-        version_work = '2.3.4'
+        version_work = '2.4.0'
 
-        version_paging = '3.0.0-alpha03'
+        version_paging = '3.0.0-alpha04'
 
         version_glide = '4.11.0'
 

@@ -1,9 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<shape xmlns:android="http://schemas.android.com/apk/res/android"
-    android:shape="oval">
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <corners android:radius="50dp" />
+    <item android:state_selected="true">
+        <shape android:shape="oval">
 
-    <solid android:color="@color/bottom_navigation_view_color" />
+            <corners android:radius="50dp" />
+            <solid android:color="@color/bottom_navigation_view_color" />
 
-</shape>
+        </shape>
+    </item>
+
+</selector>

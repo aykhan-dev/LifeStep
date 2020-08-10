@@ -16,7 +16,7 @@
         android:animateLayoutChanges="true"
         tools:context=".ui.fragment.home.HomeFragment">
 
-        <com.google.android.material.textview.MaterialTextView
+        <TextView
             android:id="@+id/text_view_title"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -61,11 +61,11 @@
             app:layout_constraintTop_toBottomOf="@id/edit_text_search_bar">
 
             <androidx.recyclerview.widget.RecyclerView
-            android:theme="@style/ScrollableTheme"
                 android:id="@+id/recycler_view_results"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
+                android:theme="@style/ScrollableTheme"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -137,10 +137,10 @@
             app:layout_constraintGuide_percent="0.1" />
 
         <androidx.core.widget.NestedScrollView
-            android:theme="@style/ScrollableTheme"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_marginTop="15dp"
+            android:theme="@style/ScrollableTheme"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintHeight_percent="0.9"
             app:layout_constraintTop_toBottomOf="@id/text_view_title"
@@ -162,7 +162,6 @@
                     android:background="@drawable/background_tab_layout"
                     android:elevation="20dp"
                     android:padding="7dp"
-
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
@@ -174,12 +173,12 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:background="@android:color/transparent"
-                        app:tabIndicator="@drawable/tab_indicator"
                         app:tabIndicatorAnimationDuration="200"
                         app:tabIndicatorColor="@color/bottom_navigation_view_color"
                         app:tabIndicatorFullWidth="true"
-                        app:tabIndicatorHeight="48dp"
+                        app:tabIndicatorHeight="0dp"
                         app:tabMode="fixed"
+                        app:tabBackground="@drawable/tab_indicator"
                         app:tabRippleColor="@android:color/transparent"
                         app:tabSelectedTextColor="@android:color/white"
                         app:tabTextAppearance="@style/WeekTabsAppearance"
@@ -187,7 +186,7 @@
 
                 </FrameLayout>
 
-                <com.google.android.material.textview.MaterialTextView
+                <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/gilroy_semibold"
@@ -199,7 +198,7 @@
                     app:layout_constraintEnd_toEndOf="@+id/seek_bar"
                     app:layout_constraintStart_toStartOf="@+id/seek_bar" />
 
-                <com.google.android.material.textview.MaterialTextView
+                <TextView
                     android:id="@+id/text_view_count"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -213,7 +212,7 @@
                     app:layout_constraintStart_toStartOf="@id/seek_bar"
                     app:layout_constraintTop_toTopOf="@+id/seek_bar" />
 
-                <com.google.android.material.textview.MaterialTextView
+                <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/gilroy_semibold"
@@ -249,61 +248,166 @@
                     app:layout_constraintVertical_bias="0.050000012"
                     app:layout_constraintWidth_percent="0.5" />
 
-                <az.rabita.lifestep.ui.custom.DailyStatCard
-                    android:id="@+id/card_converted_steps"
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/card_image_converted"
                     android:layout_width="0dp"
                     android:layout_height="@dimen/button_height_48"
-                    android:layout_marginStart="@dimen/page_padding_large"
-                    android:layout_marginTop="30dp"
-                    app:daily_stat_card_count="1234"
-                    app:daily_stat_card_image="@drawable/ic_heart"
-                    app:daily_stat_card_title="@string/converted_steps"
-                    app:layout_constraintEnd_toStartOf="@id/card_unconverted_steps"
-                    app:layout_constraintHeight_percent="0.07"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/seek_bar"
-                    app:layout_constraintVertical_bias="0.01999998" />
+                    android:layout_marginTop="@dimen/page_padding_large"
+                    android:foreground="@drawable/img_converted"
+                    android:foregroundGravity="center"
+                    app:cardCornerRadius="10dp"
+                    app:cardElevation="20dp"
+                    app:layout_constraintDimensionRatio="1:1"
+                    app:layout_constraintStart_toStartOf="@+id/button_convert_steps"
+                    app:layout_constraintTop_toBottomOf="@id/seek_bar" />
 
-                <az.rabita.lifestep.ui.custom.DailyStatCard
-                    android:id="@+id/card_unconverted_steps"
+                <TextView
+                    android:id="@+id/text_view_converted_count"
                     android:layout_width="0dp"
-                    android:layout_height="0dp"
-                    android:layout_marginEnd="@dimen/page_padding_large"
-                    app:daily_stat_card_count="1234"
-                    app:daily_stat_card_image="@drawable/ic_shoe"
-                    app:daily_stat_card_title="@string/unconverted_steps"
-                    app:layout_constraintBottom_toBottomOf="@+id/card_converted_steps"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toEndOf="@id/card_converted_steps"
-                    app:layout_constraintTop_toTopOf="@+id/card_converted_steps" />
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="10dp"
+                    android:fontFamily="@font/gilroy_bold"
+                    android:textColor="@color/dark_text_color"
+                    android:textSize="@dimen/smaller"
+                    app:layout_constraintEnd_toStartOf="@id/guideline_vertical_center"
+                    app:layout_constraintStart_toEndOf="@id/card_image_converted"
+                    app:layout_constraintTop_toTopOf="@id/card_image_converted"
+                    tools:text="1200" />
 
-                <az.rabita.lifestep.ui.custom.DailyStatCard
-                    android:id="@+id/card_distance"
+                <TextView
+                    android:id="@+id/text_view_converted"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
+                    android:fontFamily="@font/gilroy_medium"
+                    android:text="@string/converted"
+                    android:textColor="@color/dark_text_color"
+                    android:textSize="@dimen/smallest"
+                    app:layout_constraintEnd_toEndOf="@id/text_view_converted_count"
+                    app:layout_constraintStart_toStartOf="@id/text_view_converted_count"
+                    app:layout_constraintTop_toBottomOf="@id/text_view_converted_count" />
+
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/card_image_unconverted"
+                    android:layout_width="0dp"
+                    android:layout_height="@dimen/button_height_48"
+                    android:foreground="@drawable/ic_shoe"
+                    android:foregroundGravity="center"
+                    app:cardCornerRadius="10dp"
+                    app:cardElevation="20dp"
+                    app:layout_constraintDimensionRatio="1:1"
+                    app:layout_constraintStart_toEndOf="@id/guideline_vertical_center"
+                    app:layout_constraintTop_toTopOf="@id/card_image_converted" />
+
+                <TextView
+                    android:id="@+id/text_view_unconverted_count"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:fontFamily="@font/gilroy_bold"
+                    android:textColor="@color/dark_text_color"
+                    android:textSize="@dimen/smaller"
+                    app:layout_constraintEnd_toEndOf="@+id/button_convert_steps"
+                    app:layout_constraintStart_toEndOf="@id/card_image_unconverted"
+                    app:layout_constraintTop_toTopOf="@id/card_image_unconverted"
+                    tools:text="1200" />
+
+                <TextView
+                    android:id="@+id/text_view_unconverted"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
+                    android:fontFamily="@font/gilroy_medium"
+                    android:text="@string/unconverted_steps"
+                    android:textColor="@color/dark_text_color"
+                    android:textSize="@dimen/smallest"
+                    app:layout_constraintEnd_toEndOf="@id/text_view_unconverted_count"
+                    app:layout_constraintStart_toStartOf="@id/text_view_unconverted_count"
+                    app:layout_constraintTop_toBottomOf="@id/text_view_unconverted_count" />
+
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/card_image_distance"
+                    android:layout_width="0dp"
+                    android:layout_height="@dimen/button_height_48"
+                    android:foreground="@drawable/ic_km"
+                    android:foregroundGravity="center"
+                    app:cardCornerRadius="10dp"
+                    app:cardElevation="20dp"
+                    app:layout_constraintDimensionRatio="1:1"
+                    app:layout_constraintStart_toStartOf="@+id/card_image_converted"
+                    app:layout_constraintTop_toTopOf="@id/card_image_calorie" />
+
+                <TextView
+                    android:id="@+id/text_view_distance_count"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="10dp"
+                    android:fontFamily="@font/gilroy_bold"
+                    android:textColor="@color/dark_text_color"
+                    android:textSize="@dimen/smaller"
+                    app:layout_constraintEnd_toStartOf="@id/guideline_vertical_center"
+                    app:layout_constraintStart_toEndOf="@id/card_image_distance"
+                    app:layout_constraintTop_toTopOf="@id/card_image_distance"
+                    tools:text="1200" />
+
+                <TextView
+                    android:id="@+id/text_view_distance"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
+                    android:fontFamily="@font/gilroy_medium"
+                    android:text="@string/kilometer"
+                    android:textColor="@color/dark_text_color"
+                    android:textSize="@dimen/smallest"
+                    app:layout_constraintEnd_toEndOf="@id/text_view_distance_count"
+                    app:layout_constraintStart_toStartOf="@id/text_view_distance_count"
+                    app:layout_constraintTop_toBottomOf="@id/text_view_distance_count" />
+
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/card_image_calorie"
                     android:layout_width="0dp"
                     android:layout_height="@dimen/button_height_48"
                     android:layout_marginTop="20dp"
-                    app:daily_stat_card_count="1234"
-                    app:daily_stat_card_image="@drawable/ic_km"
-                    app:daily_stat_card_title="@string/kilometer"
-                    app:layout_constraintEnd_toStartOf="@id/card_calorie"
-                    app:layout_constraintHeight_percent="0.07"
-                    app:layout_constraintHorizontal_chainStyle="packed"
-                    app:layout_constraintStart_toStartOf="@id/card_converted_steps"
-                    app:layout_constraintTop_toBottomOf="@id/card_converted_steps"
-                    app:layout_constraintVertical_bias="0.050000012" />
+                    android:foreground="@drawable/ic_calorie"
+                    android:foregroundGravity="center"
+                    app:cardCornerRadius="10dp"
+                    app:cardElevation="20dp"
+                    app:layout_constraintDimensionRatio="1:1"
+                    app:layout_constraintStart_toEndOf="@id/guideline_vertical_center"
+                    app:layout_constraintTop_toBottomOf="@id/text_view_unconverted" />
 
-                <az.rabita.lifestep.ui.custom.DailyStatCard
-                    android:id="@+id/card_calorie"
+                <TextView
+                    android:id="@+id/text_view_calorie_count"
                     android:layout_width="0dp"
-                    android:layout_height="0dp"
-                    android:layout_marginEnd="@dimen/page_padding_large"
-                    app:daily_stat_card_count="1234"
-                    app:daily_stat_card_image="@drawable/ic_calorie"
-                    app:daily_stat_card_title="@string/calorie"
-                    app:layout_constraintBottom_toBottomOf="@+id/card_distance"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toEndOf="@id/card_distance"
-                    app:layout_constraintTop_toTopOf="@+id/card_distance" />
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:fontFamily="@font/gilroy_bold"
+                    android:textColor="@color/dark_text_color"
+                    android:textSize="@dimen/smaller"
+                    app:layout_constraintEnd_toEndOf="@+id/text_view_unconverted_count"
+                    app:layout_constraintStart_toEndOf="@id/card_image_calorie"
+                    app:layout_constraintTop_toTopOf="@id/card_image_calorie"
+                    tools:text="1200" />
+
+                <TextView
+                    android:id="@+id/text_view_calorie"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
+                    android:fontFamily="@font/gilroy_medium"
+                    android:text="@string/calorie"
+                    android:textColor="@color/dark_text_color"
+                    android:textSize="@dimen/smallest"
+                    app:layout_constraintEnd_toEndOf="@id/text_view_calorie_count"
+                    app:layout_constraintStart_toStartOf="@id/text_view_calorie_count"
+                    app:layout_constraintTop_toBottomOf="@id/text_view_calorie_count" />
+
+                <androidx.constraintlayout.widget.Guideline
+                    android:id="@+id/guideline_vertical_center"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    app:layout_constraintGuide_percent="0.5" />
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/button_convert_steps"
@@ -333,7 +437,7 @@
                     app:layout_constraintHeight_percent="0.076"
                     app:layout_constraintHorizontal_bias="1.0"
                     app:layout_constraintStart_toStartOf="@+id/tab_layout_container"
-                    app:layout_constraintTop_toBottomOf="@+id/card_distance"
+                    app:layout_constraintTop_toBottomOf="@+id/card_image_distance"
                     app:layout_constraintVertical_bias="0.25" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>

@@ -27,7 +27,6 @@ class LoginFragment : Fragment() {
     private val viewModel: LoginViewModel by activityViewModels()
 
     private val navController by lazy { findNavController() }
-
     private val loadingDialog by lazy { LoadingDialog() }
 
     override fun onCreateView(
@@ -35,20 +34,12 @@ class LoginFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         binding = FragmentLoginBinding.inflate(inflater)
-
-        binding.apply {
-            lifecycleOwner = this@LoginFragment
-            viewModel = this@LoginFragment.viewModel
-        }
-
-        with(binding) {
-            buttonForgotPassword.setOnClickListener {
-                startActivity(Intent(requireActivity(), ForgotPasswordActivity::class.java))
-            }
-            root.setOnClickListener { root.hideKeyboard(context) }
-        }
-
         return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        bindUI()
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -56,6 +47,16 @@ class LoginFragment : Fragment() {
         observeData()
         observeStates()
         observeEvents()
+    }
+
+    private fun bindUI(): Unit = with(binding) {
+        lifecycleOwner = this@LoginFragment
+        viewModel = this@LoginFragment.viewModel
+
+        buttonForgotPassword.setOnClickListener {
+            startActivity(Intent(requireActivity(), ForgotPasswordActivity::class.java))
+        }
+        root.setOnClickListener { root.hideKeyboard(context) }
     }
 
     private fun observeStates(): Unit = with(viewModel) {
@@ -119,10 +120,7 @@ class LoginFragment : Fragment() {
         eventNavigateToMainActivity.observe(viewLifecycleOwner, Observer {
             it?.let {
                 if (it) {
-                    activity?.let { activity ->
-                        startActivity(Intent(activity, MainActivity::class.java))
-                        activity.finish()
-                    }
+                    startActivity(Intent(requireActivity(), MainActivity::class.java))
                 }
             }
         })

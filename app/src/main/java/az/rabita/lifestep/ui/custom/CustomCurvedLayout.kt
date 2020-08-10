@@ -12,7 +12,6 @@ import az.rabita.lifestep.utils.pxFromDp
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.cancel
-import kotlinx.coroutines.launch
 import timber.log.Timber
 
 class CustomCurvedLayout @JvmOverloads constructor(
@@ -30,6 +29,14 @@ class CustomCurvedLayout @JvmOverloads constructor(
         R.id.homeFragment,
         R.id.nav_graph_ads,
         R.id.nav_graph_settings
+    )
+
+    private val destinations = listOf(
+        R.id.eventsFragment,
+        R.id.walletFragment,
+        R.id.homeFragment,
+        R.id.adsFragment,
+        R.id.settingsFragment
     )
 
     private var navController: NavController? = null
@@ -137,11 +144,12 @@ class CustomCurvedLayout @JvmOverloads constructor(
     fun navigate(index: Int) {
         navController?.let {
 
-            if (it.currentDestination?.id != ids[index]) {
+            if (it.currentDestination?.id != destinations[index]) {
                 if (index != 2) {
                     builder.setPopUpTo(ids[2], false)
 
                     val options = builder.build()
+
                     try {
                         navController?.navigate(ids[index], null, options)
                     } catch (e: IllegalArgumentException) {

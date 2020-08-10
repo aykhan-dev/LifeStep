@@ -340,7 +340,7 @@ class PinView @JvmOverloads constructor(
      * Custom text view that adds a coloured accent when selected
      */
     private inner class DigitView @JvmOverloads constructor(
-        context: Context?,
+        context: Context,
         attrs: AttributeSet? = null,
         defStyleAttr: Int = 0
     ) : androidx.appcompat.widget.AppCompatTextView(context, attrs, defStyleAttr) {

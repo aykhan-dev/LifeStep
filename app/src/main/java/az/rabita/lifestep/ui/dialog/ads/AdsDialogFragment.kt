@@ -4,6 +4,8 @@ import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
+import android.view.View.GONE
+import android.view.View.VISIBLE
 import android.view.ViewGroup
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
@@ -17,7 +19,7 @@ import az.rabita.lifestep.utils.LOADING_TAG
 import az.rabita.lifestep.utils.UiState
 import az.rabita.lifestep.utils.logout
 import az.rabita.lifestep.utils.openUrl
-import az.rabita.lifestep.viewModel.activity.ads.WatchingAdsViewModel
+import az.rabita.lifestep.viewModel.fragment.ads.WatchingAdsViewModel
 import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.SimpleExoPlayer
@@ -55,27 +57,32 @@ class AdsDialogFragment : DialogFragment() {
         return binding.root
     }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        bindUI()
+    }
+
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-
-        bindUI()
-
-        observeData()
         observeStates()
         observeEvents()
     }
 
     override fun getTheme(): Int = R.style.DialogTheme
 
-    private fun bindUI() = with(binding) {
+    private fun bindUI(): Unit = with(binding) {
+        lifecycleOwner = this@AdsDialogFragment
+        viewModel = this@AdsDialogFragment.viewModel
+
         imageViewClose.setOnClickListener {
             sendVideoResult()
-            dismiss()
         }
 
         buttonDownload.setOnClickListener {
             openUrl(args.adsTransactionDetails.openingUrl ?: "")
         }
+
+        this@AdsDialogFragment.viewModel.setupTimer()
 
         data = args.adsTransactionDetails
     }
@@ -100,8 +107,6 @@ class AdsDialogFragment : DialogFragment() {
         if (Util.SDK_INT >= 24) releasePlayer()
     }
 
-    private fun observeData(): Unit = with(viewModel) {}
-
     private fun observeStates(): Unit = with(viewModel) {
 
         uiState.observe(viewLifecycleOwner, Observer {
@@ -115,6 +120,10 @@ class AdsDialogFragment : DialogFragment() {
                     is UiState.LoadingFinished -> loadingDialog.dismiss()
                 }
             }
+        })
+
+        isClosingEnable.observe(viewLifecycleOwner, Observer {
+            it?.let { binding.imageViewClose.visibility = if (it) VISIBLE else GONE }
         })
 
     }
@@ -158,6 +167,11 @@ class AdsDialogFragment : DialogFragment() {
                 }
             }
 
+            override fun onIsPlayingChanged(isPlaying: Boolean) {
+                super.onIsPlayingChanged(isPlaying)
+                this@AdsDialogFragment.viewModel.startTimer()
+            }
+
         })
 
         simplePlayer!!.playWhenReady = (playWhenReady)
@@ -179,6 +193,7 @@ class AdsDialogFragment : DialogFragment() {
             currentWindow = it.currentWindowIndex
             it.release()
             simplePlayer = null
+            viewModel.pauseTimer()
         }
     }
 
@@ -192,7 +207,7 @@ class AdsDialogFragment : DialogFragment() {
 
             this@AdsDialogFragment.viewModel.sendAdsTransactionResult(
                 args.adsTransactionDetails.transactionId,
-                spentSeconds,
+                args.adsTransactionDetails.watchTime,
                 args.isForBonusSteps
             )
         }

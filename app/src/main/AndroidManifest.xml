@@ -18,11 +18,10 @@
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true"
         tools:targetApi="n">
-
+        <activity android:name=".ui.activity.app.AppActivity" />
         <activity
             android:name="com.theartofdev.edmodo.cropper.CropImageActivity"
             android:theme="@style/Base.Theme.AppCompat" />
-
         <activity
             android:name=".ui.activity.forgotPassword.ForgotPasswordActivity"
             android:screenOrientation="portrait"
@@ -47,15 +46,12 @@
         <meta-data
             android:name="firebase_performance_logcat_enabled"
             android:value="true" />
-
         <meta-data
             android:name="com.onesignal.NotificationOpened.DEFAULT"
             android:value="DISABLE" />
-
         <meta-data
             android:name="com.onesignal.NotificationAccentColor.DEFAULT"
             android:value="FF0055" />
-
     </application>
 
 </manifest>

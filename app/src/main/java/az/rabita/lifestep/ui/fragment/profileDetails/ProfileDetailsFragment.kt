@@ -18,7 +18,6 @@ import androidx.navigation.fragment.findNavController
 import az.rabita.lifestep.R
 import az.rabita.lifestep.databinding.FragmentProfileDetailsBinding
 import az.rabita.lifestep.ui.dialog.message.MessageDialog
-import az.rabita.lifestep.ui.dialog.message.MessageType
 import az.rabita.lifestep.utils.ERROR_TAG
 import az.rabita.lifestep.utils.logout
 import az.rabita.lifestep.viewModel.fragment.profileDetails.ProfileDetailsViewModel
@@ -36,22 +35,12 @@ class ProfileDetailsFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         binding = FragmentProfileDetailsBinding.inflate(inflater)
-
-        binding.apply {
-            lifecycleOwner = this@ProfileDetailsFragment
-            viewModel = this@ProfileDetailsFragment.viewModel
-        }
-
-        with(binding) {
-            imageButtonBack.setOnClickListener { activity?.onBackPressed() }
-            imageButtonEditProfile.setOnClickListener {
-                navController.navigate(
-                    ProfileDetailsFragmentDirections.actionProfileDetailsFragmentToEditProfileFragment()
-                )
-            }
-        }
-
         return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        bindUI()
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -65,13 +54,26 @@ class ProfileDetailsFragment : Fragment() {
         viewModel.fetchProfileDetails()
     }
 
+    private fun bindUI(): Unit = with(binding) {
+
+        lifecycleOwner = this@ProfileDetailsFragment
+        viewModel = this@ProfileDetailsFragment.viewModel
+
+        imageButtonBack.setOnClickListener { activity?.onBackPressed() }
+        imageButtonEditProfile.setOnClickListener {
+            navController.navigate(
+                ProfileDetailsFragmentDirections.actionProfileDetailsFragmentToEditProfileFragment()
+            )
+        }
+    }
+
     private fun observeData(): Unit = with(viewModel) {
 
         profileInfo.observe(viewLifecycleOwner, Observer {
             it?.let {
 
                 binding.textViewFullName.text =
-                    getString(R.string.two_lined_format, it.surname, it.name)
+                    getString(R.string.two_lined_format, it.name, it.surname)
 
                 val spannableFriends =
                     SpannableString("${it.friendsCount}\n${getString(R.string.friends)}")

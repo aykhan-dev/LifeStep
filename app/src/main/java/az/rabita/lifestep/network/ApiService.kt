@@ -355,17 +355,16 @@ object ApiInitHelper {
         return retrofit as Retrofit
     }
 
-    val usersService: UsersService by lazy { getClient().create(UsersService::class.java) }
-    val friendshipService: FriendshipService by lazy { getClient().create(FriendshipService::class.java) }
-    val contentsService: ContentsService by lazy { getClient().create(ContentsService::class.java) }
-    val categoriesService: CategoriesService by lazy { getClient().create(CategoriesService::class.java) }
-    val assocationsService: AssocationsService by lazy { getClient().create(AssocationsService::class.java) }
-    val transactionsService: TransactionsService by lazy { getClient().create(TransactionsService::class.java) }
-    val notificationsService: NotificationsService by lazy { getClient().create(NotificationsService::class.java) }
-    val reportService: ReportService by lazy { getClient().create(ReportService::class.java) }
-    val advertisementsService: AdvertisementsService by lazy {
-        getClient().create(
-            AdvertisementsService::class.java
-        )
-    }
+    val usersService: UsersService = getClient().create(UsersService::class.java)
+    val friendshipService: FriendshipService = getClient().create(FriendshipService::class.java)
+    val contentsService: ContentsService = getClient().create(ContentsService::class.java)
+    val categoriesService: CategoriesService = getClient().create(CategoriesService::class.java)
+    val assocationsService: AssocationsService = getClient().create(AssocationsService::class.java)
+    val transactionsService: TransactionsService =
+        getClient().create(TransactionsService::class.java)
+    val notificationsService: NotificationsService =
+        getClient().create(NotificationsService::class.java)
+    val reportService: ReportService = getClient().create(ReportService::class.java)
+    val advertisementsService: AdvertisementsService =
+        getClient().create(AdvertisementsService::class.java)
 }

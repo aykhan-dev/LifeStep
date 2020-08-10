@@ -21,6 +21,9 @@ abstract class UsersDao {
     @Query("delete from personalInfo")
     abstract suspend fun deletePersonalInfo()
 
+    @Query("delete from personalInfo")
+    abstract fun deletePersonalInfoSync()
+
     @Transaction
     open suspend fun cachePersonalInfo(item: PersonalInfo) {
         deletePersonalInfo()
@@ -40,6 +43,9 @@ abstract class CategoriesDao {
 
     @Query("delete from categories")
     abstract suspend fun deleteAllCategories()
+
+    @Query("delete from categories")
+    abstract fun deleteAllCategoriesSync()
 
     @Transaction
     open suspend fun cacheCategories(items: List<Category>) {
@@ -61,6 +67,9 @@ abstract class AssocationsDao {
     @Query("delete from assocations")
     abstract suspend fun deleteAllAssocations()
 
+    @Query("delete from assocations")
+    abstract fun deleteAllAssocationsSync()
+
     @Transaction
     open suspend fun cacheAssocations(items: List<Assocation>) {
         deleteAllAssocations()
@@ -81,6 +90,9 @@ abstract class ReportDao {
     @Query("delete from walletInfo")
     abstract suspend fun deleteWalletInfo()
 
+    @Query("delete from walletInfo")
+    abstract fun deleteWalletInfoSync()
+
     @Transaction
     open suspend fun cacheWalletInfo(item: Wallet) {
         deleteWalletInfo()
@@ -96,6 +108,9 @@ abstract class ReportDao {
     @Query("delete from friendshipStats")
     abstract suspend fun deleteAllFriendshipStats()
 
+    @Query("delete from friendshipStats")
+    abstract fun deleteAllFriendshipStatsSync()
+
     @Transaction
     open suspend fun cacheFriendshipStats(item: FriendshipStats) {
         deleteAllFriendshipStats()
@@ -110,6 +125,9 @@ abstract class ReportDao {
 
     @Query("delete from weeklyStats")
     abstract suspend fun deleteAllWeeklyStats()
+
+    @Query("delete from weeklyStats")
+    abstract fun deleteAllWeeklyStatsSync()
 
     @Transaction
     open suspend fun cacheWeeklyStats(items: List<WeeklyStat>) {
@@ -131,6 +149,9 @@ abstract class ContentsDao {
     @Query("delete from contents where groupID = :groupId")
     abstract suspend fun deleteContents(groupId: Int)
 
+    @Query("delete from contents where groupID = :groupId")
+    abstract fun deleteContentsSync(groupId: Int)
+
     @Transaction
     open suspend fun cacheContents(items: List<Content>, groupId: Int) {
         deleteContents(groupId)
@@ -148,6 +169,9 @@ abstract class ContentsDao {
 
     @Query("delete from contents where groupID = :groupId and contentKey = :key")
     abstract suspend fun deleteContent(groupId: Int, key: String)
+
+    @Query("delete from contents where groupID = :groupId and contentKey = :key")
+    abstract fun deleteContentSync(groupId: Int, key: String)
 
     @Transaction
     open suspend fun cacheContent(item: Content, groupId: Int, key: String) {
@@ -174,6 +198,9 @@ abstract class NotificationsDao {
 
     @Query("delete from notifications")
     abstract suspend fun deleteNotifications()
+
+    @Query("delete from notifications")
+    abstract fun deleteNotificationsSync()
 
     @Transaction
     open suspend fun cacheNotifications(items: List<Notifications>) {

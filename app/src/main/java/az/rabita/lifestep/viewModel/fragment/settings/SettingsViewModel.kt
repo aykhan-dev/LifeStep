@@ -8,6 +8,9 @@ import az.rabita.lifestep.manager.PreferenceManager
 import az.rabita.lifestep.network.NetworkState
 import az.rabita.lifestep.repository.ReportRepository
 import az.rabita.lifestep.utils.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers.IO
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 
 class SettingsViewModel(application: Application) : AndroidViewModel(application) {
@@ -15,12 +18,17 @@ class SettingsViewModel(application: Application) : AndroidViewModel(application
     private val context = application.applicationContext
     private val sharedPreferences = PreferenceManager.getInstance(context)
 
+    private val scope = CoroutineScope(IO)
+
     private val reportRepository = ReportRepository.getInstance(getDatabase(context))
 
     val friendshipStats = reportRepository.friendshipStats.asLiveData()
 
     private val _eventExpiredToken = MutableLiveData<Boolean>().apply { value = false }
     val eventExpiredToken: LiveData<Boolean> get() = _eventExpiredToken
+
+    private val _eventLogOut = MutableLiveData<Boolean>().apply { value = false }
+    val eventLogOut: LiveData<Boolean> = _eventLogOut
 
     private var _errorMessage = MutableLiveData<String?>()
     val errorMessage: LiveData<String?> get() = _errorMessage
@@ -38,6 +46,22 @@ class SettingsViewModel(application: Application) : AndroidViewModel(application
                 is NetworkState.NetworkException -> handleNetworkException(response.exception)
             }
 
+        }
+    }
+
+    fun logOut() {
+        scope.launch {
+            with(getDatabase(context)) {
+                usersDao.deletePersonalInfoSync()
+                with(reportDao) {
+                    deleteAllWeeklyStatsSync()
+                    deleteAllFriendshipStatsSync()
+                    deleteWalletInfoSync()
+                }
+                notificationsDao.deleteNotificationsSync()
+                allContentsDao.deleteContentSync(INVITE_FRIENDS_GROUP_ID, INVITE_TEXT_KEY)
+                _eventLogOut.postValue(true)
+            }
         }
     }
 
@@ -60,6 +84,15 @@ class SettingsViewModel(application: Application) : AndroidViewModel(application
 
     fun endExpireTokenProcess() {
         _eventExpiredToken.value = false
+    }
+
+    fun endLogOut() {
+        _eventLogOut.value = false
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        scope.cancel()
     }
 
 }

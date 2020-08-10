@@ -6,8 +6,13 @@
     <data>
 
         <variable
+            name="viewModel"
+            type="az.rabita.lifestep.viewModel.fragment.ads.WatchingAdsViewModel" />
+
+        <variable
             name="data"
             type="az.rabita.lifestep.pojo.dataHolder.AdsTransactionInfoHolder" />
+
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -30,7 +35,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="0.1"
-            app:layout_constraintWidth_percent="0.25">
+            app:layout_constraintWidth_percent="0.3">
 
             <ImageView
                 android:layout_width="match_parent"
@@ -75,24 +80,26 @@
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/button_download"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:backgroundTint="@color/balance_header_background_color"
             android:fontFamily="@font/gilroy_semibold"
             android:letterSpacing="0"
             android:text="@string/install"
             android:textAllCaps="false"
+            android:textSize="@dimen/large"
             app:layout_constraintBottom_toBottomOf="@+id/materialCardView"
             app:layout_constraintEnd_toEndOf="@+id/text_view_company"
             app:layout_constraintHorizontal_bias="0"
             app:layout_constraintStart_toStartOf="@+id/text_view_company"
-            app:layout_constraintTop_toBottomOf="@id/text_view_company" />
+            app:layout_constraintTop_toBottomOf="@id/text_view_company"
+            app:layout_constraintWidth_percent="0.3" />
 
         <ImageView
             android:id="@+id/image_view_close"
-            android:layout_width="20dp"
-            android:layout_height="20dp"
-            android:background="@drawable/edit_text_background"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:background="@drawable/bg_white_round"
             android:elevation="5dp"
             android:padding="2dp"
             android:src="@drawable/ic_baseline_close_24"
@@ -102,6 +109,20 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="0.444" />
+
+        <TextView
+            android:id="@+id/text_view_remaining_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/gilroy_regular"
+            app:layout_constraintHorizontal_bias="0.95"
+            android:text="@{viewModel.remainingTime}"
+            android:textColor="@color/dark_text_color"
+            app:layout_constraintBottom_toBottomOf="@+id/image_view_close"
+            app:layout_constraintEnd_toStartOf="@+id/image_view_close"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/image_view_close"
+            tools:text="15 seconds remaining" />
 
         <com.google.android.exoplayer2.ui.PlayerView
             android:id="@+id/player_view"
@@ -124,7 +145,6 @@
             android:lineSpacingExtra="5dp"
             android:lines="2"
             android:text="@{data.description}"
-            android:textAlignment="center"
             android:textColor="@color/gray_text_color"
             android:textSize="@dimen/smallest"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -132,7 +152,7 @@
             app:layout_constraintHorizontal_bias="0.487"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/player_view"
-            app:layout_constraintVertical_bias="0.189"
+            app:layout_constraintVertical_bias="0.179"
             app:layout_constraintWidth_percent="0.9"
             tools:text="@string/lorem_impuls" />
 
