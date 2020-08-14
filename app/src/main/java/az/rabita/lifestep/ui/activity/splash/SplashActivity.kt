@@ -16,6 +16,7 @@ import az.rabita.lifestep.ui.activity.auth.AuthActivity
 import az.rabita.lifestep.ui.activity.main.MainActivity
 import az.rabita.lifestep.utils.DEFAULT_LANG_KEY
 import az.rabita.lifestep.utils.TOKEN_KEY
+import kotlinx.coroutines.launch
 
 class SplashActivity : AppCompatActivity() {
 
@@ -29,7 +30,7 @@ class SplashActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_splash_new)
         bindUI()
-        lifecycleScope.launchWhenCreated {
+        lifecycleScope.launch {
             mIntent = Intent(
                 applicationContext,
                 if (sharedPreferences.getStringElement(TOKEN_KEY, "").isEmpty())

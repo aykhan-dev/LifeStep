@@ -3,7 +3,6 @@ package az.rabita.lifestep.ui.fragment.home
 import android.Manifest
 import android.animation.ValueAnimator
 import android.content.Intent
-import android.content.pm.PackageManager.PERMISSION_DENIED
 import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -11,7 +10,6 @@ import android.view.View
 import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.view.ViewGroup
-import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -34,12 +32,12 @@ class HomeFragment : Fragment() {
 
     private lateinit var binding: FragmentHomeBinding
 
-    private val viewModel: HomeViewModel by viewModels()
+    private val viewModel by viewModels<HomeViewModel>()
 
-    private val adapter = SearchResultRecyclerAdapter { onSearchResultItemClick(it) }
     private val navController by lazy { findNavController() }
 
-    private val loadingDialog by lazy { LoadingDialog() }
+    private val adapter = SearchResultRecyclerAdapter { onSearchResultItemClick(it) }
+    private val loadingDialog = LoadingDialog()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -118,7 +116,7 @@ class HomeFragment : Fragment() {
         }
     }
 
-    private fun configureRecyclerView() = with(binding) {
+    private fun configureRecyclerView(): Unit = with(binding) {
         recyclerViewResults.adapter = adapter
 
         context?.let {
@@ -231,11 +229,11 @@ class HomeFragment : Fragment() {
 
     }
 
-    private fun navigateToNotificationsPage() = with(navController) {
+    private fun navigateToNotificationsPage(): Unit = with(navController) {
         navigate(HomeFragmentDirections.actionHomeFragmentToNavGraphNotifications())
     }
 
-    private fun onSearchResultItemClick(userId: String) = with(navController) {
+    private fun onSearchResultItemClick(userId: String): Unit = with(navController) {
         navigate(HomeFragmentDirections.actionHomeFragmentToUserProfileFragment(userId))
     }
 
@@ -248,23 +246,19 @@ class HomeFragment : Fragment() {
     private fun hideSearchBar(): Unit = with(binding) {
         editTextSearchBar.makeInvisible()
         textViewTitle.makeVisible()
-        if (frameLayoutSearchResults.isVisible) frameLayoutSearchResults.visibility = View.GONE
+        if (frameLayoutSearchResults.isVisible) frameLayoutSearchResults.visibility = GONE
         root.hideKeyboard(context)
     }
 
     private fun permissions() {
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && ContextCompat.checkSelfPermission(
-                requireContext(),
-                Manifest.permission.ACTIVITY_RECOGNITION
-            ) == PERMISSION_DENIED
-        ) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             requestPermissions(
                 arrayOf(Manifest.permission.ACTIVITY_RECOGNITION),
                 ACTIVITY_RECOGNITION_REQUEST_CODE
             )
         } else {
-//            googleAuthFlow()
+            googleAuthFlow()
         }
 
     }

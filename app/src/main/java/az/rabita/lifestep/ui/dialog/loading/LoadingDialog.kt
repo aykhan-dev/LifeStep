@@ -31,24 +31,22 @@ class LoadingDialog : DialogFragment() {
             it.window?.requestFeature(Window.FEATURE_NO_TITLE)
         }
 
+        isCancelable = false
         binding = FragmentLoadingDialogBinding.inflate(inflater)
-
-        binding.content.startAnimation(openAnimation)
-
-        binding.apply {
-            lifecycleOwner = this@LoadingDialog
-        }
-
-        with(binding) {
-            context?.let { Glide.with(it).load(R.raw.gif_loading).into(imageViewLoading) }
-        }
-
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        isCancelable = false
+        bindUI()
+    }
+
+    private fun bindUI(): Unit = with(binding) {
+        lifecycleOwner = this@LoadingDialog
+
+        binding.content.startAnimation(openAnimation)
+
+        context?.let { Glide.with(it).load(R.raw.gif_loading).into(imageViewLoading) }
     }
 
     override fun getTheme(): Int {

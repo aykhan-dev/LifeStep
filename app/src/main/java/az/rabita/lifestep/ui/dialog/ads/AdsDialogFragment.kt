@@ -4,8 +4,6 @@ import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
-import android.view.View.GONE
-import android.view.View.VISIBLE
 import android.view.ViewGroup
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
@@ -28,12 +26,15 @@ import com.google.android.exoplayer2.source.ProgressiveMediaSource
 import com.google.android.exoplayer2.upstream.DataSource
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
 import com.google.android.exoplayer2.util.Util
+import java.util.concurrent.TimeUnit
+import kotlin.math.roundToInt
 
-class AdsDialogFragment : DialogFragment() {
+class AdsDialogFragment() : DialogFragment() {
 
     private lateinit var binding: FragmentAdsDialogBinding
 
-    private val viewModel: WatchingAdsViewModel by viewModels()
+    private val viewModel by viewModels<WatchingAdsViewModel>()
+    private val args by navArgs<AdsDialogFragmentArgs>()
 
     private var simplePlayer: SimpleExoPlayer? = null
 
@@ -43,16 +44,16 @@ class AdsDialogFragment : DialogFragment() {
 
     private var startTime = 0L
 
-    private val args by navArgs<AdsDialogFragmentArgs>()
-    private val loadingDialog by lazy { LoadingDialog() }
-
     private val navController by lazy { findNavController() }
+
+    private val loadingDialog = LoadingDialog()
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        isCancelable = false
         binding = FragmentAdsDialogBinding.inflate(inflater)
         return binding.root
     }
@@ -64,6 +65,7 @@ class AdsDialogFragment : DialogFragment() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
+        observeData()
         observeStates()
         observeEvents()
     }
@@ -82,7 +84,7 @@ class AdsDialogFragment : DialogFragment() {
             openUrl(args.adsTransactionDetails.openingUrl ?: "")
         }
 
-        this@AdsDialogFragment.viewModel.setupTimer()
+        this@AdsDialogFragment.viewModel.setupTimer(timeMillis = args.adsTransactionDetails.watchTime * 1000L)
 
         data = args.adsTransactionDetails
     }
@@ -107,6 +109,18 @@ class AdsDialogFragment : DialogFragment() {
         if (Util.SDK_INT >= 24) releasePlayer()
     }
 
+    private fun observeData(): Unit = with(viewModel) {
+
+        remainingTime.observe(viewLifecycleOwner, Observer {
+            it?.let {
+                val seconds: Long = TimeUnit.SECONDS.toSeconds(it)
+                val minutes: Long = TimeUnit.SECONDS.toMinutes(it)
+                binding.textViewTime.text = String.format("%02d:%02d", minutes, seconds)
+            }
+        })
+
+    }
+
     private fun observeStates(): Unit = with(viewModel) {
 
         uiState.observe(viewLifecycleOwner, Observer {
@@ -122,8 +136,8 @@ class AdsDialogFragment : DialogFragment() {
             }
         })
 
-        isClosingEnable.observe(viewLifecycleOwner, Observer {
-            it?.let { binding.imageViewClose.visibility = if (it) VISIBLE else GONE }
+        isMuted.observe(viewLifecycleOwner, Observer {
+            it?.let { simplePlayer?.volume = if (it) 0f else 1f }
         })
 
     }
@@ -140,7 +154,9 @@ class AdsDialogFragment : DialogFragment() {
         eventCloseAdsPage.observe(viewLifecycleOwner, Observer {
             it?.let {
                 if (it) {
-                    if (args.isForBonusSteps) navController.navigate(AdsDialogFragmentDirections.actionAdsDialogFragment2ToBonusStepDialog())
+                    if (args.isForBonusSteps && viewModel.isSuccessfullyWatched) navController.navigate(
+                        AdsDialogFragmentDirections.actionAdsDialogFragment2ToBonusStepDialog()
+                    )
                     else dismiss()
                 }
             }
@@ -169,7 +185,8 @@ class AdsDialogFragment : DialogFragment() {
 
             override fun onIsPlayingChanged(isPlaying: Boolean) {
                 super.onIsPlayingChanged(isPlaying)
-                this@AdsDialogFragment.viewModel.startTimer()
+                if (isPlaying) this@AdsDialogFragment.viewModel.startTimer()
+                else this@AdsDialogFragment.viewModel.pauseTimer()
             }
 
         })
@@ -200,15 +217,16 @@ class AdsDialogFragment : DialogFragment() {
     private fun sendVideoResult() {
         if (startTime != 0L) {
             val spentMillis = System.currentTimeMillis() - startTime
-            var spentSeconds = (spentMillis / 1000).toInt()
+            var spentSeconds = (spentMillis / 1000f).roundToInt()
 
             if (spentSeconds > args.adsTransactionDetails.watchTime)
                 spentSeconds = args.adsTransactionDetails.watchTime
 
             this@AdsDialogFragment.viewModel.sendAdsTransactionResult(
                 args.adsTransactionDetails.transactionId,
-                args.adsTransactionDetails.watchTime,
-                args.isForBonusSteps
+                spentSeconds,
+                args.isForBonusSteps,
+                args.adsTransactionDetails.watchTime
             )
         }
     }

@@ -11,7 +11,6 @@ import androidx.navigation.fragment.findNavController
 import az.rabita.lifestep.R
 import az.rabita.lifestep.databinding.FragmentFriendsBinding
 import az.rabita.lifestep.ui.dialog.message.MessageDialog
-import az.rabita.lifestep.ui.dialog.message.MessageType
 import az.rabita.lifestep.utils.ERROR_TAG
 import az.rabita.lifestep.utils.logout
 import az.rabita.lifestep.viewModel.fragment.friends.FriendsViewModel
@@ -21,7 +20,7 @@ class FriendsFragment : Fragment() {
 
     private lateinit var binding: FragmentFriendsBinding
 
-    private val viewModel: FriendsViewModel by viewModels()
+    private val viewModel by viewModels<FriendsViewModel>()
 
     private val navController by lazy { findNavController() }
 
@@ -30,25 +29,12 @@ class FriendsFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         binding = FragmentFriendsBinding.inflate(inflater)
-
-        binding.apply {
-            lifecycleOwner = this@FriendsFragment
-        }
-
-        with(binding) {
-            imageButtonBack.setOnClickListener { navController.popBackStack() }
-        }
-
         return binding.root
-    }
-
-    override fun onStart() {
-        super.onStart()
-        viewModel.fetchFriendshipStats()
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        bindUI()
         configureViewPager()
     }
 
@@ -56,6 +42,17 @@ class FriendsFragment : Fragment() {
         super.onActivityCreated(savedInstanceState)
         observeData()
         observeEvents()
+    }
+
+    override fun onStart() {
+        super.onStart()
+        viewModel.fetchFriendshipStats()
+    }
+
+    private fun bindUI(): Unit = with(binding) {
+        lifecycleOwner = this@FriendsFragment
+
+        imageButtonBack.setOnClickListener { navController.popBackStack() }
     }
 
     private fun observeData(): Unit = with(viewModel) {

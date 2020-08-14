@@ -9,10 +9,8 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import az.rabita.lifestep.databinding.FragmentAdsBinding
-import az.rabita.lifestep.pojo.dataHolder.AdsTransactionInfoHolder
 import az.rabita.lifestep.ui.dialog.loading.LoadingDialog
 import az.rabita.lifestep.ui.dialog.message.MessageDialog
-import az.rabita.lifestep.ui.dialog.message.MessageType
 import az.rabita.lifestep.utils.*
 import az.rabita.lifestep.viewModel.fragment.ads.AdsViewModel
 
@@ -20,11 +18,11 @@ class AdsFragment : Fragment() {
 
     private lateinit var binding: FragmentAdsBinding
 
-    private val viewModel: AdsViewModel by viewModels()
-
-    private val loadingDialog by lazy { LoadingDialog() }
+    private val viewModel by viewModels<AdsViewModel>()
 
     private val navController by lazy { findNavController() }
+
+    private val loadingDialog = LoadingDialog()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -32,11 +30,6 @@ class AdsFragment : Fragment() {
     ): View? {
         binding = FragmentAdsBinding.inflate(inflater)
         return binding.root
-    }
-
-    override fun onStart() {
-        super.onStart()
-        viewModel.fetchAdsPageContent()
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -49,6 +42,11 @@ class AdsFragment : Fragment() {
         observeData()
         observeStates()
         observeEvents()
+    }
+
+    override fun onStart() {
+        super.onStart()
+        viewModel.fetchAdsPageContent()
     }
 
     private fun bindUI() = with(binding) {

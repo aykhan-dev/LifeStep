@@ -16,7 +16,6 @@ import androidx.navigation.fragment.navArgs
 import az.rabita.lifestep.R
 import az.rabita.lifestep.databinding.FragmentSendStepDialogBinding
 import az.rabita.lifestep.ui.dialog.message.MessageDialog
-import az.rabita.lifestep.ui.dialog.message.MessageType
 import az.rabita.lifestep.utils.ERROR_TAG
 import az.rabita.lifestep.utils.hideKeyboard
 import az.rabita.lifestep.utils.logout
@@ -30,45 +29,45 @@ class SendStepDialogFragment : DialogFragment() {
         AnimationUtils.loadAnimation(context, R.anim.fade_in)
     }
 
-    private val viewModel: UserProfileViewModel by viewModels()
-
-    private val args: SendStepDialogFragmentArgs by navArgs()
+    private val viewModel by viewModels<UserProfileViewModel>()
+    private val args by navArgs<SendStepDialogFragmentArgs>()
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-
         dialog?.let {
             it.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
             it.window?.requestFeature(Window.FEATURE_NO_TITLE)
         }
 
         binding = FragmentSendStepDialogBinding.inflate(inflater)
-
-        binding.content.startAnimation(openAnimation)
-
-        binding.apply {
-            lifecycleOwner = this@SendStepDialogFragment
-            viewModel = this@SendStepDialogFragment.viewModel
-        }
-
-        with(binding) {
-            buttonSendSteps.setOnClickListener {
-                this@SendStepDialogFragment.viewModel.sendStep(args.userId)
-            }
-            root.setOnClickListener { dismiss() }
-            content.setOnClickListener { it.hideKeyboard(context) }
-        }
-
         return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        bindUI()
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         observeData()
         observeEvents()
+    }
+
+    private fun bindUI(): Unit = with(binding) {
+        lifecycleOwner = this@SendStepDialogFragment
+        viewModel = this@SendStepDialogFragment.viewModel
+
+        binding.content.startAnimation(openAnimation)
+
+        buttonSendSteps.setOnClickListener {
+            this@SendStepDialogFragment.viewModel.sendStep(args.userId)
+        }
+        root.setOnClickListener { dismiss() }
+        content.setOnClickListener { it.hideKeyboard(context) }
     }
 
     private fun observeData(): Unit = with(viewModel) {

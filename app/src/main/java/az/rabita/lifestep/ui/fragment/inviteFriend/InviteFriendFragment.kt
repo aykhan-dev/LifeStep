@@ -12,7 +12,6 @@ import androidx.navigation.fragment.findNavController
 import az.rabita.lifestep.R
 import az.rabita.lifestep.databinding.FragmentInviteFriendBinding
 import az.rabita.lifestep.ui.dialog.message.MessageDialog
-import az.rabita.lifestep.ui.dialog.message.MessageType
 import az.rabita.lifestep.utils.ERROR_TAG
 import az.rabita.lifestep.utils.INVITE_TEXT_KEY
 import az.rabita.lifestep.utils.NO_MESSAGE
@@ -23,7 +22,7 @@ class InviteFriendFragment : Fragment() {
 
     private lateinit var binding: FragmentInviteFriendBinding
 
-    private val viewModel: InviteFriendViewModel by viewModels()
+    private val viewModel by viewModels<InviteFriendViewModel>()
 
     private val navController by lazy { findNavController() }
 
@@ -32,18 +31,18 @@ class InviteFriendFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         binding = FragmentInviteFriendBinding.inflate(inflater)
-
-        binding.apply {
-            lifecycleOwner = this@InviteFriendFragment
-            viewModel = this@InviteFriendFragment.viewModel
-        }
-
-        with(binding) {
-            imageButtonBack.setOnClickListener { navController.popBackStack() }
-            editTextInvitationCode.isEnabled = false
-        }
-
         return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        bindUI()
+    }
+
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
+        observeData()
+        observeEvents()
     }
 
     override fun onStart() {
@@ -52,10 +51,12 @@ class InviteFriendFragment : Fragment() {
         viewModel.fetchInviteFriendsContent()
     }
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-        observeData()
-        observeEvents()
+    private fun bindUI(): Unit = with(binding) {
+        lifecycleOwner = this@InviteFriendFragment
+        viewModel = this@InviteFriendFragment.viewModel
+
+        imageButtonBack.setOnClickListener { navController.popBackStack() }
+        editTextInvitationCode.isEnabled = false
     }
 
     private fun observeData(): Unit = with(viewModel) {

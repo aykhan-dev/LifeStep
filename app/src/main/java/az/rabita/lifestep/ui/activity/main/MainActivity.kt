@@ -2,11 +2,10 @@ package az.rabita.lifestep.ui.activity.main
 
 import android.content.Context
 import android.os.Bundle
-import android.view.WindowManager
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
 import az.rabita.lifestep.R
 import az.rabita.lifestep.databinding.ActivityMainBinding
@@ -22,43 +21,35 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
 
-    private lateinit var viewModel: MainViewModel
+    private val viewModel by viewModels<MainViewModel>()
 
     private val navController by lazy { findNavController(R.id.fragment_main_host) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        window.setFlags(
-            WindowManager.LayoutParams.FLAG_FULLSCREEN,
-            WindowManager.LayoutParams.FLAG_FULLSCREEN
-        )
-
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
 
-        viewModel = ViewModelProvider(this).get(MainViewModel::class.java)
-
-        binding.apply {
-            lifecycleOwner = this@MainActivity
-            viewModel = this@MainActivity.viewModel
-        }
-
+        bindUI()
         analyzeIntentComingFromNotificationEvent()
         navigate()
         configurations()
+    }
+
+    private fun bindUI(): Unit = with(binding) {
+        lifecycleOwner = this@MainActivity
+        viewModel = this@MainActivity.viewModel
     }
 
     private fun analyzeIntentComingFromNotificationEvent() {
         intent?.let {
             val data = it.getParcelableExtra<NotificationInfoHolder>(NOTIFICATION_INFO_KEY)
             data?.let {
-                Timber.e(data.type.toString())
                 navController.navigate(HomeFragmentDirections.actionHomeFragmentToNavGraphNotifications())
             }
         }
     }
 
-    private fun configurations() = with(binding) {
+    private fun configurations(): Unit = with(binding) {
 
         customCurvedLayout.setupWithNavController(navController)
 
@@ -68,7 +59,7 @@ class MainActivity : AppCompatActivity() {
 
     }
 
-    private fun navigate() = with(viewModel) {
+    private fun navigate(): Unit = with(viewModel) {
 
         indexOfSelectedPage.observe(this@MainActivity, Observer {
             it?.let { binding.customCurvedLayout.navigate(it) }

@@ -23,11 +23,12 @@ class LoginFragment : Fragment() {
 
     private lateinit var binding: FragmentLoginBinding
 
-    private val authViewModel: AuthViewModel by activityViewModels()
-    private val viewModel: LoginViewModel by activityViewModels()
+    private val authViewModel by activityViewModels<AuthViewModel>()
+    private val viewModel by activityViewModels<LoginViewModel>()
 
     private val navController by lazy { findNavController() }
-    private val loadingDialog by lazy { LoadingDialog() }
+
+    private val loadingDialog = LoadingDialog()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,

@@ -110,20 +110,6 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="0.444" />
 
-        <TextView
-            android:id="@+id/text_view_remaining_time"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:fontFamily="@font/gilroy_regular"
-            app:layout_constraintHorizontal_bias="0.95"
-            android:text="@{viewModel.remainingTime}"
-            android:textColor="@color/dark_text_color"
-            app:layout_constraintBottom_toBottomOf="@+id/image_view_close"
-            app:layout_constraintEnd_toStartOf="@+id/image_view_close"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/image_view_close"
-            tools:text="15 seconds remaining" />
-
         <com.google.android.exoplayer2.ui.PlayerView
             android:id="@+id/player_view"
             android:layout_width="match_parent"
@@ -137,6 +123,33 @@
             app:use_controller="false"
             tools:layout_editor_absoluteX="10dp" />
 
+        <ImageView
+            android:id="@+id/image_view_mute"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="@{()->viewModel.muteOrUnmute()}"
+            android:src="@{viewModel.isMuted() ? @drawable/ic_baseline_volume_off_24 : @drawable/ic_baseline_volume_up_24}"
+            app:layout_constraintBottom_toTopOf="@id/text_view_description"
+            app:layout_constraintEnd_toEndOf="@id/player_view"
+            app:layout_constraintHorizontal_bias="0"
+            app:layout_constraintStart_toStartOf="@id/text_view_description"
+            app:layout_constraintTop_toBottomOf="@id/player_view"
+            app:layout_constraintVertical_bias="0.35" />
+
+        <TextView
+            android:id="@+id/text_view_time"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/gilroy_medium"
+            android:textAlignment="viewEnd"
+            android:textColor="@color/dark_text_color"
+            android:textSize="@dimen/smaller"
+            app:layout_constraintBottom_toBottomOf="@id/image_view_mute"
+            app:layout_constraintEnd_toEndOf="@+id/text_view_description"
+            app:layout_constraintStart_toEndOf="@id/image_view_mute"
+            app:layout_constraintTop_toTopOf="@id/image_view_mute"
+            tools:text="00:30" />
+
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/text_view_description"
             android:layout_width="0dp"
@@ -149,10 +162,9 @@
             android:textSize="@dimen/smallest"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.487"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/player_view"
-            app:layout_constraintVertical_bias="0.179"
+            app:layout_constraintVertical_bias="0.242"
             app:layout_constraintWidth_percent="0.9"
             tools:text="@string/lorem_impuls" />
 

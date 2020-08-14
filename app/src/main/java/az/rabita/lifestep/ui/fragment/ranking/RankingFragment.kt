@@ -13,7 +13,6 @@ import androidx.navigation.fragment.navArgs
 import az.rabita.lifestep.R
 import az.rabita.lifestep.databinding.FragmentRankingBinding
 import az.rabita.lifestep.ui.dialog.message.MessageDialog
-import az.rabita.lifestep.ui.dialog.message.MessageType
 import az.rabita.lifestep.utils.ERROR_TAG
 import az.rabita.lifestep.utils.logout
 import az.rabita.lifestep.viewModel.fragment.ranking.RankingViewModel
@@ -23,7 +22,7 @@ class RankingFragment : Fragment() {
 
     private lateinit var binding: FragmentRankingBinding
 
-    private val viewModel: RankingViewModel by viewModels()
+    private val viewModel by viewModels<RankingViewModel>()
 
     private val args by navArgs<RankingFragmentArgs>()
 
@@ -50,23 +49,12 @@ class RankingFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         binding = FragmentRankingBinding.inflate(inflater)
-
-        binding.apply {
-            lifecycleOwner = this@RankingFragment
-        }
-
-        with(binding) {
-            if (args.postId != null) textViewTitle.text = getString(R.string.step_donors)
-            else textViewTitle.text = getString(R.string.champions)
-
-            imageButtonBack.setOnClickListener { activity?.onBackPressed() }
-        }
-
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        bindUI()
         configureRecyclerView()
     }
 
@@ -82,7 +70,16 @@ class RankingFragment : Fragment() {
         else viewModel.fetchAllChampions()
     }
 
-    private fun configureRecyclerView() = with(binding.recyclerViewChampions) {
+    private fun bindUI(): Unit = with(binding) {
+        lifecycleOwner = this@RankingFragment
+
+        if (args.postId != null) textViewTitle.text = getString(R.string.step_donors)
+        else textViewTitle.text = getString(R.string.champions)
+
+        imageButtonBack.setOnClickListener { activity?.onBackPressed() }
+    }
+
+    private fun configureRecyclerView(): Unit = with(binding.recyclerViewChampions) {
         adapter = if (args.postId != null) rankingPagedAdapter else rankingAdapter
     }
 

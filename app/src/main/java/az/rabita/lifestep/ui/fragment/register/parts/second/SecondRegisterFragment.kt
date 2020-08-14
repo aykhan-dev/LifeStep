@@ -17,40 +17,37 @@ import az.rabita.lifestep.viewModel.fragment.register.RegistrationViewModel
 class SecondRegisterFragment(private val buttonBackClickListener: () -> Unit) : Fragment() {
 
     private lateinit var binding: FragmentRegisterTwoBinding
-    private val viewModel: RegistrationViewModel by activityViewModels()
+    private val viewModel by activityViewModels<RegistrationViewModel>()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         binding = FragmentRegisterTwoBinding.inflate(inflater)
-
-        binding.apply {
-            lifecycleOwner = this@SecondRegisterFragment
-            viewModel = this@SecondRegisterFragment.viewModel
-        }
-
-        with(binding) {
-            buttonBack.setOnClickListener { buttonBackClickListener() }
-
-            context?.resources?.getStringArray(R.array.genders)?.let {
-                val adapter = ArrayAdapter(requireContext(), R.layout.item_gender, it)
-                editTextGender.setAdapter(adapter)
-            }
-
-            editTextGender.onFocusChangeListener =
-                OnFocusChangeListener { _, hasFocus -> if (hasFocus) editTextGender.showDropDown() }
-
-            root.setOnClickListener { root.hideKeyboard(context) }
-
-        }
-
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        bindUI()
         configurations()
+    }
+
+    private fun bindUI(): Unit = with(binding) {
+        lifecycleOwner = this@SecondRegisterFragment
+        viewModel = this@SecondRegisterFragment.viewModel
+
+        buttonBack.setOnClickListener { buttonBackClickListener() }
+
+        context?.resources?.getStringArray(R.array.genders)?.let {
+            val adapter = ArrayAdapter(requireContext(), R.layout.item_gender, it)
+            editTextGender.setAdapter(adapter)
+        }
+
+        editTextGender.onFocusChangeListener =
+            OnFocusChangeListener { _, hasFocus -> if (hasFocus) editTextGender.showDropDown() }
+
+        root.setOnClickListener { root.hideKeyboard(context) }
     }
 
     private fun configurations() {

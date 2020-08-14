@@ -7,7 +7,6 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
-import az.rabita.lifestep.LifeStepsApplication
 import az.rabita.lifestep.databinding.FragmentLanguageBinding
 import az.rabita.lifestep.manager.LocaleManager
 import az.rabita.lifestep.manager.PreferenceManager
@@ -20,7 +19,7 @@ class LanguageFragment : Fragment() {
     private lateinit var binding: FragmentLanguageBinding
     private lateinit var sharedPreferences: PreferenceManager
 
-    private val viewModel: LanguageViewModel by viewModels()
+    private val viewModel by viewModels<LanguageViewModel>()
     private val navController by lazy { findNavController() }
 
     override fun onCreateView(
@@ -28,25 +27,13 @@ class LanguageFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         binding = FragmentLanguageBinding.inflate(inflater)
-
-        context?.let {
-            sharedPreferences = PreferenceManager.getInstance(it)
-        }
-
-        binding.apply {
-            lifecycleOwner = this@LanguageFragment
-            viewModel = this@LanguageFragment.viewModel
-        }
-
-        with(binding) {
-            imageButtonBack.setOnClickListener { navController.popBackStack() }
-        }
-
+        sharedPreferences = PreferenceManager.getInstance(requireContext())
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        bindUI()
         configureListeners()
         when (sharedPreferences.getIntegerElement(LANG_KEY, DEFAULT_LANG)) {
             LANG_AZ -> switcher_az.isSwitchOn = true
@@ -54,6 +41,13 @@ class LanguageFragment : Fragment() {
             LANG_RU -> switcher_ru.isSwitchOn = true
             0 -> activity?.finish()
         }
+    }
+
+    private fun bindUI(): Unit = with(binding) {
+        lifecycleOwner = this@LanguageFragment
+        viewModel = this@LanguageFragment.viewModel
+
+        imageButtonBack.setOnClickListener { navController.popBackStack() }
     }
 
     private fun configureListeners(): Unit = with(binding) {

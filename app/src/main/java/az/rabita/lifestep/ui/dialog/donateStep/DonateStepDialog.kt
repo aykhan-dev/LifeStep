@@ -10,15 +10,14 @@ import android.view.Window
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
 import androidx.fragment.app.DialogFragment
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import az.rabita.lifestep.R
 import az.rabita.lifestep.databinding.FragmentDonateStepDialogBinding
 import az.rabita.lifestep.ui.dialog.loading.LoadingDialog
 import az.rabita.lifestep.ui.dialog.message.MessageDialog
-import az.rabita.lifestep.ui.dialog.message.MessageType
 import az.rabita.lifestep.utils.*
 import az.rabita.lifestep.viewModel.fragment.detailedInfo.DetailedInfoViewModel
 
@@ -26,17 +25,16 @@ class DonateStepDialog : DialogFragment() {
 
     private lateinit var binding: FragmentDonateStepDialogBinding;
 
-    private lateinit var viewModel: DetailedInfoViewModel
+    private val viewModel by viewModels<DetailedInfoViewModel>()
+    private val args by navArgs<DonateStepDialogArgs>()
 
     private val openAnimation: Animation by lazy {
         AnimationUtils.loadAnimation(context, R.anim.fade_in)
     }
 
-    private val args: DonateStepDialogArgs by navArgs()
-
-    private val loadingDialog by lazy { LoadingDialog() }
-
     private val navController by lazy { findNavController() }
+
+    private val loadingDialog = LoadingDialog()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -49,33 +47,12 @@ class DonateStepDialog : DialogFragment() {
         }
 
         binding = FragmentDonateStepDialogBinding.inflate(inflater)
-
-        viewModel = ViewModelProvider(this).get(DetailedInfoViewModel::class.java)
-
-        binding.content.startAnimation(openAnimation)
-
-        binding.apply {
-            lifecycleOwner = this@DonateStepDialog
-            viewModel = this@DonateStepDialog.viewModel
-        }
-
-        with(binding) {
-            buttonDonateSteps.setOnClickListener {
-                this@DonateStepDialog.viewModel.donateStep(
-                    args.postId,
-                    switcher.isSwitchOn
-                )
-            }
-            root.setOnClickListener { dismiss() }
-            content.setOnClickListener { it.hideKeyboard(context) }
-        }
-
         return binding.root
     }
 
-    override fun onStart() {
-        super.onStart()
-        viewModel.fetchPersonalInfo()
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        bindUI()
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -83,6 +60,27 @@ class DonateStepDialog : DialogFragment() {
         observeData()
         observeStates()
         observeEvents()
+    }
+
+    override fun onStart() {
+        super.onStart()
+        viewModel.fetchPersonalInfo()
+    }
+
+    private fun bindUI(): Unit = with(binding) {
+        lifecycleOwner = this@DonateStepDialog
+        viewModel = this@DonateStepDialog.viewModel
+
+        binding.content.startAnimation(openAnimation)
+
+        buttonDonateSteps.setOnClickListener {
+            this@DonateStepDialog.viewModel.donateStep(
+                args.postId,
+                switcher.isSwitchOn
+            )
+        }
+        root.setOnClickListener { dismiss() }
+        content.setOnClickListener { it.hideKeyboard(context) }
     }
 
     private fun observeData(): Unit = with(viewModel) {

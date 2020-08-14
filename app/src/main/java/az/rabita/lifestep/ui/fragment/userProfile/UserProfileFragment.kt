@@ -27,8 +27,8 @@ class UserProfileFragment : Fragment() {
 
     private lateinit var binding: FragmentUserProfileBinding
 
-    private val viewModel: UserProfileViewModel by viewModels()
-    private val args: UserProfileFragmentArgs by navArgs()
+    private val viewModel by viewModels<UserProfileViewModel>()
+    private val args by navArgs<UserProfileFragmentArgs>()
 
     private val navController by lazy { findNavController() }
 

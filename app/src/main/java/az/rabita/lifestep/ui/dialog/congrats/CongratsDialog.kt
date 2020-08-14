@@ -28,29 +28,30 @@ class CongratsDialog : DialogFragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-
         dialog?.let {
             it.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
             it.window?.requestFeature(Window.FEATURE_NO_TITLE)
         }
 
         binding = FragmentCongratsDialogBinding.inflate(inflater)
+        return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        bindUI()
+    }
+
+    private fun bindUI(): Unit = with(binding) {
+        lifecycleOwner = this@CongratsDialog
 
         binding.content.startAnimation(openAnimation)
 
-        binding.apply {
-            lifecycleOwner = this@CongratsDialog
+        root.setOnClickListener {
+            val savedState = navController.previousBackStackEntry!!.savedStateHandle
+            savedState.set("Donated", true)
+            navController.popBackStack()
         }
-
-        with(binding) {
-            root.setOnClickListener {
-                val savedState = navController.previousBackStackEntry!!.savedStateHandle
-                savedState.set("Donated", true)
-                navController.popBackStack()
-            }
-        }
-
-        return binding.root
     }
 
     override fun getTheme(): Int {

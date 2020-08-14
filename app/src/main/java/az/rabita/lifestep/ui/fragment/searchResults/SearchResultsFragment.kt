@@ -12,7 +12,6 @@ import androidx.navigation.fragment.navArgs
 import az.rabita.lifestep.databinding.FragmentSearchResultBinding
 import az.rabita.lifestep.ui.dialog.loading.LoadingDialog
 import az.rabita.lifestep.ui.dialog.message.MessageDialog
-import az.rabita.lifestep.ui.dialog.message.MessageType
 import az.rabita.lifestep.utils.ERROR_TAG
 import az.rabita.lifestep.utils.LOADING_TAG
 import az.rabita.lifestep.utils.UiState
@@ -23,8 +22,8 @@ class SearchResultsFragment : Fragment() {
 
     private lateinit var binding: FragmentSearchResultBinding
 
-    private val viewModel: SearchResultsViewModel by viewModels()
-    private val args: SearchResultsFragmentArgs by navArgs()
+    private val viewModel by viewModels<SearchResultsViewModel>()
+    private val args by navArgs<SearchResultsFragmentArgs>()
 
     private val navController by lazy { findNavController() }
 
@@ -65,7 +64,7 @@ class SearchResultsFragment : Fragment() {
         viewModel.fetchSearchResults(args.searchKeyword)
     }
 
-    private fun bindUI() = with(binding) {
+    private fun bindUI(): Unit = with(binding) {
         imageButtonBack.setOnClickListener { activity?.onBackPressed() }
     }
 

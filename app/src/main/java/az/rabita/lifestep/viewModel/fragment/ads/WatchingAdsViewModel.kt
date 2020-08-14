@@ -39,18 +39,23 @@ class WatchingAdsViewModel(application: Application) : AndroidViewModel(applicat
     private val _errorMessage = MutableLiveData<String>()
     val errorMessage: LiveData<String> get() = _errorMessage
 
-    val isClosingEnable = MutableLiveData<Boolean>().apply { value = false }
-    val remainingTime = MutableLiveData<String>()
+    val isMuted = MutableLiveData<Boolean>().apply { value = false }
+    val remainingTime = MutableLiveData<Long>()
     val uiState = MutableLiveData<UiState>()
+
+    var isSuccessfullyWatched = false
 
     fun sendAdsTransactionResult(
         transactionId: String,
         watchTime: Int,
-        forBonusSteps: Boolean
+        forBonusSteps: Boolean,
+        totalWatchTime: Int
     ) {
         viewModelScope.launch {
 
             uiState.postValue(UiState.Loading)
+
+            isSuccessfullyWatched = watchTime == totalWatchTime
 
             val token = sharedPreferences.getStringElement(TOKEN_KEY, "")
             val lang = sharedPreferences.getIntegerElement(LANG_KEY, 10)
@@ -79,6 +84,8 @@ class WatchingAdsViewModel(application: Application) : AndroidViewModel(applicat
                 is NetworkState.NetworkException -> handleNetworkException(response.exception)
             }
 
+            isSuccessfullyWatched = false
+
             uiState.postValue(UiState.LoadingFinished)
 
         }
@@ -88,8 +95,8 @@ class WatchingAdsViewModel(application: Application) : AndroidViewModel(applicat
         timer = ExtendedCountDownTimer(
             timeMillis,
             tickMillis,
-            { remainingTime.value = null; isClosingEnable.value = true },
-            { remainingTime.value = "${it / 1000} ${context.getString(R.string.remaining)}" }
+            { remainingTime.value = null; },
+            { remainingTime.value = it / 1000 }
         )
     }
 
@@ -99,6 +106,10 @@ class WatchingAdsViewModel(application: Application) : AndroidViewModel(applicat
 
     fun pauseTimer() {
         timer.cancel()
+    }
+
+    fun muteOrUnmute() {
+        isMuted.value = !(isMuted.value ?: false)
     }
 
     private fun handleNetworkException(exception: String?) {

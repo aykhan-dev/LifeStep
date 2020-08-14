@@ -13,25 +13,27 @@ import az.rabita.lifestep.viewModel.fragment.register.RegistrationViewModel
 class FirstRegisterFragment : Fragment() {
 
     private lateinit var binding: FragmentRegisterOneBinding
-    private val viewModel: RegistrationViewModel by activityViewModels()
+    private val viewModel by activityViewModels<RegistrationViewModel>()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         binding = FragmentRegisterOneBinding.inflate(inflater)
-
-        binding.apply {
-            lifecycleOwner = this@FirstRegisterFragment
-            viewModel = this@FirstRegisterFragment.viewModel
-        }
-
-        with(binding) {
-            buttonHaveAccount.setOnClickListener { activity?.onBackPressed() }
-            root.setOnClickListener { root.hideKeyboard(context) }
-        }
-
         return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        bindUI()
+    }
+
+    private fun bindUI(): Unit = with(binding) {
+        lifecycleOwner = this@FirstRegisterFragment
+        viewModel = this@FirstRegisterFragment.viewModel
+
+        buttonHaveAccount.setOnClickListener { activity?.onBackPressed() }
+        root.setOnClickListener { root.hideKeyboard(context) }
     }
 
 }

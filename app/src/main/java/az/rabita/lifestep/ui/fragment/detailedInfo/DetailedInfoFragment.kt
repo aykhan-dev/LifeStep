@@ -12,7 +12,6 @@ import androidx.navigation.fragment.navArgs
 import az.rabita.lifestep.databinding.FragmentDetailedInfoBinding
 import az.rabita.lifestep.ui.dialog.loading.LoadingDialog
 import az.rabita.lifestep.ui.dialog.message.MessageDialog
-import az.rabita.lifestep.ui.dialog.message.MessageType
 import az.rabita.lifestep.ui.fragment.ranking.RankingRecyclerAdapter
 import az.rabita.lifestep.utils.*
 import az.rabita.lifestep.viewModel.fragment.detailedInfo.DetailedInfoViewModel
@@ -21,52 +20,33 @@ class DetailedInfoFragment : Fragment() {
 
     private lateinit var binding: FragmentDetailedInfoBinding
 
-    private val viewModel: DetailedInfoViewModel by viewModels()
+    private val viewModel by viewModels<DetailedInfoViewModel>()
+    private val args by navArgs<DetailedInfoFragmentArgs>()
 
-    private val args: DetailedInfoFragmentArgs by navArgs()
-
-    private val donorsAdapter by lazy {
-        RankingRecyclerAdapter { ranker ->
-            navController.navigate(
-                DetailedInfoFragmentDirections.actionDetailedInfoFragmentToUserProfileFragment(
-                    ranker.id
-                )
+    private val donorsAdapter = RankingRecyclerAdapter { ranker ->
+        navController.navigate(
+            DetailedInfoFragmentDirections.actionDetailedInfoFragmentToUserProfileFragment(
+                ranker.id
             )
-        }
+        )
     }
 
     private val navController by lazy { findNavController() }
 
-    private val loadingDialog by lazy { LoadingDialog() }
+    private val loadingDialog = LoadingDialog()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         binding = FragmentDetailedInfoBinding.inflate(inflater)
-
-        binding.apply {
-            lifecycleOwner = this@DetailedInfoFragment
-            viewModel = this@DetailedInfoFragment.viewModel
-        }
-
-        with(binding) {
-            imageButtonBack.setOnClickListener { activity?.onBackPressed() }
-            buttonDonateSteps.setOnClickListener { navigateTo(DetailedFragmentDirections.DONATE_STEPS) }
-            textViewAll.setOnClickListener { navigateTo(DetailedFragmentDirections.ALL_DONORS) }
-        }
-
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        bindUI()
         configureRecyclerView()
-    }
-
-    override fun onStart() {
-        super.onStart()
-        viewModel.fetchDetailedInfo(args.assocationId)
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -76,24 +56,38 @@ class DetailedInfoFragment : Fragment() {
         observeEvents()
     }
 
-    private fun navigateTo(direction: DetailedFragmentDirections) = when (direction) {
-        DetailedFragmentDirections.DONATE_STEPS -> {
-            viewModel.assocationDetails.value?.let {
+    override fun onStart() {
+        super.onStart()
+        viewModel.fetchDetailedInfo(args.assocationId)
+    }
+
+    private fun bindUI(): Unit = with(binding) {
+        lifecycleOwner = this@DetailedInfoFragment
+        viewModel = this@DetailedInfoFragment.viewModel
+
+        imageButtonBack.setOnClickListener { activity?.onBackPressed() }
+        buttonDonateSteps.setOnClickListener { navigateTo(DetailedFragmentDirections.DONATE_STEPS) }
+        textViewAll.setOnClickListener { navigateTo(DetailedFragmentDirections.ALL_DONORS) }
+    }
+
+    private fun navigateTo(direction: DetailedFragmentDirections) {
+        when (direction) {
+            DetailedFragmentDirections.DONATE_STEPS -> {
+                viewModel.assocationDetails.value?.let {
+                    navController.navigate(
+                        DetailedInfoFragmentDirections.actionDetailedInfoFragmentToDonateStepDialog(
+                            it.id
+                        )
+                    )
+                }
+            }
+            DetailedFragmentDirections.ALL_DONORS -> {
                 navController.navigate(
-                    DetailedInfoFragmentDirections.actionDetailedInfoFragmentToDonateStepDialog(
-                        it.id
+                    DetailedInfoFragmentDirections.actionDetailedInfoFragmentToRankingFragment(
+                        postId = viewModel.assocationDetails.value?.id
                     )
                 )
             }
-        }
-        DetailedFragmentDirections.CONGRATS -> {
-        }
-        DetailedFragmentDirections.ALL_DONORS -> {
-            navController.navigate(
-                DetailedInfoFragmentDirections.actionDetailedInfoFragmentToRankingFragment(
-                    postId = viewModel.assocationDetails.value?.id
-                )
-            )
         }
     }
 

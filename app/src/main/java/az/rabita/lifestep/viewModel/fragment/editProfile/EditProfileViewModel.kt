@@ -96,22 +96,28 @@ class EditProfileViewModel(application: Application) : AndroidViewModel(applicat
         }
     }
 
-    fun updateProfileImage(file: File) = viewModelScope.launch {
-        val requestFile: RequestBody =
-            RequestBody.create("multipart/form-data".toMediaTypeOrNull(), file)
+    fun updateProfileImage(file: File) {
+        viewModelScope.launch {
+            uiState.postValue(UiState.Loading)
 
-        val body: MultipartBody.Part =
-            MultipartBody.Part.createFormData("image", file.name, requestFile)
+            val requestFile: RequestBody =
+                RequestBody.create("multipart/form-data".toMediaTypeOrNull(), file)
 
-        val token = sharedPreferences.getStringElement(TOKEN_KEY, "")
-        val lang = sharedPreferences.getIntegerElement(LANG_KEY, DEFAULT_LANG)
+            val body: MultipartBody.Part =
+                MultipartBody.Part.createFormData("image", file.name, requestFile)
 
-        when (val response = usersRepository.changeProfilePhoto(token, lang, body)) {
-            is NetworkState.Success<*> -> fetchPersonalInfo()
-            is NetworkState.ExpiredToken -> startExpireTokenProcess()
-            is NetworkState.HandledHttpError -> showMessageDialog(response.error)
-            is NetworkState.UnhandledHttpError -> showMessageDialog(response.error)
-            is NetworkState.NetworkException -> handleNetworkException(response.exception)
+            val token = sharedPreferences.getStringElement(TOKEN_KEY, "")
+            val lang = sharedPreferences.getIntegerElement(LANG_KEY, DEFAULT_LANG)
+
+            when (val response = usersRepository.changeProfilePhoto(token, lang, body)) {
+                is NetworkState.Success<*> -> fetchPersonalInfo()
+                is NetworkState.ExpiredToken -> startExpireTokenProcess()
+                is NetworkState.HandledHttpError -> showMessageDialog(response.error)
+                is NetworkState.UnhandledHttpError -> showMessageDialog(response.error)
+                is NetworkState.NetworkException -> handleNetworkException(response.exception)
+            }
+
+            uiState.postValue(UiState.LoadingFinished)
         }
     }
 
@@ -137,7 +143,7 @@ class EditProfileViewModel(application: Application) : AndroidViewModel(applicat
             else showMessageDialog(context.getString(R.string.no_internet_connection))
         }
     }
-    
+
     private fun showMessageDialog(message: String?) {
         _errorMessage.value = message
         _errorMessage.value = null

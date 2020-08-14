@@ -20,9 +20,10 @@ class SettingsFragment : Fragment() {
 
     private lateinit var binding: FragmentSettingsBinding
 
-    private val viewModel: SettingsViewModel by viewModels()
+    private val viewModel by viewModels<SettingsViewModel>()
 
     private val navController by lazy { findNavController() }
+
     private val loadingDialog = LoadingDialog()
 
     override fun onCreateView(
@@ -38,15 +39,15 @@ class SettingsFragment : Fragment() {
         bindUI()
     }
 
-    override fun onStart() {
-        super.onStart()
-        viewModel.fetchFriendshipStats()
-    }
-
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         observeData()
         observeEvents()
+    }
+
+    override fun onStart() {
+        super.onStart()
+        viewModel.fetchFriendshipStats()
     }
 
     private fun bindUI(): Unit = with(binding) {
@@ -79,7 +80,7 @@ class SettingsFragment : Fragment() {
             navController.navigate(SettingsFragmentDirections.actionSettingsFragmentToLanguageFragment())
         }
         cardInfo.setOnClickListener {
-            navController.navigate(SettingsFragmentDirections.actionSettingsFragmentToContactFragment())
+            navController.navigate(SettingsFragmentDirections.actionSettingsFragmentToAboutUsFragment())
         }
         cardLogout.setOnClickListener {
             loadingDialog.show(requireActivity().supportFragmentManager, LOADING_TAG)

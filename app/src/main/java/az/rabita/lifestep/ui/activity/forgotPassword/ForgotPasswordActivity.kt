@@ -2,41 +2,34 @@ package az.rabita.lifestep.ui.activity.forgotPassword
 
 import android.content.Context
 import android.os.Bundle
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
 import az.rabita.lifestep.R
 import az.rabita.lifestep.databinding.ActivityForgotPasswordBinding
 import az.rabita.lifestep.manager.LocaleManager
 import az.rabita.lifestep.ui.dialog.loading.LoadingDialog
 import az.rabita.lifestep.ui.dialog.message.MessageDialog
-import az.rabita.lifestep.ui.dialog.message.MessageType
-import az.rabita.lifestep.utils.DEFAULT_LANG_KEY
-import az.rabita.lifestep.utils.LOADING_TAG
-import az.rabita.lifestep.utils.MAIN_TO_FORGOT_PASSWORD_KEY
-import az.rabita.lifestep.utils.UiState
+import az.rabita.lifestep.utils.*
 import az.rabita.lifestep.viewModel.fragment.forgotPassword.ForgotPasswordViewModel
 
 class ForgotPasswordActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityForgotPasswordBinding
 
-    private lateinit var viewModel: ForgotPasswordViewModel
+    private val viewModel by viewModels<ForgotPasswordViewModel>()
 
     private val navController by lazy { findNavController(R.id.fragment_password_host) }
-    private val loadingDialog by lazy { LoadingDialog() }
+
+    private val loadingDialog = LoadingDialog()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_forgot_password)
 
-        viewModel = ViewModelProvider(this).get(ForgotPasswordViewModel::class.java)
-
-        binding.apply {
-            lifecycleOwner = this@ForgotPasswordActivity
-        }
+        bindUI()
 
         viewModel.changeFromEditProfilePage(
             intent.getBooleanExtra(
@@ -50,6 +43,10 @@ class ForgotPasswordActivity : AppCompatActivity() {
         observeStates()
         observeData()
         navigate()
+    }
+
+    private fun bindUI(): Unit = with(binding) {
+        lifecycleOwner = this@ForgotPasswordActivity
     }
 
     private fun observeStates(): Unit = with(viewModel) {
@@ -77,13 +74,13 @@ class ForgotPasswordActivity : AppCompatActivity() {
 
         errorMessage.observe(this@ForgotPasswordActivity, Observer {
             it?.let {
-                MessageDialog(it).show(supportFragmentManager, "Error")
+                MessageDialog(it).show(supportFragmentManager, ERROR_TAG)
             }
         })
 
     }
 
-    private fun navigate() = with(viewModel) {
+    private fun navigate(): Unit = with(viewModel) {
 
         eventBack.observe(this@ForgotPasswordActivity, Observer {
             it?.let { if (it) finish() }

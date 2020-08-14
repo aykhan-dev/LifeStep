@@ -4,6 +4,7 @@ import androidx.recyclerview.widget.DiffUtil
 import az.rabita.lifestep.pojo.apiPOJO.content.DonorsContentPOJO
 
 object DonorsDiffCallback : DiffUtil.ItemCallback<DonorsContentPOJO>() {
+
     override fun areItemsTheSame(oldItem: DonorsContentPOJO, newItem: DonorsContentPOJO): Boolean {
         return oldItem.id == newItem.id
     }
@@ -14,4 +15,5 @@ object DonorsDiffCallback : DiffUtil.ItemCallback<DonorsContentPOJO>() {
     ): Boolean {
         return oldItem == newItem
     }
+
 }

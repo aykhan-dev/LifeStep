@@ -8,26 +8,20 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
-import androidx.recyclerview.widget.RecyclerView
 import az.rabita.lifestep.databinding.FragmentDonationBinding
 import az.rabita.lifestep.ui.dialog.message.MessageDialog
-import az.rabita.lifestep.ui.dialog.message.MessageType
 import az.rabita.lifestep.utils.ERROR_TAG
-import az.rabita.lifestep.utils.VerticalSpaceItemDecoration
 import az.rabita.lifestep.utils.logout
-import az.rabita.lifestep.utils.pxFromDp
 import az.rabita.lifestep.viewModel.fragment.donation.DonationViewModel
 
 class DonationFragment : Fragment() {
 
     private lateinit var binding: FragmentDonationBinding
 
-    private val viewModel: DonationViewModel by viewModels()
+    private val viewModel by viewModels<DonationViewModel>()
 
-    private lateinit var recyclerView: RecyclerView
-
-    private val donationAdapter: DonationRecyclerAdapter by lazy {
-        DonationRecyclerAdapter { id -> navigateToDetailedFragment(id) }
+    private val donationAdapter: DonationRecyclerAdapter = DonationRecyclerAdapter { id ->
+        navigateToDetailedFragment(id)
     }
 
     private val navController by lazy { findNavController() }
@@ -37,27 +31,12 @@ class DonationFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         binding = FragmentDonationBinding.inflate(inflater)
-
-        binding.apply {
-            lifecycleOwner = this@DonationFragment
-        }
-
-        with(binding) {
-            imageButtonBack.setOnClickListener { navController.popBackStack() }
-
-            this@DonationFragment.recyclerView = recyclerViewDonation
-        }
-
         return binding.root
-    }
-
-    override fun onStart() {
-        super.onStart()
-        viewModel.fetchListOfDonations(1)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        bindUI()
         configureRecyclerView()
     }
 
@@ -67,7 +46,18 @@ class DonationFragment : Fragment() {
         observeEvents()
     }
 
-    private fun configureRecyclerView() = with(binding.recyclerViewDonation) {
+    override fun onStart() {
+        super.onStart()
+        viewModel.fetchListOfDonations(1)
+    }
+
+    private fun bindUI(): Unit = with(binding) {
+        lifecycleOwner = this@DonationFragment
+
+        imageButtonBack.setOnClickListener { navController.popBackStack() }
+    }
+
+    private fun configureRecyclerView(): Unit = with(binding.recyclerViewDonation) {
         adapter = donationAdapter
     }
 
@@ -103,7 +93,7 @@ class DonationFragment : Fragment() {
 
     }
 
-    private fun navigateToDetailedFragment(id: String) = with(navController) {
+    private fun navigateToDetailedFragment(id: String): Unit = with(navController) {
         navigate(DonationFragmentDirections.actionDonationFragmentToDetailedInfoFragment(id))
     }
 

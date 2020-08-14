@@ -10,7 +10,6 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import az.rabita.lifestep.databinding.FragmentPageBinding
 import az.rabita.lifestep.ui.dialog.message.MessageDialog
-import az.rabita.lifestep.ui.dialog.message.MessageType
 import az.rabita.lifestep.utils.ERROR_TAG
 import az.rabita.lifestep.utils.logout
 import az.rabita.lifestep.viewModel.fragment.history.HistoryViewModel
@@ -20,7 +19,7 @@ class PageHistoryFragment(private val pageType: HistoryPageType) : Fragment() {
 
     private lateinit var binding: FragmentPageBinding
 
-    private val viewModel: HistoryViewModel by viewModels()
+    private val viewModel by viewModels<HistoryViewModel>()
 
     private val adapter = PageHistoryRecyclerAdapter()
 
@@ -29,16 +28,12 @@ class PageHistoryFragment(private val pageType: HistoryPageType) : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         binding = FragmentPageBinding.inflate(inflater)
-
-        binding.apply {
-            lifecycleOwner = this@PageHistoryFragment
-        }
-
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        bindUI()
         configureRecyclerView()
     }
 
@@ -48,8 +43,12 @@ class PageHistoryFragment(private val pageType: HistoryPageType) : Fragment() {
         observeEvents()
     }
 
-    private fun configureRecyclerView() = with(binding) {
-        recyclerViewHistory.adapter = adapter
+    private fun bindUI(): Unit = with(binding) {
+        lifecycleOwner = this@PageHistoryFragment
+    }
+
+    private fun configureRecyclerView(): Unit = with(binding.recyclerViewHistory) {
+        adapter = this@PageHistoryFragment.adapter
     }
 
     private fun observeData(): Unit = with(viewModel) {

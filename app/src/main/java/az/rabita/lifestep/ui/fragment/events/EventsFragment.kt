@@ -10,43 +10,31 @@ import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import az.rabita.lifestep.databinding.FragmentEventsBinding
 import az.rabita.lifestep.ui.dialog.message.MessageDialog
-import az.rabita.lifestep.ui.dialog.message.MessageType
 import az.rabita.lifestep.utils.ERROR_TAG
-import az.rabita.lifestep.utils.VerticalSpaceItemDecoration
 import az.rabita.lifestep.utils.logout
-import az.rabita.lifestep.utils.pxFromDp
 import az.rabita.lifestep.viewModel.fragment.events.EventsViewModel
 
 class EventsFragment : Fragment() {
 
     private lateinit var binding: FragmentEventsBinding
 
-    private val viewModel: EventsViewModel by viewModels()
+    private val viewModel by viewModels<EventsViewModel>()
 
-    private val adapter by lazy { EventsRecyclerAdapter { id -> navigateTo(id) } }
     private val navController by lazy { findNavController() }
+
+    private val adapter = EventsRecyclerAdapter { id -> navigateTo(id) }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         binding = FragmentEventsBinding.inflate(inflater)
-
-        binding.apply {
-            lifecycleOwner = this@EventsFragment
-            viewModel = this@EventsFragment.viewModel
-        }
-
         return binding.root
-    }
-
-    override fun onStart() {
-        super.onStart()
-        viewModel.fetchAllCategories()
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        bindUI()
         configureRecyclerView()
     }
 
@@ -56,11 +44,21 @@ class EventsFragment : Fragment() {
         observeEvents()
     }
 
+    override fun onStart() {
+        super.onStart()
+        viewModel.fetchAllCategories()
+    }
+
+    private fun bindUI(): Unit = with(binding) {
+        lifecycleOwner = this@EventsFragment
+        viewModel = this@EventsFragment.viewModel
+    }
+
     private fun configureRecyclerView() = with(binding.recyclerViewEvents) {
         adapter = this@EventsFragment.adapter
     }
 
-    private fun navigateTo(eventId: Int) = when (eventId) {
+    private fun navigateTo(eventId: Int): Unit = when (eventId) {
         1 -> navController.navigate(EventsFragmentDirections.actionEventsFragmentToDonationFragment())
         else -> run { }
     }

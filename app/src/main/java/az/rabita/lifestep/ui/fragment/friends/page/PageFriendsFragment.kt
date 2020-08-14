@@ -11,9 +11,11 @@ import androidx.lifecycle.lifecycleScope
 import az.rabita.lifestep.databinding.FragmentPageFriendsBinding
 import az.rabita.lifestep.ui.dialog.loading.LoadingDialog
 import az.rabita.lifestep.ui.dialog.message.MessageDialog
-import az.rabita.lifestep.ui.dialog.message.MessageType
 import az.rabita.lifestep.ui.fragment.friends.FriendsPageType
-import az.rabita.lifestep.utils.*
+import az.rabita.lifestep.utils.ERROR_TAG
+import az.rabita.lifestep.utils.LOADING_TAG
+import az.rabita.lifestep.utils.UiState
+import az.rabita.lifestep.utils.logout
 import az.rabita.lifestep.viewModel.fragment.friends.FriendsViewModel
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -25,31 +27,26 @@ class PageFriendsFragment(
 
     private lateinit var binding: FragmentPageFriendsBinding
 
-    private val viewModel: FriendsViewModel by viewModels()
+    private val viewModel by viewModels<FriendsViewModel>()
 
-    private val adapter by lazy {
+    private val adapter =
         PageFriendsRecyclerAdapter(pageType) { id: String, isAccepted: Boolean?, position: Int ->
             onItemClick(id, isAccepted, position)
         }
-    }
 
-    private val loadingDialog by lazy { LoadingDialog() }
+    private val loadingDialog = LoadingDialog()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         binding = FragmentPageFriendsBinding.inflate(inflater)
-
-        binding.apply {
-            lifecycleOwner = this@PageFriendsFragment
-        }
-
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        bindUI()
         configureRecyclerView()
     }
 
@@ -60,12 +57,12 @@ class PageFriendsFragment(
         observeEvents()
     }
 
-    private fun configureRecyclerView() = with(binding) {
-        recyclerViewFriends.adapter = adapter
+    private fun bindUI(): Unit = with(binding) {
+        lifecycleOwner = this@PageFriendsFragment
+    }
 
-        context?.let {
-            recyclerViewFriends.addItemDecoration(VerticalSpaceItemDecoration(0, pxFromDp(it, 90f)))
-        }
+    private fun configureRecyclerView(): Unit = with(binding.recyclerViewFriends) {
+        adapter = this@PageFriendsFragment.adapter
     }
 
     private fun observeData(): Unit = with(viewModel) {

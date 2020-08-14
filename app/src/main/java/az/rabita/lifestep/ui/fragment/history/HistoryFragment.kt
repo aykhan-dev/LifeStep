@@ -21,24 +21,22 @@ class HistoryFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         binding = FragmentHistoryBinding.inflate(inflater)
-
-        binding.apply {
-            lifecycleOwner = this@HistoryFragment
-        }
-
-        with(binding) {
-            imageButtonBack.setOnClickListener { navController.popBackStack() }
-        }
-
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        bindUI()
         configureViewPager()
     }
 
-    private fun configureViewPager() = with(binding) {
+    private fun bindUI(): Unit = with(binding) {
+        lifecycleOwner = this@HistoryFragment
+
+        imageButtonBack.setOnClickListener { navController.popBackStack() }
+    }
+
+    private fun configureViewPager(): Unit = with(binding) {
         val tabTitles = listOf(
             getString(R.string.title_donated),
             getString(R.string.title_transfered),

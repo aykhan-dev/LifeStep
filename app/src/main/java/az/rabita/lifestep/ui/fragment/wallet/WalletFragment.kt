@@ -9,7 +9,6 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import az.rabita.lifestep.databinding.FragmentWalletBinding
 import az.rabita.lifestep.ui.dialog.message.MessageDialog
-import az.rabita.lifestep.ui.dialog.message.MessageType
 import az.rabita.lifestep.utils.ERROR_TAG
 import az.rabita.lifestep.utils.logout
 import az.rabita.lifestep.viewModel.fragment.wallet.WalletViewModel
@@ -18,20 +17,25 @@ class WalletFragment : Fragment() {
 
     private lateinit var binding: FragmentWalletBinding
 
-    private val viewModel: WalletViewModel by viewModels()
+    private val viewModel by viewModels<WalletViewModel>()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         binding = FragmentWalletBinding.inflate(inflater)
-
-        binding.apply {
-            lifecycleOwner = this@WalletFragment
-            viewModel = this@WalletFragment.viewModel
-        }
-
         return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        bindUI()
+    }
+
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
+        observeData()
+        observeEvents()
     }
 
     override fun onStart() {
@@ -39,10 +43,9 @@ class WalletFragment : Fragment() {
         viewModel.fetchWalletInfo()
     }
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-        observeData()
-        observeEvents()
+    private fun bindUI(): Unit = with(binding) {
+        lifecycleOwner = this@WalletFragment
+        viewModel = this@WalletFragment.viewModel
     }
 
     private fun observeData(): Unit = with(viewModel) {

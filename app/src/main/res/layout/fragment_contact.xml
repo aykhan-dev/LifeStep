@@ -21,13 +21,13 @@
             android:id="@+id/image_button_back"
             android:layout_width="0dp"
             android:layout_height="0dp"
+            android:background="@android:color/transparent"
             android:scaleType="center"
             android:src="@drawable/ic_back"
             app:layout_constraintBottom_toBottomOf="@id/text_view_title"
             app:layout_constraintDimensionRatio="1:1"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0"
-            android:background="@android:color/transparent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="@id/text_view_title"
             app:layout_constraintWidth_percent="0.15" />
@@ -55,12 +55,12 @@
             app:layout_constraintGuide_percent="0.1" />
 
         <androidx.core.widget.NestedScrollView
-            android:theme="@style/ScrollableTheme"
             android:id="@+id/scroll_content"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:background="@drawable/background_auth_panel"
             android:elevation="20dp"
+            android:theme="@style/ScrollableTheme"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintHeight_percent="0.9"
             app:layout_constraintTop_toTopOf="parent"
@@ -82,13 +82,15 @@
                     app:layout_constraintTop_toTopOf="parent" />
 
                 <androidx.recyclerview.widget.RecyclerView
-            android:theme="@style/ScrollableTheme"
                     android:id="@+id/recycler_view_contacts"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/page_padding_normal"
+                    android:clipToPadding="false"
                     android:nestedScrollingEnabled="false"
                     android:orientation="vertical"
+                    android:paddingBottom="90dp"
+                    android:theme="@style/ScrollableTheme"
                     app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                     app:layout_constraintTop_toBottomOf="@id/image_view_contact"
                     tools:listitem="@layout/item_contact_details" />

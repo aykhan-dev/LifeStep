@@ -11,11 +11,9 @@ import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import az.rabita.lifestep.R
 import az.rabita.lifestep.databinding.FragmentRegisterBinding
-import az.rabita.lifestep.ui.activity.auth.AuthActivity
 import az.rabita.lifestep.ui.activity.main.MainActivity
 import az.rabita.lifestep.ui.dialog.loading.LoadingDialog
 import az.rabita.lifestep.ui.dialog.message.MessageDialog
-import az.rabita.lifestep.ui.dialog.message.MessageType
 import az.rabita.lifestep.utils.ERROR_TAG
 import az.rabita.lifestep.utils.LOADING_TAG
 import az.rabita.lifestep.utils.UiState
@@ -28,31 +26,25 @@ class RegisterFragment : Fragment() {
     private lateinit var binding: FragmentRegisterBinding
     private lateinit var pagerAdapter: RegisterPagerAdapter
 
-    private val authViewModel: AuthViewModel by activityViewModels()
-    private val viewModel: RegistrationViewModel by activityViewModels()
+    private val authViewModel by activityViewModels<AuthViewModel>()
+    private val viewModel by activityViewModels<RegistrationViewModel>()
 
     private val navController by lazy { findNavController() }
-    private val loadingDialog by lazy { LoadingDialog() }
+
+    private val loadingDialog = LoadingDialog()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         binding = FragmentRegisterBinding.inflate(inflater)
-
         pagerAdapter = RegisterPagerAdapter({ swipeBackOnViewPager() }, requireActivity())
-
-        binding.apply {
-            lifecycleOwner = this@RegisterFragment
-            viewModel = this@RegisterFragment.viewModel
-            pagerAdapter = this@RegisterFragment.pagerAdapter
-        }
-
-        with(binding) {
-            root.setOnClickListener { root.hideKeyboard(context) }
-        }
-
         return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        bindUI()
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -60,6 +52,14 @@ class RegisterFragment : Fragment() {
         observeData()
         observeStates()
         observeEvents()
+    }
+
+    private fun bindUI(): Unit = with(binding) {
+        lifecycleOwner = this@RegisterFragment
+        viewModel = this@RegisterFragment.viewModel
+        pagerAdapter = this@RegisterFragment.pagerAdapter
+
+        root.setOnClickListener { root.hideKeyboard(context) }
     }
 
     private fun swipeBackOnViewPager(): Unit = with(binding) {

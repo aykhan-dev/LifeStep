@@ -18,7 +18,6 @@ import az.rabita.lifestep.databinding.FragmentEditProfileBinding
 import az.rabita.lifestep.ui.activity.forgotPassword.ForgotPasswordActivity
 import az.rabita.lifestep.ui.dialog.loading.LoadingDialog
 import az.rabita.lifestep.ui.dialog.message.MessageDialog
-import az.rabita.lifestep.ui.dialog.message.MessageType
 import az.rabita.lifestep.utils.*
 import az.rabita.lifestep.viewModel.fragment.editProfile.EditProfileViewModel
 import com.theartofdev.edmodo.cropper.CropImage
@@ -31,57 +30,61 @@ import java.util.*
 
 class EditProfileFragment : Fragment() {
 
-    private val PICK_IMAGE = 1
-    private val PIC_CROP = 2
+    private val pickImage = 1
+    private val picCrop = 2
 
     private lateinit var binding: FragmentEditProfileBinding
 
-    private val viewModel: EditProfileViewModel by viewModels()
-
-    private val loadingDialog by lazy { LoadingDialog() }
+    private val viewModel by viewModels<EditProfileViewModel>()
 
     private val navController by lazy { findNavController() }
+
+    private val loadingDialog = LoadingDialog()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         binding = FragmentEditProfileBinding.inflate(inflater)
-
-        binding.apply {
-            lifecycleOwner = this@EditProfileFragment
-            viewModel = this@EditProfileFragment.viewModel
-        }
-
-        with(binding) {
-            imageButtonBack.setOnClickListener { navController.popBackStack() }
-            imageViewEditImage.setOnClickListener { onEditImageClick() }
-            buttonChangePassword.setOnClickListener {
-                activity?.let {
-                    val intent = Intent(it, ForgotPasswordActivity::class.java)
-                    intent.putExtra(MAIN_TO_FORGOT_PASSWORD_KEY, true)
-                    startActivity(intent)
-                }
-            }
-            editTextEmail.isEnabled = false
-            editTextInvitationCode.isEnabled = false
-
-            root.setOnClickListener { root.hideKeyboard(context) }
-            constraintLayoutContent.setOnClickListener { root.hideKeyboard(context) }
-        }
-
         return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        bindUI()
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         observeData()
+        observeStates()
         observeEvents()
     }
 
     override fun onStart() {
         super.onStart()
         viewModel.fetchPersonalInfo()
+    }
+
+    private fun bindUI(): Unit = with(binding) {
+        lifecycleOwner = this@EditProfileFragment
+        viewModel = this@EditProfileFragment.viewModel
+
+        imageButtonBack.setOnClickListener { navController.popBackStack() }
+        imageViewEditImage.setOnClickListener { onEditImageClick() }
+        buttonChangePassword.setOnClickListener {
+            activity?.let {
+                val intent = Intent(it, ForgotPasswordActivity::class.java)
+                intent.putExtra(MAIN_TO_FORGOT_PASSWORD_KEY, true)
+                startActivity(intent)
+            }
+        }
+
+        editTextEmail.isEnabled = false
+        editTextInvitationCode.isEnabled = false
+
+        root.setOnClickListener { root.hideKeyboard(context) }
+        constraintLayoutContent.setOnClickListener { root.hideKeyboard(context) }
     }
 
     private fun observeData(): Unit = with(viewModel) {
@@ -101,6 +104,27 @@ class EditProfileFragment : Fragment() {
                         activity.supportFragmentManager,
                         ERROR_TAG
                     )
+                }
+            }
+        })
+
+    }
+
+    private fun observeStates(): Unit = with(viewModel) {
+
+        uiState.observe(viewLifecycleOwner, Observer {
+            it?.let {
+                when (it) {
+                    is UiState.Loading -> activity?.supportFragmentManager?.let { fm ->
+                        loadingDialog.show(
+                            fm,
+                            LOADING_TAG
+                        )
+                    }
+                    is UiState.LoadingFinished -> {
+                        loadingDialog.dismiss()
+                        uiState.value = null
+                    }
                 }
             }
         })

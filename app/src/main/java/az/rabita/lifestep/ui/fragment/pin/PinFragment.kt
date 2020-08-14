@@ -10,7 +10,6 @@ import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import az.rabita.lifestep.databinding.FragmentPinBinding
 import az.rabita.lifestep.ui.dialog.message.MessageDialog
-import az.rabita.lifestep.ui.dialog.message.MessageType
 import az.rabita.lifestep.utils.ERROR_TAG
 import az.rabita.lifestep.utils.hideKeyboard
 import az.rabita.lifestep.viewModel.fragment.forgotPassword.ForgotPasswordViewModel
@@ -19,7 +18,7 @@ class PinFragment : Fragment() {
 
     private lateinit var binding: FragmentPinBinding
 
-    private val viewModel: ForgotPasswordViewModel by activityViewModels()
+    private val viewModel by activityViewModels<ForgotPasswordViewModel>()
 
     private val navController by lazy { findNavController() }
 
@@ -28,22 +27,12 @@ class PinFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         binding = FragmentPinBinding.inflate(inflater)
-
-        binding.apply {
-            lifecycleOwner = this@PinFragment
-            viewModel = this@PinFragment.viewModel
-        }
-
-        with(binding) {
-            imageButtonBack.setOnClickListener { navController.popBackStack() }
-            root.setOnClickListener { it.hideKeyboard(context) }
-        }
-
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        bindUI()
         configurations()
     }
 
@@ -53,7 +42,15 @@ class PinFragment : Fragment() {
         observeEvents()
     }
 
-    private fun configurations() = with(binding) {
+    private fun bindUI(): Unit = with(binding) {
+        lifecycleOwner = this@PinFragment
+        viewModel = this@PinFragment.viewModel
+
+        imageButtonBack.setOnClickListener { navController.popBackStack() }
+        root.setOnClickListener { it.hideKeyboard(context) }
+    }
+
+    private fun configurations(): Unit = with(binding) {
 
         pinView.addTextChangeMethod {
             this@PinFragment.viewModel.pinInput.postValue(it)

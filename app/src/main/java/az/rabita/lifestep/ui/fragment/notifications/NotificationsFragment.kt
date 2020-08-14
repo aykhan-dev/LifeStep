@@ -21,7 +21,7 @@ class NotificationsFragment : Fragment() {
 
     private lateinit var binding: FragmentNotificationsBinding
 
-    private val viewModel: NotificationsViewModel by viewModels()
+    private val viewModel by viewModels<NotificationsViewModel>()
 
     private val navController by lazy { findNavController() }
     private val notificationsAdapter by lazy {
@@ -44,21 +44,12 @@ class NotificationsFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         binding = FragmentNotificationsBinding.inflate(inflater)
-
-        binding.apply {
-            lifecycleOwner = this@NotificationsFragment
-            viewModel = this@NotificationsFragment.viewModel
-        }
-
-        with(binding) {
-            imageButtonBack.setOnClickListener { navController.popBackStack() }
-        }
-
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        bindUI()
         configureRecyclerView()
     }
 
@@ -73,7 +64,14 @@ class NotificationsFragment : Fragment() {
         viewModel.fetchListOfNotifications()
     }
 
-    private fun configureRecyclerView() = with(binding.recyclerViewNotifications) {
+    private fun bindUI(): Unit = with(binding) {
+        lifecycleOwner = this@NotificationsFragment
+        viewModel = this@NotificationsFragment.viewModel
+
+        imageButtonBack.setOnClickListener { navController.popBackStack() }
+    }
+
+    private fun configureRecyclerView(): Unit = with(binding.recyclerViewNotifications) {
         adapter = notificationsAdapter
     }
 

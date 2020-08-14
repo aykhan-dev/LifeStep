@@ -10,7 +10,6 @@ import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import az.rabita.lifestep.databinding.FragmentEmailBinding
 import az.rabita.lifestep.ui.dialog.message.MessageDialog
-import az.rabita.lifestep.ui.dialog.message.MessageType
 import az.rabita.lifestep.utils.ERROR_TAG
 import az.rabita.lifestep.utils.hideKeyboard
 import az.rabita.lifestep.viewModel.fragment.forgotPassword.ForgotPasswordViewModel
@@ -19,7 +18,7 @@ class EmailFragment : Fragment() {
 
     private lateinit var binding: FragmentEmailBinding
 
-    private val viewModel: ForgotPasswordViewModel by activityViewModels()
+    private val viewModel by activityViewModels<ForgotPasswordViewModel>()
 
     private val navController by lazy { findNavController() }
 
@@ -28,24 +27,26 @@ class EmailFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         binding = FragmentEmailBinding.inflate(inflater)
-
-        binding.apply {
-            lifecycleOwner = this@EmailFragment
-            viewModel = this@EmailFragment.viewModel
-        }
-
-        with(binding) {
-            imageButtonBack.setOnClickListener { activity?.finish() }
-            root.setOnClickListener { it.hideKeyboard(context) }
-        }
-
         return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        bindUI()
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         observeData()
         observeEvents()
+    }
+
+    private fun bindUI(): Unit = with(binding) {
+        lifecycleOwner = this@EmailFragment
+        viewModel = this@EmailFragment.viewModel
+
+        imageButtonBack.setOnClickListener { activity?.finish() }
+        root.setOnClickListener { it.hideKeyboard(context) }
     }
 
     private fun observeData(): Unit = with(viewModel) {

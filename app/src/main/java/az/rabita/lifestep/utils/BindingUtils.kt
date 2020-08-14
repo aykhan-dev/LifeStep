@@ -11,7 +11,6 @@ import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
 import az.rabita.lifestep.R
 import az.rabita.lifestep.ui.custom.BarDiagram
-import az.rabita.lifestep.ui.custom.DailyStatCard
 import az.rabita.lifestep.ui.custom.WalletCard
 import com.bumptech.glide.Glide
 import com.github.twocoffeesoneteam.glidetovectoryou.GlideToVectorYou
@@ -115,11 +114,6 @@ fun MaterialTextView.setNullableContent(data: Any?) {
         isVisible = true
         text = data.toString()
     } ?: run { this.isVisible = false }
-}
-
-@BindingAdapter("count")
-fun DailyStatCard.setCount(data: Any) {
-    count = data.toString()
 }
 
 @BindingAdapter("dateText")

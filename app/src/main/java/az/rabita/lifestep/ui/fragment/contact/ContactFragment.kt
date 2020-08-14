@@ -10,7 +10,6 @@ import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import az.rabita.lifestep.databinding.FragmentContactBinding
 import az.rabita.lifestep.ui.dialog.message.MessageDialog
-import az.rabita.lifestep.ui.dialog.message.MessageType
 import az.rabita.lifestep.utils.*
 import az.rabita.lifestep.viewModel.fragment.contact.ContactViewModel
 
@@ -18,7 +17,7 @@ class ContactFragment : Fragment() {
 
     private lateinit var binding: FragmentContactBinding
 
-    private val viewModel: ContactViewModel by viewModels()
+    private val viewModel by viewModels<ContactViewModel>()
 
     private val contactsAdapter = ContactRecyclerAdapter {
         if (it.contentKey == "mobilephone" || it.contentKey == "phone") callNumber(it.content)
@@ -30,26 +29,12 @@ class ContactFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         binding = FragmentContactBinding.inflate(inflater)
-
-        binding.apply {
-            lifecycleOwner = this@ContactFragment
-            viewModel = this@ContactFragment.viewModel
-        }
-
-        with(binding) {
-            imageButtonBack.setOnClickListener { navController.popBackStack() }
-        }
-
         return binding.root
-    }
-
-    override fun onStart() {
-        super.onStart()
-        viewModel.fetchContactPageContent()
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        bindUI()
         configureRecyclerView()
     }
 
@@ -59,13 +44,23 @@ class ContactFragment : Fragment() {
         observeEvents()
     }
 
-    private fun configureRecyclerView() = with(binding.recyclerViewContacts) {
+    override fun onStart() {
+        super.onStart()
+        viewModel.fetchContactPageContent()
+    }
+
+    private fun bindUI(): Unit = with(binding) {
+        lifecycleOwner = this@ContactFragment
+        viewModel = this@ContactFragment.viewModel
+
+        imageButtonBack.setOnClickListener { navController.popBackStack() }
+    }
+
+    private fun configureRecyclerView(): Unit = with(binding.recyclerViewContacts) {
         adapter = contactsAdapter
 
         context?.let {
-            addItemDecoration(
-                VerticalSpaceItemDecoration(pxFromDp(it, 20f), pxFromDp(it, 90f))
-            )
+            addItemDecoration(VerticalSpaceItemDecoration(pxFromDp(it, 20f), pxFromDp(it, 0f)))
         }
     }
 

@@ -32,18 +32,20 @@ class BonusStepDialog : DialogFragment() {
         }
 
         binding = FragmentBonusStepDialogBinding.inflate(inflater)
+        return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        bindUI()
+    }
+
+    private fun bindUI(): Unit = with(binding) {
+        lifecycleOwner = this@BonusStepDialog
 
         binding.content.startAnimation(openAnimation)
 
-        binding.apply {
-            lifecycleOwner = this@BonusStepDialog
-        }
-
-        with(binding) {
-            root.setOnClickListener { dismiss() }
-        }
-
-        return binding.root
+        root.setOnClickListener { dismiss() }
     }
 
     override fun getTheme(): Int = R.style.DialogTheme

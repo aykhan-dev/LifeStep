@@ -26,7 +26,7 @@ class ProfileDetailsFragment : Fragment() {
 
     private lateinit var binding: FragmentProfileDetailsBinding
 
-    private val viewModel: ProfileDetailsViewModel by viewModels()
+    private val viewModel by viewModels<ProfileDetailsViewModel>()
 
     private val navController by lazy { findNavController() }
 
@@ -55,7 +55,6 @@ class ProfileDetailsFragment : Fragment() {
     }
 
     private fun bindUI(): Unit = with(binding) {
-
         lifecycleOwner = this@ProfileDetailsFragment
         viewModel = this@ProfileDetailsFragment.viewModel
 
