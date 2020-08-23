@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
     <string name="app_name">LifeStep</string>
     <string name="action_settings">Settings</string>
 
     <string name="hello_blank_fragment">Hello blank fragment</string>
-    <string name="main">Əsas</string>
+    <string name="main">Main</string>
     <string name="monday">B.e</string>
     <string name="tuesday">Ç.a</string>
     <string name="wednesday">Çər</string>
@@ -36,26 +35,26 @@
     <string name="spend_step">Addımı xərclə</string>
     <string name="marathon">Marafon</string>
     <string name="donate_step">Addım bağışla</string>
-    <string name="total_lifesteps">Total LifeStep steps count</string>
-    <string name="converted">Converted</string>
-    <string name="donated">Donated</string>
-    <string name="transfered">Transferred</string>
+    <string name="total_lifesteps">Mövcud cəmi LifeStep addım</string>
+    <string name="converted">Çevrilən</string>
+    <string name="donated">Bağışlanan</string>
+    <string name="transfered">Transfer edilən</string>
     <string name="bonus">Bonus</string>
-    <string name="earned">Earned AZN</string>
-    <string name="balance">Balance</string>
-    <string name="earned_steps">Transferred to you</string>
+    <string name="earned">Qazanılan AZN</string>
+    <string name="balance">Balans</string>
+    <string name="earned_steps">Transfer ilə alınan</string>
     <string name="earn_steps">Addım qazan</string>
     <string name="title_watch_ads">Reklam izlə 200 addım qazan!</string>
     <string name="body_watch_ads">Bu bölmədə siz Google reklamlarını izləməklə hər izlədiyiniz reklama görə 200 addım qazanmış olacaqsınız. İstədiyiniz qədər reklam izləyib addım qazana bilərsiniz. Yardım etmək bax bu qədər asandır !</string>
     <string name="watch_ads">Reklam izlə</string>
-    <string name="settings">Settings</string>
-    <string name="text_profile">Profile</string>
-    <string name="text_invite_friend">Invite\nyour friend</string>
-    <string name="text_history">History</string>
-    <string name="text_contact">Contact us</string>
-    <string name="language_selection">Language</string>
-    <string name="about_us">About Us</string>
-    <string name="logout">Logout</string>
+    <string name="settings">Tənzimləmələr</string>
+    <string name="text_profile">Profilim</string>
+    <string name="text_invite_friend">Dostunu\ndəvət et</string>
+    <string name="text_history">Tarixçə</string>
+    <string name="text_contact">Bizimlə\nəlaqə</string>
+    <string name="language_selection">Dil seçimi</string>
+    <string name="about_us">Haqqımızda</string>
+    <string name="logout">Çıxış</string>
     <string name="lorem_impuls">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Tellus nunc, nunc, sit aliquet hac sit et neque. Dignissim porttitor lacus imperdiet viverra tincidunt risus justo, condimentum fermentum. Eu viverra urna ipsum mi pellentesque id risus egestas. Id metus, malesuada tincidunt nisi et ornare. Eu nunc imperdiet etiam pellentesque mauris</string>
     <string name="text_address_contact">Dilarə Əliyeva 185C</string>
     <string name="text_phone_home_contact">+994 12 456 65 56</string>
@@ -70,7 +69,7 @@
     <string name="en_lang">İngilis dili</string>
     <string name="ru_lang">Rus dili</string>
     <string name="text_friends_title">Dostlarım</string>
-    <string name="champions">Champions</string>
+    <string name="champions">Çempionlar</string>
     <string name="title_donated">Bağışladıqlarım</string>
     <string name="title_transfered">Transferlərim</string>
     <string name="title_earned">Qazandıqlarım</string>
@@ -135,19 +134,18 @@
     <string name="friends_count">%1s nəfər</string>
     <string name="friends_balance">%1s addım</string>
 
-    <string name="text_friends">Friends\n%1s person</string>
+    <string name="text_friends">Dostlarım\n%1s nəfər</string>
     <string name="my_friends">Dostlarım (%1s)</string>
     <string name="friend_requests">Dostluq təkliflərim (%1s)</string>
     <string name="decline">Imtina et</string>
     <string name="accept">Qəbul et</string>
     <string name="hide">Gizlət</string>
     <string name="join_date_text">%1s tarixində qoşulub</string>
-    <string name="two_lined_format">%1s\n%2s</string>
+    <string name="two_lined_format">%1$s\n%2$s</string>
     <string name="total_steps">cəmi addım</string>
     <string name="friends">dostlar</string>
     <string name="preparing">Hazırlanır</string>
     <string name="sharing_method">Choose sharing method</string>
-
     <string name="user_info">Istifadəçi məlumatları</string>
     <string name="desired_steps_count_send">Göndərmək istədiyiniz\naddım sayı</string>
     <string name="send">Göndər</string>
@@ -156,17 +154,24 @@
     <string name="search">Axtar</string>
     <string name="install">Yüklə</string>
     <string name="life_steps">LifeSteps</string>
-
     <string name="more">Daha çox</string>
     <string name="search_results">Axtarış Nəticələri</string>
 
     <string name="full_name_singleline">%1s %2s</string>
-
     <string name="congrats">Təbriklər</string>
     <string name="quote_congrats_bonus">200 Bonus addım qazandınız</string>
 
     <string name="google_auth_fail_message">Google Fit hesabınızı qoşmalısınız</string>
 
     <string name="no_internet_connection">Internet əlaqəsi yoxdur</string>
+    <string name="remaining">seconds remaining</string>
 
+    <string-array name="calcalationSuffixes">
+        <item>min</item>
+        <item>mln</item>
+        <item>mly</item>
+        <item>trl</item>
+    </string-array>
+
+    <!-- Strings used for fragments for navigation -->
 </resources>

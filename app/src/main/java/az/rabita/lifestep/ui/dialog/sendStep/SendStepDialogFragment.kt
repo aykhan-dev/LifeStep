@@ -19,6 +19,7 @@ import az.rabita.lifestep.ui.dialog.message.MessageDialog
 import az.rabita.lifestep.utils.ERROR_TAG
 import az.rabita.lifestep.utils.hideKeyboard
 import az.rabita.lifestep.utils.logout
+import az.rabita.lifestep.utils.shortenString
 import az.rabita.lifestep.viewModel.fragment.profileDetails.UserProfileViewModel
 
 class SendStepDialogFragment : DialogFragment() {

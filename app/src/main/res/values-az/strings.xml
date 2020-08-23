@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
     <string name="app_name">LifeStep</string>
     <string name="action_settings">Settings</string>
 
@@ -142,12 +141,11 @@
     <string name="accept">Qəbul et</string>
     <string name="hide">Gizlət</string>
     <string name="join_date_text">%1s tarixində qoşulub</string>
-    <string name="two_lined_format">%1s\n%2s</string>
+    <string name="two_lined_format">%1$s\n%2$s</string>
     <string name="total_steps">cəmi addım</string>
     <string name="friends">dostlar</string>
     <string name="preparing">Hazırlanır</string>
     <string name="sharing_method">Choose sharing method</string>
-
     <string name="user_info">Istifadəçi məlumatları</string>
     <string name="desired_steps_count_send">Göndərmək istədiyiniz\naddım sayı</string>
     <string name="send">Göndər</string>
@@ -156,17 +154,24 @@
     <string name="search">Axtar</string>
     <string name="install">Yüklə</string>
     <string name="life_steps">LifeSteps</string>
-
     <string name="more">Daha çox</string>
     <string name="search_results">Axtarış Nəticələri</string>
 
     <string name="full_name_singleline">%1s %2s</string>
-
     <string name="congrats">Təbriklər</string>
     <string name="quote_congrats_bonus">200 Bonus addım qazandınız</string>
 
     <string name="google_auth_fail_message">Google Fit hesabınızı qoşmalısınız</string>
 
     <string name="no_internet_connection">Internet əlaqəsi yoxdur</string>
+    <string name="remaining">seconds remaining</string>
 
+    <string-array name="calcalationSuffixes">
+        <item>min</item>
+        <item>mln</item>
+        <item>mly</item>
+        <item>trl</item>
+    </string-array>
+
+    <!-- Strings used for fragments for navigation -->
 </resources>

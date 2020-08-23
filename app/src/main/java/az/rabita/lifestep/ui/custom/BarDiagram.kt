@@ -11,6 +11,7 @@ import android.view.MotionEvent
 import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import az.rabita.lifestep.R
+import az.rabita.lifestep.utils.shortenString
 import kotlinx.android.synthetic.main.layout_diagram.view.*
 
 class BarDiagram @JvmOverloads constructor(
@@ -269,7 +270,7 @@ class BarDiagram @JvmOverloads constructor(
         var sum = perRow
 
         for (i in 0 until 4) {
-            result.add(sum.toString())
+            result.add(context?.shortenString(sum) ?: "")
             sum += (2 * perRow)
         }
 

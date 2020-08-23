@@ -3,8 +3,10 @@ package az.rabita.lifestep.utils
 import android.net.Uri
 import android.os.Build
 import android.view.View
+import android.widget.EditText
 import android.widget.ImageView
 import android.widget.ProgressBar
+import android.widget.TextView
 import androidx.core.view.isVisible
 import androidx.databinding.BindingAdapter
 import androidx.viewpager2.adapter.FragmentStateAdapter
@@ -119,4 +121,11 @@ fun MaterialTextView.setNullableContent(data: Any?) {
 @BindingAdapter("dateText")
 fun MaterialTextView.setFormattedDateAsText(date: String) {
     text = date.substring(0, 10)
+}
+
+@BindingAdapter("app:shortenDecimalHint")
+fun EditText.setDecimalText(number: Long?) {
+    number?.let {
+        hint = context.shortenString(number)
+    }
 }

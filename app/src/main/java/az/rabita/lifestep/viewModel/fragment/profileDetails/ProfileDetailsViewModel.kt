@@ -11,7 +11,10 @@ import az.rabita.lifestep.pojo.apiPOJO.content.MonthlyContentPOJO
 import az.rabita.lifestep.repository.ReportRepository
 import az.rabita.lifestep.repository.UsersRepository
 import az.rabita.lifestep.ui.custom.BarDiagram
-import az.rabita.lifestep.utils.*
+import az.rabita.lifestep.utils.DEFAULT_LANG
+import az.rabita.lifestep.utils.LANG_KEY
+import az.rabita.lifestep.utils.TOKEN_KEY
+import az.rabita.lifestep.utils.isInternetConnectionAvailable
 import kotlinx.coroutines.launch
 
 @Suppress("UNCHECKED_CAST")
@@ -35,55 +38,61 @@ class ProfileDetailsViewModel(application: Application) : AndroidViewModel(appli
     private val _stats = MutableLiveData<BarDiagram.DiagramDataModel>()
     val stats: LiveData<BarDiagram.DiagramDataModel> get() = _stats
 
+    private val listOfDailyStats = MutableLiveData<BarDiagram.DiagramDataModel>()
+    private var listOfMonthlyStats = MutableLiveData<BarDiagram.DiagramDataModel>()
+
     private var _errorMessage = MutableLiveData<String?>()
     val errorMessage: LiveData<String?> get() = _errorMessage
 
     val profileInfo = usersRepository.personalInfo.asLiveData()
 
-    fun fetchProfileDetails() = viewModelScope.launch {
+    fun fetchProfile() {
+        viewModelScope.launch {
+            fetchProfileDetails()
+            refreshDailyStats()
+            refreshMonthlyStats()
+        }
+    }
 
+    private suspend fun fetchProfileDetails() {
         val token = sharedPreferences.getStringElement(TOKEN_KEY, "")
-         val lang = sharedPreferences.getIntegerElement(LANG_KEY, DEFAULT_LANG)
+        val lang = sharedPreferences.getIntegerElement(LANG_KEY, DEFAULT_LANG)
 
         when (val response = usersRepository.getPersonalInfo(token, lang)) {
-            is NetworkState.Success<*> -> refreshStats()
+            is NetworkState.Success<*> -> {
+                refreshDailyStats()
+                refreshMonthlyStats()
+            }
             is NetworkState.ExpiredToken -> startExpireTokenProcess()
             is NetworkState.UnhandledHttpError -> showMessageDialog(response.error)
             is NetworkState.HandledHttpError -> showMessageDialog(response.error)
             is NetworkState.NetworkException -> handleNetworkException(response.exception)
         }
-
     }
 
     fun onDailyTextClick() {
         _dailyTextSelected.value = true
         _monthlyTextSelected.value = false
-        refreshStats()
+        _stats.value = listOfDailyStats.value
     }
 
     fun onMonthlyTextClick() {
         _monthlyTextSelected.value = true
         _dailyTextSelected.value = false
-        refreshStats()
+        _stats.value = listOfMonthlyStats.value
     }
 
-    private fun refreshStats() {
-        if (_dailyTextSelected.value!!) refreshDailyStats()
-        if (_monthlyTextSelected.value!!) refreshMonthlyStats()
-    }
-
-    private fun refreshDailyStats() = viewModelScope.launch {
-
+    private suspend fun refreshDailyStats() {
         profileInfo.value?.let { info ->
 
             val token = sharedPreferences.getStringElement(TOKEN_KEY, "")
-             val lang = sharedPreferences.getIntegerElement(LANG_KEY, DEFAULT_LANG)
+            val lang = sharedPreferences.getIntegerElement(LANG_KEY, DEFAULT_LANG)
 
             when (val response =
                 reportRepository.getDailyStats(token, lang, info.id)) {
                 is NetworkState.Success<*> -> run {
                     val data = response.data as List<DailyContentPOJO>
-                    extractDiagramData(data)
+                    listOfDailyStats.postValue(extractDiagramData(data))
                 }
                 is NetworkState.ExpiredToken -> startExpireTokenProcess()
                 is NetworkState.UnhandledHttpError -> showMessageDialog(response.error)
@@ -92,21 +101,19 @@ class ProfileDetailsViewModel(application: Application) : AndroidViewModel(appli
             }
 
         }
-
     }
 
-    private fun refreshMonthlyStats() = viewModelScope.launch {
-
+    private suspend fun refreshMonthlyStats() {
         profileInfo.value?.let { info ->
 
             val token = sharedPreferences.getStringElement(TOKEN_KEY, "")
-             val lang = sharedPreferences.getIntegerElement(LANG_KEY, DEFAULT_LANG)
+            val lang = sharedPreferences.getIntegerElement(LANG_KEY, DEFAULT_LANG)
 
             when (val response =
                 reportRepository.getMonthlyStats(token, lang, info.id)) {
                 is NetworkState.Success<*> -> run {
                     val data = response.data as List<MonthlyContentPOJO>
-                    extractDiagramData(data)
+                    listOfMonthlyStats.postValue(extractDiagramData(data))
                 }
                 is NetworkState.ExpiredToken -> startExpireTokenProcess()
                 is NetworkState.UnhandledHttpError -> showMessageDialog(response.error)
@@ -115,10 +122,9 @@ class ProfileDetailsViewModel(application: Application) : AndroidViewModel(appli
             }
 
         }
-
     }
 
-    private fun extractDiagramData(data: List<*>) {
+    private fun extractDiagramData(data: List<*>): BarDiagram.DiagramDataModel {
         var maxValue = 0L
         val columns = mutableListOf<String>()
         val values = mutableListOf<Long>()
@@ -138,7 +144,7 @@ class ProfileDetailsViewModel(application: Application) : AndroidViewModel(appli
             }
         }
 
-        _stats.value = BarDiagram.DiagramDataModel(
+        return BarDiagram.DiagramDataModel(
             maxValue = maxValue,
             columnTexts = columns,
             values = values

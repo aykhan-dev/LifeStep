@@ -70,8 +70,8 @@
                     android:text="@={viewModel.sendStepInput}"
                     android:textAlignment="center"
                     android:textColor="@color/bottom_navigation_view_color"
-                    android:textSize="40sp"
-                    app:hint="@{viewModel.personalInfo.balance}" />
+                    android:textSize="@dimen/very_large"
+                    app:shortenDecimalHint="@{viewModel.personalInfo.balance}" />
 
             </com.google.android.material.textfield.TextInputLayout>
 

@@ -91,7 +91,7 @@ class HomeFragment : Fragment() {
         }
 
         tabLayout.addOnTabSelectedListener(object : OnTabSelectedListener {
-            override fun onTabSelected(tab: TabLayout.Tab) = onWeekDaySelect(tab.position)
+            override fun onTabSelected(tab: TabLayout.Tab): Unit = onWeekDaySelect(tab.position)
             override fun onTabUnselected(tab: TabLayout.Tab) {}
             override fun onTabReselected(tab: TabLayout.Tab) {}
         })
@@ -104,12 +104,16 @@ class HomeFragment : Fragment() {
             viewModel.weeklyStats.value?.let { list ->
                 if (list.isNotEmpty()) {
                     with(binding) {
-                        textViewCount.text = list[position].stepCount.toString()
-                        textViewConvertedCount.text = list[position].convertedSteps.toString()
-                        textViewUnconvertedCount.text = list[position].unconvertedSteps.toString()
-                        textViewDistanceCount.text = list[position].kilometers.toString()
-                        textViewCalorieCount.text = list[position].calories.toString()
-                        configureSeekBar(list[position].convertedSteps, list[position].stepCount)
+                        with(list[position]) {
+                            with(requireContext()) {
+                                textViewCount.text = shortenString(stepCount, 6)
+                                textViewConvertedCount.text = shortenString(convertedSteps)
+                                textViewUnconvertedCount.text = shortenString(unconvertedSteps)
+                            }
+                            textViewDistanceCount.text = kilometers.toString()
+                            textViewCalorieCount.text = calories.toString()
+                            configureSeekBar(convertedSteps, stepCount)
+                        }
                     }
                 }
             }

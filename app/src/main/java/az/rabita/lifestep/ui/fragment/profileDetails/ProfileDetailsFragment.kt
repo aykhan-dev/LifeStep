@@ -20,6 +20,7 @@ import az.rabita.lifestep.databinding.FragmentProfileDetailsBinding
 import az.rabita.lifestep.ui.dialog.message.MessageDialog
 import az.rabita.lifestep.utils.ERROR_TAG
 import az.rabita.lifestep.utils.logout
+import az.rabita.lifestep.utils.shortenString
 import az.rabita.lifestep.viewModel.fragment.profileDetails.ProfileDetailsViewModel
 
 class ProfileDetailsFragment : Fragment() {
@@ -51,7 +52,7 @@ class ProfileDetailsFragment : Fragment() {
 
     override fun onStart() {
         super.onStart()
-        viewModel.fetchProfileDetails()
+        viewModel.fetchProfile()
     }
 
     private fun bindUI(): Unit = with(binding) {
@@ -77,7 +78,7 @@ class ProfileDetailsFragment : Fragment() {
                 val spannableFriends =
                     SpannableString("${it.friendsCount}\n${getString(R.string.friends)}")
                 val spannableSteps =
-                    SpannableString("${it.balance}\n${getString(R.string.total_steps)}")
+                    SpannableString("${requireContext().shortenString(it.balance, 6)}\n${getString(R.string.total_steps)}")
 
                 spannableFriends.setSpan(
                     RelativeSizeSpan(2f),
