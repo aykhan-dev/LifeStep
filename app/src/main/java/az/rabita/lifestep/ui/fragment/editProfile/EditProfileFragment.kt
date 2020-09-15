@@ -174,9 +174,9 @@ class EditProfileFragment : Fragment() {
                 }
                 bitmap?.let {
                     context?.let {
-                        val file = File(it.cacheDir, UUID.randomUUID().toString() + ".png")
+                        val file = File(it.cacheDir, UUID.randomUUID().toString() + ".jpeg")
                         val bos = ByteArrayOutputStream()
-                        bitmap.compress(Bitmap.CompressFormat.PNG, 100, bos)
+                        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, bos)
                         val bitmapData = bos.toByteArray()
                         val fos = FileOutputStream(file)
                         fos.write(bitmapData)

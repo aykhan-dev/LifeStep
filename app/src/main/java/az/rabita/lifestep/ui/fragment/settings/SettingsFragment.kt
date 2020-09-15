@@ -70,11 +70,7 @@ class SettingsFragment : Fragment() {
             navController.navigate(SettingsFragmentDirections.actionSettingsFragmentToContactFragment())
         }
         cardChampions.setOnClickListener {
-            navController.navigate(
-                SettingsFragmentDirections.actionSettingsFragmentToRankingFragment(
-                    postId = null
-                )
-            )
+            navController.navigate(SettingsFragmentDirections.actionSettingsFragmentToChampionsFragment())
         }
         cardLanguage.setOnClickListener {
             navController.navigate(SettingsFragmentDirections.actionSettingsFragmentToLanguageFragment())

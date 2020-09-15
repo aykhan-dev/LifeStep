@@ -35,7 +35,7 @@
         tools:layout="@layout/fragment_invite_friend" />
     <fragment
         android:id="@+id/userProfileFragment2"
-        android:name="az.rabita.lifestep.ui.fragment.userProfile.UserProfileFragment"
+        android:name="az.rabita.lifestep.ui.fragment.otherUserProfile.OtherUserProfileFragment"
         android:label="UserProfileFragment"
         tools:layout="@layout/fragment_user_profile">
         <argument

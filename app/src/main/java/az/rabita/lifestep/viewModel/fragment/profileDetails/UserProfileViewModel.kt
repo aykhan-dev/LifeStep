@@ -17,7 +17,7 @@ import az.rabita.lifestep.repository.ReportRepository
 import az.rabita.lifestep.repository.TransactionsRepository
 import az.rabita.lifestep.repository.UsersRepository
 import az.rabita.lifestep.ui.custom.BarDiagram
-import az.rabita.lifestep.ui.fragment.userProfile.FriendshipStatus
+import az.rabita.lifestep.ui.fragment.otherUserProfile.FriendshipStatus
 import az.rabita.lifestep.utils.*
 import kotlinx.coroutines.launch
 import java.util.*

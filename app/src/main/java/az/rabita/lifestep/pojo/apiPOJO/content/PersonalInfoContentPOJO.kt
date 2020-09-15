@@ -10,10 +10,11 @@ data class PersonalInfoContentPOJO(
     @Json(name = "Email") val email: String,
     @Json(name = "PhoneNumber") val phone: String,
     @Json(name = "ImageUrl") val url: String,
+    @Json(name = "OriginalImageUrl") val originalUrl: String,
+    @Json(name = "Balance") val balance: Long,
     @Json(name = "FriendsCount") val friendsCount: Int,
     @Json(name = "UsersFriendshipsStatusesId") val friendShipStatus: Int,
     @Json(name = "UsersFriendshipsStatuses") val friendShipStatusMessage: String,
-    @Json(name = "Balance") val balance: Long,
     @Json(name = "InvitationCode") val invitationCode: String,
     @Json(name = "CreatedDate") val createdDate: String
 )

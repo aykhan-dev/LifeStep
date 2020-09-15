@@ -7,9 +7,9 @@
 
     <fragment
         android:id="@+id/profileDetailsFragment"
-        android:name="az.rabita.lifestep.ui.fragment.profileDetails.ProfileDetailsFragment"
+        android:name="az.rabita.lifestep.ui.fragment.ownProfileDetails.OwnProfileDetailsFragment"
         android:label="ProfileDetailsFragment"
-        tools:layout="@layout/fragment_profile_details" >
+        tools:layout="@layout/fragment_own_profile_details" >
         <action
             android:id="@+id/action_profileDetailsFragment_to_editProfileFragment"
             app:destination="@id/editProfileFragment" />

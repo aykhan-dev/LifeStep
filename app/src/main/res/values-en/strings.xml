@@ -173,5 +173,11 @@
         <item>trl</item>
     </string-array>
 
+    <string-array name="championsPageTabs">
+        <item>Günün çempionları</item>
+        <item>Həftənin çempionları</item>
+        <item>Ayın çempionları</item>
+    </string-array>
+
     <!-- Strings used for fragments for navigation -->
 </resources>

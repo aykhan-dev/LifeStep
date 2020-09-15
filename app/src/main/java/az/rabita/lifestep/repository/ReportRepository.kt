@@ -70,8 +70,22 @@ class ReportRepository private constructor(database: AppDatabase) {
         NetworkState.NetworkException(e.message)
     }
 
+    suspend fun getChampionsOfDay(token: String, lang: Int): NetworkState = try {
+        val response = reportService.getChampionsOfDay(token, lang)
+        checkNetworkRequestResponse(response)
+    } catch (e: Exception) {
+        NetworkState.NetworkException(e.message)
+    }
+
     suspend fun getChampionsOfWeek(token: String, lang: Int): NetworkState = try {
         val response = reportService.getChampionsOfWeek(token, lang)
+        checkNetworkRequestResponse(response)
+    } catch (e: Exception) {
+        NetworkState.NetworkException(e.message)
+    }
+
+    suspend fun getChampionsOfMonth(token: String, lang: Int): NetworkState = try {
+        val response = reportService.getChampionsOfMonth(token, lang)
         checkNetworkRequestResponse(response)
     } catch (e: Exception) {
         NetworkState.NetworkException(e.message)

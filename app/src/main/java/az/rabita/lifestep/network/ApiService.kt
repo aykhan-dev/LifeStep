@@ -103,6 +103,21 @@ interface UsersService {
         @Query("fullname") fullName: String
     ): Response<ServerResponsePOJO<SearchResultContentPOJO>>
 
+    ///////////////// DIFFERENT TYPE REQUEST ////////////////////
+
+    @GET("users/fullinfo")
+    suspend fun getUserInfoAllInOne(
+        @Header("token") token: String,
+        @Header("lang") lang: Int
+    ): Response<AllInOneOwnProfileInfoServerResponsePOJO>
+
+    @GET("users/fullinfobyid")
+    suspend fun getUserInfoAllInOneById(
+        @Header("token") token: String,
+        @Header("lang") lang: Int,
+        @Query("usersId") usersId: String
+    ): Response<AllInOneOtherUserProfileInfoServerResponse>
+
 }
 
 interface FriendshipService {
@@ -208,8 +223,20 @@ interface ReportService {
         @Query("usersId") userId: String
     ): Response<ServerResponsePOJO<MonthlyContentPOJO>>
 
+    @GET("report/championsofday")
+    suspend fun getChampionsOfDay(
+        @Header("token") token: String,
+        @Header("lang") lang: Int
+    ): Response<ServerResponsePOJO<RankerContentPOJO>>
+
     @GET("report/championsofweek")
     suspend fun getChampionsOfWeek(
+        @Header("token") token: String,
+        @Header("lang") lang: Int
+    ): Response<ServerResponsePOJO<RankerContentPOJO>>
+
+    @GET("report/championsofmonth")
+    suspend fun getChampionsOfMonth(
         @Header("token") token: String,
         @Header("lang") lang: Int
     ): Response<ServerResponsePOJO<RankerContentPOJO>>

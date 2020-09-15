@@ -19,8 +19,11 @@ import androidx.lifecycle.MutableLiveData
 import az.rabita.lifestep.network.NetworkState
 import az.rabita.lifestep.pojo.apiPOJO.ServerResponsePOJO
 import az.rabita.lifestep.pojo.apiPOJO.content.AdsTransactionContentPOJO
+import az.rabita.lifestep.pojo.apiPOJO.content.DailyContentPOJO
+import az.rabita.lifestep.pojo.apiPOJO.content.MonthlyContentPOJO
 import az.rabita.lifestep.pojo.dataHolder.AdsTransactionInfoHolder
 import az.rabita.lifestep.ui.activity.auth.AuthActivity
+import az.rabita.lifestep.ui.custom.BarDiagram
 import retrofit2.Response
 import timber.log.Timber
 import java.util.*
@@ -154,6 +157,10 @@ fun AdsTransactionContentPOJO.asAdsTransactionInfoHolderObject(): AdsTransaction
     )
 }
 
+fun MutableLiveData<*>.notifyObservers() {
+    value = value
+}
+
 fun <T> checkNetworkRequestResponse(response: Response<ServerResponsePOJO<T>>): NetworkState {
     return if (response.isSuccessful && response.code() == 200) {
         response.body()?.let { data ->
@@ -164,4 +171,31 @@ fun <T> checkNetworkRequestResponse(response: Response<ServerResponsePOJO<T>>): 
             }
         } ?: NetworkState.InvalidData
     } else NetworkState.UnhandledHttpError(response.message() + response.code())
+}
+
+fun extractDiagramData(data: List<*>): BarDiagram.DiagramDataModel {
+    var maxValue = 0L
+    val columns = mutableListOf<String>()
+    val values = mutableListOf<Long>()
+
+    for (i in data) {
+        when (i) {
+            is MonthlyContentPOJO -> {
+                maxValue = maxValue.coerceAtLeast(i.count)
+                columns.add(i.monthName)
+                values.add(i.count)
+            }
+            is DailyContentPOJO -> {
+                maxValue = maxValue.coerceAtLeast(i.count)
+                columns.add(i.createdDate.substring(8, 10))
+                values.add(i.count)
+            }
+        }
+    }
+
+    return BarDiagram.DiagramDataModel(
+        maxValue = maxValue,
+        columnTexts = columns,
+        values = values
+    )
 }

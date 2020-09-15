@@ -12,11 +12,13 @@ import java.text.DecimalFormat
 
 
 fun Activity.logout() {
-    clearToken()
-    signOutGoogleAccount()
+    if(this::class.java.name == "az.rabita.lifestep.ui.activity.main.MainActivity"){
+        clearToken()
+        signOutGoogleAccount()
 
-    startActivity(Intent(this, AuthActivity::class.java))
-    finish()
+        startActivity(Intent(this, AuthActivity::class.java))
+        finish()
+    }
 }
 
 fun Context.signOutGoogleAccount() {

@@ -1,4 +1,4 @@
-package az.rabita.lifestep.ui.fragment.profileDetails
+package az.rabita.lifestep.ui.fragment.ownProfileDetails
 
 
 import android.graphics.Typeface
@@ -16,18 +16,19 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import az.rabita.lifestep.R
-import az.rabita.lifestep.databinding.FragmentProfileDetailsBinding
+import az.rabita.lifestep.databinding.FragmentOwnProfileDetailsBinding
+
 import az.rabita.lifestep.ui.dialog.message.MessageDialog
 import az.rabita.lifestep.utils.ERROR_TAG
 import az.rabita.lifestep.utils.logout
 import az.rabita.lifestep.utils.shortenString
-import az.rabita.lifestep.viewModel.fragment.profileDetails.ProfileDetailsViewModel
+import az.rabita.lifestep.viewModel.fragment.profileDetails.RefactoredOwnProfileViewModel
 
-class ProfileDetailsFragment : Fragment() {
+class OwnProfileDetailsFragment : Fragment() {
 
-    private lateinit var binding: FragmentProfileDetailsBinding
+    private lateinit var binding: FragmentOwnProfileDetailsBinding
 
-    private val viewModel by viewModels<ProfileDetailsViewModel>()
+    private val viewModel by viewModels<RefactoredOwnProfileViewModel>()
 
     private val navController by lazy { findNavController() }
 
@@ -35,7 +36,7 @@ class ProfileDetailsFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        binding = FragmentProfileDetailsBinding.inflate(inflater)
+        binding = FragmentOwnProfileDetailsBinding.inflate(inflater)
         return binding.root
     }
 
@@ -52,24 +53,25 @@ class ProfileDetailsFragment : Fragment() {
 
     override fun onStart() {
         super.onStart()
-        viewModel.fetchProfile()
+        //viewModel.fetchProfile()
+        viewModel.fetchAllInOneProfileInfo()
     }
 
     private fun bindUI(): Unit = with(binding) {
-        lifecycleOwner = this@ProfileDetailsFragment
-        viewModel = this@ProfileDetailsFragment.viewModel
+        lifecycleOwner = this@OwnProfileDetailsFragment
+        viewModel = this@OwnProfileDetailsFragment.viewModel
 
         imageButtonBack.setOnClickListener { activity?.onBackPressed() }
         imageButtonEditProfile.setOnClickListener {
             navController.navigate(
-                ProfileDetailsFragmentDirections.actionProfileDetailsFragmentToEditProfileFragment()
+                OwnProfileDetailsFragmentDirections.actionProfileDetailsFragmentToEditProfileFragment()
             )
         }
     }
 
     private fun observeData(): Unit = with(viewModel) {
 
-        profileInfo.observe(viewLifecycleOwner, Observer {
+        cachedProfileInfo.observe(viewLifecycleOwner, Observer {
             it?.let {
 
                 binding.textViewFullName.text =
@@ -78,7 +80,14 @@ class ProfileDetailsFragment : Fragment() {
                 val spannableFriends =
                     SpannableString("${it.friendsCount}\n${getString(R.string.friends)}")
                 val spannableSteps =
-                    SpannableString("${requireContext().shortenString(it.balance, 6)}\n${getString(R.string.total_steps)}")
+                    SpannableString(
+                        "${
+                            requireContext().shortenString(
+                                it.balance,
+                                6
+                            )
+                        }\n${getString(R.string.total_steps)}"
+                    )
 
                 spannableFriends.setSpan(
                     RelativeSizeSpan(2f),
@@ -107,6 +116,14 @@ class ProfileDetailsFragment : Fragment() {
                 binding.textViewFriends.setText(spannableFriends, TextView.BufferType.SPANNABLE)
                 binding.textViewTotalSteps.setText(spannableSteps, TextView.BufferType.SPANNABLE)
             }
+        })
+
+        dailyStats.observe(viewLifecycleOwner, Observer {
+            it?.let { if (isDailyStatsShown.value == true) binding.diagram.submitData(it) }
+        })
+
+        monthlyStats.observe(viewLifecycleOwner, Observer {
+            it?.let { if (isDailyStatsShown.value == false) binding.diagram.submitData(it) }
         })
 
         errorMessage.observe(viewLifecycleOwner, Observer {

@@ -12,6 +12,8 @@ import az.rabita.lifestep.network.NetworkState
 import az.rabita.lifestep.pagingSource.DonorsPagingSource
 import az.rabita.lifestep.pojo.apiPOJO.content.RankerContentPOJO
 import az.rabita.lifestep.pojo.apiPOJO.model.*
+import az.rabita.lifestep.pojo.dataHolder.AllInOneOtherUserInfoHolder
+import az.rabita.lifestep.pojo.dataHolder.AllInOneUserInfoHolder
 import az.rabita.lifestep.utils.NETWORK_PAGE_SIZE
 import az.rabita.lifestep.utils.STATIC_TOKEN
 import az.rabita.lifestep.utils.asOwnProfileInfoEntityObject
@@ -154,5 +156,61 @@ class UsersRepository private constructor(database: AppDatabase) {
     } catch (e: Exception) {
         NetworkState.NetworkException(e.message)
     }
+
+    /////////////// DIFFERENT TYPE REQUEST ////////////////
+
+    suspend fun getUserInfoAllInOne(token: String, lang: Int): NetworkState = try {
+        val response = usersService.getUserInfoAllInOne(token, lang)
+
+        val state = if (response.isSuccessful && response.code() == 200) {
+            response.body()?.let { data ->
+                when (data.status.code) {
+                    200, 201 -> NetworkState.Success(
+                        AllInOneUserInfoHolder(
+                            data.userInfo[0],
+                            data.dailyStats,
+                            data.monthlyStats
+                        )
+                    )
+                    300 -> NetworkState.ExpiredToken
+                    else -> NetworkState.HandledHttpError(data.status.text)
+                }
+            } ?: NetworkState.InvalidData
+        } else NetworkState.UnhandledHttpError(response.message() + response.code())
+
+        state.also {
+            if (it is NetworkState.Success<*>) {
+                val data = response.body()?.userInfo ?: listOf()
+                if (data.isNotEmpty()) usersDao.cachePersonalInfo(data.asOwnProfileInfoEntityObject()[0])
+            }
+        }
+    } catch (e: Exception) {
+        NetworkState.NetworkException(e.message)
+    }
+
+    suspend fun getUserInfoAllInOneById(token: String, lang: Int, usersId: String): NetworkState =
+        try {
+            val response = usersService.getUserInfoAllInOneById(token, lang, usersId)
+
+            val state = if (response.isSuccessful && response.code() == 200) {
+                response.body()?.let { data ->
+                    when (data.status.code) {
+                        200, 201 -> NetworkState.Success(
+                            AllInOneOtherUserInfoHolder(
+                                data.userInfo[0],
+                                data.dailyStats,
+                                data.monthlyStats
+                            )
+                        )
+                        300 -> NetworkState.ExpiredToken
+                        else -> NetworkState.HandledHttpError(data.status.text)
+                    }
+                } ?: NetworkState.InvalidData
+            } else NetworkState.UnhandledHttpError(response.message() + response.code())
+
+            state
+        } catch (e: Exception) {
+            NetworkState.NetworkException(e.message)
+        }
 
 }

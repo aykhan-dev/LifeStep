@@ -8,6 +8,7 @@ import az.rabita.lifestep.manager.PreferenceManager
 import az.rabita.lifestep.network.NetworkState
 import az.rabita.lifestep.pojo.apiPOJO.content.DailyContentPOJO
 import az.rabita.lifestep.pojo.apiPOJO.content.MonthlyContentPOJO
+import az.rabita.lifestep.pojo.dataHolder.AllInOneUserInfoHolder
 import az.rabita.lifestep.repository.ReportRepository
 import az.rabita.lifestep.repository.UsersRepository
 import az.rabita.lifestep.ui.custom.BarDiagram
@@ -18,7 +19,7 @@ import az.rabita.lifestep.utils.isInternetConnectionAvailable
 import kotlinx.coroutines.launch
 
 @Suppress("UNCHECKED_CAST")
-class ProfileDetailsViewModel(application: Application) : AndroidViewModel(application) {
+class OwnProfileDetailsViewModel(application: Application) : AndroidViewModel(application) {
 
     private val context = application.applicationContext
     private val sharedPreferences = PreferenceManager.getInstance(context)
@@ -29,10 +30,10 @@ class ProfileDetailsViewModel(application: Application) : AndroidViewModel(appli
     private val _eventExpiredToken = MutableLiveData<Boolean>().apply { value = false }
     val eventExpiredToken: LiveData<Boolean> get() = _eventExpiredToken
 
-    private val _dailyTextSelected = MutableLiveData<Boolean>().apply { value = true }
+    private val _dailyTextSelected = MutableLiveData<Boolean>(true)
     val dailyTextSelected: LiveData<Boolean> get() = _dailyTextSelected
 
-    private val _monthlyTextSelected = MutableLiveData<Boolean>().apply { value = false }
+    private val _monthlyTextSelected = MutableLiveData<Boolean>(false)
     val monthlyTextSelected: LiveData<Boolean> get() = _monthlyTextSelected
 
     private val _stats = MutableLiveData<BarDiagram.DiagramDataModel>()
@@ -45,6 +46,29 @@ class ProfileDetailsViewModel(application: Application) : AndroidViewModel(appli
     val errorMessage: LiveData<String?> get() = _errorMessage
 
     val profileInfo = usersRepository.personalInfo.asLiveData()
+
+    fun fetchAllInOneProfileInfo() {
+        viewModelScope.launch {
+            val token = sharedPreferences.getStringElement(TOKEN_KEY, "")
+            val lang = sharedPreferences.getIntegerElement(LANG_KEY, DEFAULT_LANG)
+
+            when (val response = usersRepository.getUserInfoAllInOne(token, lang)) {
+                is NetworkState.Success<*> -> {
+                    val data = response.data as AllInOneUserInfoHolder
+                    listOfDailyStats.postValue(extractDiagramData(data.dailyStats))
+                    listOfMonthlyStats.postValue(extractDiagramData(data.monthlyStats))
+
+                    if (_stats.value == null) {
+                        _stats.postValue(if (_dailyTextSelected.value == true) listOfDailyStats.value else listOfMonthlyStats.value)
+                    }
+                }
+                is NetworkState.ExpiredToken -> startExpireTokenProcess()
+                is NetworkState.UnhandledHttpError -> showMessageDialog(response.error)
+                is NetworkState.HandledHttpError -> showMessageDialog(response.error)
+                is NetworkState.NetworkException -> handleNetworkException(response.exception)
+            }
+        }
+    }
 
     fun fetchProfile() {
         viewModelScope.launch {
@@ -73,13 +97,11 @@ class ProfileDetailsViewModel(application: Application) : AndroidViewModel(appli
     fun onDailyTextClick() {
         _dailyTextSelected.value = true
         _monthlyTextSelected.value = false
-        _stats.value = listOfDailyStats.value
     }
 
     fun onMonthlyTextClick() {
         _monthlyTextSelected.value = true
         _dailyTextSelected.value = false
-        _stats.value = listOfMonthlyStats.value
     }
 
     private suspend fun refreshDailyStats() {

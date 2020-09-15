@@ -74,7 +74,7 @@
         tools:layout="@layout/fragment_congrats_dialog" />
     <fragment
         android:id="@+id/userProfileFragment4"
-        android:name="az.rabita.lifestep.ui.fragment.userProfile.UserProfileFragment"
+        android:name="az.rabita.lifestep.ui.fragment.otherUserProfile.OtherUserProfileFragment"
         android:label="UserProfileFragment"
         tools:layout="@layout/fragment_user_profile">
         <argument

@@ -1,4 +1,4 @@
-package az.rabita.lifestep.ui.fragment.userProfile
+package az.rabita.lifestep.ui.fragment.otherUserProfile
 
 import android.graphics.Typeface
 import android.os.Bundle
@@ -21,14 +21,15 @@ import az.rabita.lifestep.databinding.FragmentUserProfileBinding
 import az.rabita.lifestep.ui.dialog.message.MessageDialog
 import az.rabita.lifestep.utils.ERROR_TAG
 import az.rabita.lifestep.utils.logout
+import az.rabita.lifestep.viewModel.fragment.profileDetails.RefactoredOtherUserProfileViewModel
 import az.rabita.lifestep.viewModel.fragment.profileDetails.UserProfileViewModel
 
-class UserProfileFragment : Fragment() {
+class OtherUserProfileFragment : Fragment() {
 
     private lateinit var binding: FragmentUserProfileBinding
 
-    private val viewModel by viewModels<UserProfileViewModel>()
-    private val args by navArgs<UserProfileFragmentArgs>()
+    private val viewModel by viewModels<RefactoredOtherUserProfileViewModel>()
+    private val args by navArgs<OtherUserProfileFragmentArgs>()
 
     private val navController by lazy { findNavController() }
 
@@ -48,7 +49,7 @@ class UserProfileFragment : Fragment() {
 
     override fun onStart() {
         super.onStart()
-        viewModel.fetchUserProfileDetails(args.userId)
+        viewModel.fetchAllInOneProfileInfo(args.userId)
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -58,28 +59,28 @@ class UserProfileFragment : Fragment() {
     }
 
     private fun bindUI(): Unit = with(binding) {
-        lifecycleOwner = this@UserProfileFragment
-        viewModel = this@UserProfileFragment.viewModel
+        lifecycleOwner = this@OtherUserProfileFragment
+        viewModel = this@OtherUserProfileFragment.viewModel
 
         imageButtonBack.setOnClickListener { activity?.onBackPressed() }
-        buttonSendSteps.setOnClickListener { this@UserProfileFragment.viewModel.fetchPersonalInfo() }
+        //buttonSendSteps.setOnClickListener { this@OtherUserProfileFragment.viewModel.fetchPersonalInfo() }
     }
 
     private fun observeEvents(): Unit = with(viewModel) {
 
-        eventShowSendStepsDialog.observe(viewLifecycleOwner, Observer {
-            it?.let {
-                if (it) {
-                    profileInfo.value?.let { info ->
-                        navController.navigate(
-                            UserProfileFragmentDirections.actionUserProfileFragmentToSendStepDialogFragment(
-                                info.id
-                            )
-                        )
-                    }
-                }
-            }
-        })
+//        eventShowSendStepsDialog.observe(viewLifecycleOwner, Observer {
+//            it?.let {
+//                if (it) {
+//                    profileInfo.value?.let { info ->
+//                        navController.navigate(
+//                            UserProfileFragmentDirections.actionUserProfileFragmentToSendStepDialogFragment(
+//                                info.id
+//                            )
+//                        )
+//                    }
+//                }
+//            }
+//        })
 
         eventExpiredToken.observe(viewLifecycleOwner, Observer {
             it?.let {
@@ -95,20 +96,28 @@ class UserProfileFragment : Fragment() {
     private fun observeData(): Unit = with(viewModel) {
 
         //DON'T REMOVE THIS LINE
-        personalInfo.observe(viewLifecycleOwner, Observer { })
+        cachedOwnProfileInfo.observe(viewLifecycleOwner, Observer { })
 
-        friendshipStatus.observe(viewLifecycleOwner, Observer {
-            it?.let {
-                with(binding) {
-                    buttonSendFriendRequest.text = profileInfo.value?.friendShipStatusMessage
-                    when (it) {
-                        FriendshipStatus.PENDING -> buttonSendFriendRequest.isEnabled = false
-                        FriendshipStatus.NOT_FRIEND -> buttonSendFriendRequest.setOnClickListener {
-                            this@UserProfileFragment.viewModel.sendFriendRequest()
-                        }
-                    }
-                }
-            }
+//        friendshipStatus.observe(viewLifecycleOwner, Observer {
+//            it?.let {
+//                with(binding) {
+//                    buttonSendFriendRequest.text = profileInfo.value?.friendShipStatusMessage
+//                    when (it) {
+//                        FriendshipStatus.PENDING -> buttonSendFriendRequest.isEnabled = false
+//                        FriendshipStatus.NOT_FRIEND -> buttonSendFriendRequest.setOnClickListener {
+//                            this@OtherUserProfileFragment.viewModel.sendFriendRequest()
+//                        }
+//                    }
+//                }
+//            }
+//        })
+
+        dailyStats.observe(viewLifecycleOwner, Observer {
+            it?.let { if(isDailyStatsShown.value == true) binding.diagram.submitData(it) }
+        })
+
+        monthlyStats.observe(viewLifecycleOwner, Observer {
+            it?.let { if(isDailyStatsShown.value == false) binding.diagram.submitData(it) }
         })
 
         profileInfo.observe(viewLifecycleOwner, Observer {
@@ -117,7 +126,7 @@ class UserProfileFragment : Fragment() {
                 binding.textViewFullName.text =
                     getString(R.string.two_lined_format, it.surname, it.name)
 
-                if (it.id == personalInfo.value?.id ?: "") {
+                if (it.id == cachedOwnProfileInfo.value?.id ?: "") {
                     binding.buttonSendFriendRequest.isVisible = false
                     binding.buttonSendSteps.isVisible = false
                 }

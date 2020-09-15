@@ -7,7 +7,7 @@
 
         <variable
             name="viewModel"
-            type="az.rabita.lifestep.viewModel.fragment.profileDetails.UserProfileViewModel" />
+            type="az.rabita.lifestep.viewModel.fragment.profileDetails.RefactoredOtherUserProfileViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -204,7 +204,7 @@
                     android:layout_marginTop="30dp"
                     android:onClick="@{()->viewModel.onDailyTextClick()}"
                     android:text="@string/daily"
-                    app:isBold="@{viewModel.dailyTextSelected}"
+                    app:isBold="@{viewModel.isDailyStatsShown}"
                     app:layout_constraintStart_toStartOf="@+id/linear_layout_status"
                     app:layout_constraintTop_toBottomOf="@id/button_send_friend_request" />
 
@@ -215,7 +215,7 @@
                     android:layout_marginStart="20dp"
                     android:onClick="@{()->viewModel.onMonthlyTextClick()}"
                     android:text="@string/monthly"
-                    app:isBold="@{viewModel.monthlyTextSelected}"
+                    app:isBold="@{!viewModel.isDailyStatsShown()}"
                     app:layout_constraintBottom_toBottomOf="@id/text_view_daily"
                     app:layout_constraintStart_toEndOf="@id/text_view_daily"
                     app:layout_constraintTop_toTopOf="@id/text_view_daily" />
@@ -231,7 +231,6 @@
                     android:elevation="20dp"
                     android:focusable="true"
                     android:theme="@style/DiagramTheme"
-                    app:data="@{viewModel.stats}"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintDimensionRatio="14:10"
                     app:layout_constraintEnd_toEndOf="@id/linear_layout_status"

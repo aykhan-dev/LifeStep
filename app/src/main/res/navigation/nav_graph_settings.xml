@@ -37,6 +37,9 @@
         <action
             android:id="@+id/action_settingsFragment_to_rankingFragment"
             app:destination="@id/rankingFragment" />
+        <action
+            android:id="@+id/action_settingsFragment_to_championsFragment"
+            app:destination="@id/championsFragment" />
     </fragment>
     <fragment
         android:id="@+id/friendsFragment"
@@ -89,7 +92,7 @@
     </fragment>
     <fragment
         android:id="@+id/userProfileFragment3"
-        android:name="az.rabita.lifestep.ui.fragment.userProfile.UserProfileFragment"
+        android:name="az.rabita.lifestep.ui.fragment.otherUserProfile.OtherUserProfileFragment"
         android:label="UserProfileFragment"
         tools:layout="@layout/fragment_user_profile">
         <argument
@@ -108,5 +111,10 @@
             android:name="userId"
             app:argType="string" />
     </dialog>
+    <fragment
+        android:id="@+id/championsFragment"
+        android:name="az.rabita.lifestep.ui.fragment.champions.ChampionsFragment"
+        android:label="ChampionsFragment"
+        tools:layout="@layout/fragment_champions"/>
 
 </navigation>

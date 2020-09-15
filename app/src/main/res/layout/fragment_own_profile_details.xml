@@ -7,7 +7,7 @@
 
         <variable
             name="viewModel"
-            type="az.rabita.lifestep.viewModel.fragment.profileDetails.ProfileDetailsViewModel" />
+            type="az.rabita.lifestep.viewModel.fragment.profileDetails.RefactoredOwnProfileViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -15,7 +15,7 @@
         android:layout_height="match_parent"
         android:clickable="true"
         android:focusable="true"
-        tools:context=".ui.fragment.profileDetails.ProfileDetailsFragment">
+        tools:context=".ui.fragment.ownProfileDetails.OwnProfileDetailsFragment">
 
         <ImageButton
             android:id="@+id/image_button_back"
@@ -98,7 +98,7 @@
 
                     <ImageView
                         android:id="@+id/image_view_profile"
-                        imageUrl="@{viewModel.profileInfo.url}"
+                        imageUrl="@{viewModel.cachedProfileInfo.url}"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:scaleType="centerCrop" />
@@ -161,7 +161,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="15dp"
                     android:fontFamily="@font/gilroy_medium"
-                    android:text="@{@string/join_date_text(viewModel.profileInfo.createdDate)}"
+                    android:text="@{@string/join_date_text(viewModel.cachedProfileInfo.createdDate)}"
                     android:textAlignment="center"
                     android:textColor="@color/gray_text_color"
                     android:textSize="@dimen/small"
@@ -176,7 +176,7 @@
                     android:layout_marginTop="30dp"
                     android:onClick="@{()->viewModel.onDailyTextClick()}"
                     android:text="@string/daily"
-                    app:isBold="@{viewModel.dailyTextSelected}"
+                    app:isBold="@{viewModel.isDailyStatsShown}"
                     app:layout_constraintStart_toStartOf="@+id/linear_layout_status"
                     app:layout_constraintTop_toBottomOf="@id/text_view_join_date" />
 
@@ -187,7 +187,7 @@
                     android:layout_marginStart="20dp"
                     android:onClick="@{()->viewModel.onMonthlyTextClick()}"
                     android:text="@string/monthly"
-                    app:isBold="@{viewModel.monthlyTextSelected}"
+                    app:isBold="@{!viewModel.isDailyStatsShown}"
                     app:layout_constraintBottom_toBottomOf="@id/text_view_daily"
                     app:layout_constraintStart_toEndOf="@id/text_view_daily"
                     app:layout_constraintTop_toTopOf="@id/text_view_daily" />
@@ -203,7 +203,6 @@
                     android:elevation="20dp"
                     android:focusable="true"
                     android:theme="@style/DiagramTheme"
-                    app:data="@{viewModel.stats}"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintDimensionRatio="14:10"
                     app:layout_constraintEnd_toEndOf="@id/linear_layout_status"
