@@ -25,6 +25,7 @@ import az.rabita.lifestep.viewModel.fragment.home.HomeViewModel
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayout.OnTabSelectedListener
+import jp.wasabeef.recyclerview.animators.ScaleInAnimator
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
@@ -62,7 +63,7 @@ class HomeFragment : Fragment() {
 
     override fun onStart() {
         super.onStart()
-        lifecycleScope.launchWhenStarted { permissions() }
+        //lifecycleScope.launchWhenStarted { permissions() }
         viewModel.fetchWeeklyStats()
     }
 
@@ -150,6 +151,7 @@ class HomeFragment : Fragment() {
                 val flag = it is UiState.Loading
                 binding.recyclerViewResults.isVisible = !flag
                 binding.progressBar.isVisible = flag
+                binding.textViewMore.isVisible = !flag
             }
         })
 
@@ -288,8 +290,10 @@ class HomeFragment : Fragment() {
         super.onActivityResult(requestCode, resultCode, data)
         when (requestCode) {
             GOOGLE_FIT_PERMISSIONS_REQUEST_CODE -> {
-                val result = GoogleSignIn.getSignedInAccountFromIntent(data)
-                result?.let {
+                val result = GoogleSignIn.getSignedInAccountFromIntent(data).addOnFailureListener {
+                    Timber.e(it)
+                }
+                result.let {
                     if (result.isSuccessful) {
                         Timber.i("Google fit permission accepted")
                         viewModel.accessGoogleFit()

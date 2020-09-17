@@ -11,6 +11,7 @@ import androidx.lifecycle.Observer
 import az.rabita.lifestep.databinding.FragmentChampionsPageBinding
 import az.rabita.lifestep.utils.logout
 import az.rabita.lifestep.viewModel.fragment.champions.ChampionsViewModel
+import jp.wasabeef.recyclerview.animators.ScaleInAnimator
 
 class ChampionsPageFragment(private val pageType: ChampionsPageType) : Fragment() {
 
@@ -52,6 +53,7 @@ class ChampionsPageFragment(private val pageType: ChampionsPageType) : Fragment(
 
     private fun configureRecyclerView(): Unit = with(binding.recyclerViewChampions) {
         adapter = this@ChampionsPageFragment.listAdapter
+        itemAnimator = ScaleInAnimator().apply { addDuration = 100 }
     }
 
     private fun observeData(): Unit = with(viewModel) {

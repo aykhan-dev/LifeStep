@@ -13,6 +13,7 @@ import az.rabita.lifestep.ui.dialog.message.MessageDialog
 import az.rabita.lifestep.utils.ERROR_TAG
 import az.rabita.lifestep.utils.logout
 import az.rabita.lifestep.viewModel.fragment.donation.DonationViewModel
+import jp.wasabeef.recyclerview.animators.ScaleInAnimator
 
 class DonationFragment : Fragment() {
 
@@ -59,6 +60,7 @@ class DonationFragment : Fragment() {
 
     private fun configureRecyclerView(): Unit = with(binding.recyclerViewDonation) {
         adapter = donationAdapter
+        itemAnimator = ScaleInAnimator().apply { addDuration = 100 }
     }
 
     private fun observeData(): Unit = with(viewModel) {

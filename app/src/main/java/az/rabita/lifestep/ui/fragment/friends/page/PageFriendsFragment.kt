@@ -10,13 +10,10 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import az.rabita.lifestep.databinding.FragmentPageFriendsBinding
 import az.rabita.lifestep.ui.dialog.loading.LoadingDialog
-import az.rabita.lifestep.ui.dialog.message.MessageDialog
 import az.rabita.lifestep.ui.fragment.friends.FriendsPageType
-import az.rabita.lifestep.utils.ERROR_TAG
-import az.rabita.lifestep.utils.LOADING_TAG
-import az.rabita.lifestep.utils.UiState
-import az.rabita.lifestep.utils.logout
+import az.rabita.lifestep.utils.*
 import az.rabita.lifestep.viewModel.fragment.friends.FriendsViewModel
+import jp.wasabeef.recyclerview.animators.ScaleInAnimator
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
@@ -63,17 +60,18 @@ class PageFriendsFragment(
 
     private fun configureRecyclerView(): Unit = with(binding.recyclerViewFriends) {
         adapter = this@PageFriendsFragment.adapter
+        itemAnimator = ScaleInAnimator().apply { addDuration = 100 }
     }
 
     private fun observeData(): Unit = with(viewModel) {
 
         errorMessage.observe(viewLifecycleOwner, Observer {
-            it?.let {
+            it?.let { errorMsg ->
                 activity?.let { activity ->
-                    MessageDialog(it).show(
-                        activity.supportFragmentManager,
-                        ERROR_TAG
-                    )
+                    Message.getInstance().apply {
+                        message = errorMsg
+                        show(activity.supportFragmentManager, ERROR_TAG)
+                    }
                 }
             }
         })

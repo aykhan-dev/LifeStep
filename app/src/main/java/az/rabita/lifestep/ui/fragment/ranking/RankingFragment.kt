@@ -16,6 +16,7 @@ import az.rabita.lifestep.ui.dialog.message.MessageDialog
 import az.rabita.lifestep.utils.ERROR_TAG
 import az.rabita.lifestep.utils.logout
 import az.rabita.lifestep.viewModel.fragment.ranking.RankingViewModel
+import jp.wasabeef.recyclerview.animators.ScaleInAnimator
 import kotlinx.coroutines.launch
 
 class RankingFragment : Fragment() {
@@ -81,6 +82,7 @@ class RankingFragment : Fragment() {
 
     private fun configureRecyclerView(): Unit = with(binding.recyclerViewChampions) {
         adapter = if (args.postId != null) rankingPagedAdapter else rankingAdapter
+        itemAnimator = ScaleInAnimator().apply { addDuration = 100 }
     }
 
     private fun observeData(): Unit = with(viewModel) {

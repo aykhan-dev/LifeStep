@@ -13,6 +13,7 @@ import az.rabita.lifestep.databinding.FragmentNotificationsBinding
 import az.rabita.lifestep.utils.logout
 import az.rabita.lifestep.utils.openUrl
 import az.rabita.lifestep.viewModel.fragment.notifications.NotificationsViewModel
+import jp.wasabeef.recyclerview.animators.ScaleInAnimator
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
@@ -73,6 +74,7 @@ class NotificationsFragment : Fragment() {
 
     private fun configureRecyclerView(): Unit = with(binding.recyclerViewNotifications) {
         adapter = notificationsAdapter
+        itemAnimator = ScaleInAnimator().apply { addDuration = 100 }
     }
 
     private fun observeData(): Unit = with(viewModel) {
