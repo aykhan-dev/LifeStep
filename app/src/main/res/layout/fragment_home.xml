@@ -56,6 +56,7 @@
             android:elevation="20dp"
             android:padding="20dp"
             android:visibility="gone"
+            android:clipToPadding="false"
             app:layout_constraintEnd_toEndOf="@id/image_button_notification"
             app:layout_constraintStart_toStartOf="@id/edit_text_search_bar"
             app:layout_constraintTop_toBottomOf="@id/edit_text_search_bar">

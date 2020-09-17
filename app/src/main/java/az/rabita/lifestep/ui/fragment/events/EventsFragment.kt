@@ -13,6 +13,7 @@ import az.rabita.lifestep.ui.dialog.message.MessageDialog
 import az.rabita.lifestep.utils.ERROR_TAG
 import az.rabita.lifestep.utils.logout
 import az.rabita.lifestep.viewModel.fragment.events.EventsViewModel
+import jp.wasabeef.recyclerview.animators.ScaleInAnimator
 
 class EventsFragment : Fragment() {
 

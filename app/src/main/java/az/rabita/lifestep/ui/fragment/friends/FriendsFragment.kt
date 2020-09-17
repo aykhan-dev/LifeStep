@@ -10,8 +10,8 @@ import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import az.rabita.lifestep.R
 import az.rabita.lifestep.databinding.FragmentFriendsBinding
-import az.rabita.lifestep.ui.dialog.message.MessageDialog
 import az.rabita.lifestep.utils.ERROR_TAG
+import az.rabita.lifestep.utils.Message
 import az.rabita.lifestep.utils.logout
 import az.rabita.lifestep.viewModel.fragment.friends.FriendsViewModel
 import com.google.android.material.tabs.TabLayoutMediator
@@ -67,12 +67,12 @@ class FriendsFragment : Fragment() {
         })
 
         errorMessage.observe(viewLifecycleOwner, Observer {
-            it?.let {
+            it?.let { errorMsg ->
                 activity?.let { activity ->
-                    MessageDialog(it).show(
-                        activity.supportFragmentManager,
-                        ERROR_TAG
-                    )
+                    Message.getInstance().apply {
+                        message = errorMsg
+                        show(activity.supportFragmentManager, ERROR_TAG)
+                    }
                 }
             }
         })

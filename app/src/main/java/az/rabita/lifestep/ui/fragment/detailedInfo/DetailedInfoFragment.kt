@@ -15,6 +15,7 @@ import az.rabita.lifestep.ui.dialog.message.MessageDialog
 import az.rabita.lifestep.ui.fragment.ranking.RankingRecyclerAdapter
 import az.rabita.lifestep.utils.*
 import az.rabita.lifestep.viewModel.fragment.detailedInfo.DetailedInfoViewModel
+import jp.wasabeef.recyclerview.animators.ScaleInAnimator
 
 class DetailedInfoFragment : Fragment() {
 
@@ -93,6 +94,7 @@ class DetailedInfoFragment : Fragment() {
 
     private fun configureRecyclerView(): Unit = with(binding.recyclerViewDonors) {
         adapter = donorsAdapter
+        itemAnimator = ScaleInAnimator().apply { addDuration = 100 }
     }
 
     private fun observeData(): Unit = with(viewModel) {

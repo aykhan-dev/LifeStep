@@ -12,6 +12,7 @@ import az.rabita.lifestep.pojo.dataHolder.AllInOneOtherUserInfoHolder
 import az.rabita.lifestep.repository.FriendshipRepository
 import az.rabita.lifestep.repository.UsersRepository
 import az.rabita.lifestep.ui.custom.BarDiagram
+import az.rabita.lifestep.ui.fragment.otherUserProfile.FriendshipStatus
 import az.rabita.lifestep.utils.*
 import kotlinx.coroutines.launch
 
@@ -48,6 +49,8 @@ class RefactoredOtherUserProfileViewModel(app: Application) : AndroidViewModel(a
 
     val cachedOwnProfileInfo = usersRepository.personalInfo.asLiveData()
 
+    val friendshipStatus: LiveData<FriendshipStatus> = MutableLiveData()
+
     fun fetchAllInOneProfileInfo(userId: String) {
         viewModelScope.launch {
 
@@ -57,7 +60,17 @@ class RefactoredOtherUserProfileViewModel(app: Application) : AndroidViewModel(a
             when (val response = usersRepository.getUserInfoAllInOneById(token, lang, userId)) {
                 is NetworkState.Success<*> -> run {
                     val data = response.data as AllInOneOtherUserInfoHolder
-                    _profileInfo.postValue(data.info)
+                    _profileInfo.postValue(data.info.also {
+                        (friendshipStatus as MutableLiveData).postValue(
+                            when (it.friendShipStatus) {
+                                0 -> FriendshipStatus.NOT_FRIEND
+                                10 -> FriendshipStatus.PENDING
+                                20 -> FriendshipStatus.IS_FRIEND
+                                //30 -> FriendshipStatus.REJECTED
+                                else -> FriendshipStatus.NOT_FRIEND
+                            }
+                        )
+                    })
                     _dailyStats.postValue(extractDiagramData(data.dailyStats))
                     _monthlyStats.postValue(extractDiagramData(data.monthlyStats))
                 }

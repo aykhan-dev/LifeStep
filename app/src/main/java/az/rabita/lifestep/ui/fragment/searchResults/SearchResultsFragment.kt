@@ -17,6 +17,7 @@ import az.rabita.lifestep.utils.LOADING_TAG
 import az.rabita.lifestep.utils.UiState
 import az.rabita.lifestep.utils.logout
 import az.rabita.lifestep.viewModel.fragment.searchResults.SearchResultsViewModel
+import jp.wasabeef.recyclerview.animators.ScaleInAnimator
 
 class SearchResultsFragment : Fragment() {
 
@@ -70,6 +71,7 @@ class SearchResultsFragment : Fragment() {
 
     private fun configureRecyclerView(): Unit = with(binding) {
         recyclerViewResults.adapter = this@SearchResultsFragment.adapter
+        recyclerViewResults.itemAnimator = ScaleInAnimator().apply { addDuration = 100 }
     }
 
     private fun observeData(): Unit = with(viewModel) {

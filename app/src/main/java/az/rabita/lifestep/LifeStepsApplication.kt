@@ -19,6 +19,8 @@ class LifeStepsApplication : Application() {
         super.onCreate()
         Timber.plant(Timber.DebugTree())
 
+        Timber.e("✅ application created")
+
         sharedPreferenceManager = PreferenceManager.getInstance(applicationContext)
 
         val notificationOpenHandler = OneSignal.NotificationOpenedHandler { result ->

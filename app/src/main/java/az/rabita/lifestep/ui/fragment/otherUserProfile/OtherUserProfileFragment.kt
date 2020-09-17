@@ -98,19 +98,19 @@ class OtherUserProfileFragment : Fragment() {
         //DON'T REMOVE THIS LINE
         cachedOwnProfileInfo.observe(viewLifecycleOwner, Observer { })
 
-//        friendshipStatus.observe(viewLifecycleOwner, Observer {
-//            it?.let {
-//                with(binding) {
-//                    buttonSendFriendRequest.text = profileInfo.value?.friendShipStatusMessage
-//                    when (it) {
-//                        FriendshipStatus.PENDING -> buttonSendFriendRequest.isEnabled = false
-//                        FriendshipStatus.NOT_FRIEND -> buttonSendFriendRequest.setOnClickListener {
-//                            this@OtherUserProfileFragment.viewModel.sendFriendRequest()
-//                        }
-//                    }
-//                }
-//            }
-//        })
+        friendshipStatus.observe(viewLifecycleOwner, Observer {
+            it?.let {
+                with(binding) {
+                    buttonSendFriendRequest.text = profileInfo.value?.friendShipStatusMessage
+                    when (it) {
+                        FriendshipStatus.PENDING -> buttonSendFriendRequest.isEnabled = false
+                        FriendshipStatus.NOT_FRIEND -> buttonSendFriendRequest.setOnClickListener {
+                            this@OtherUserProfileFragment.viewModel.sendFriendRequest()
+                        }
+                    }
+                }
+            }
+        })
 
         dailyStats.observe(viewLifecycleOwner, Observer {
             it?.let { if(isDailyStatsShown.value == true) binding.diagram.submitData(it) }
