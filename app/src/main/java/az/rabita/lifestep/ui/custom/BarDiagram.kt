@@ -1,5 +1,8 @@
 package az.rabita.lifestep.ui.custom
 
+import android.animation.ObjectAnimator
+import android.animation.TypeEvaluator
+import android.animation.ValueAnimator
 import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Canvas
@@ -85,6 +88,7 @@ class BarDiagram @JvmOverloads constructor(
                 paint.strokeWidth = pxFromDP(0.5f)
 
                 repeat(8) {
+
                     c.drawLine(
                         horizontalLineStartX,
                         horizontalLineLevel,
