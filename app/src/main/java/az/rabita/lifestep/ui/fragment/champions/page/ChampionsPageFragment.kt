@@ -5,10 +5,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import az.rabita.lifestep.databinding.FragmentChampionsPageBinding
+import az.rabita.lifestep.ui.dialog.message.SingleMessageDialog
+import az.rabita.lifestep.utils.ERROR_TAG
 import az.rabita.lifestep.utils.logout
 import az.rabita.lifestep.viewModel.fragment.champions.ChampionsViewModel
 import jp.wasabeef.recyclerview.animators.ScaleInAnimator
@@ -66,6 +67,18 @@ class ChampionsPageFragment(private val pageType: ChampionsPageType) : Fragment(
                 if (it) {
                     endExpireTokenProcess()
                     requireActivity().logout()
+                }
+            }
+        })
+
+        errorMessage.observe(viewLifecycleOwner, Observer {
+            it?.let { errorMsg ->
+                activity?.let { activity ->
+                    SingleMessageDialog.popUp(
+                        activity.supportFragmentManager,
+                        ERROR_TAG,
+                        errorMsg
+                    )
                 }
             }
         })

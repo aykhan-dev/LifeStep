@@ -10,6 +10,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import az.rabita.lifestep.databinding.FragmentPageFriendsBinding
 import az.rabita.lifestep.ui.dialog.loading.LoadingDialog
+import az.rabita.lifestep.ui.dialog.message.SingleMessageDialog
 import az.rabita.lifestep.ui.fragment.friends.FriendsPageType
 import az.rabita.lifestep.utils.*
 import az.rabita.lifestep.viewModel.fragment.friends.FriendsViewModel
@@ -68,8 +69,11 @@ class PageFriendsFragment(
         errorMessage.observe(viewLifecycleOwner, Observer {
             it?.let { errorMsg ->
                 activity?.let { activity ->
-                    Message.getInstance().message = errorMsg
-                    Message.showControlled(activity.supportFragmentManager, ERROR_TAG)
+                    SingleMessageDialog.popUp(
+                        activity.supportFragmentManager,
+                        ERROR_TAG,
+                        errorMsg
+                    )
                 }
             }
         })

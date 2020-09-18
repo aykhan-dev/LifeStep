@@ -10,18 +10,21 @@ import android.view.Window
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
 import androidx.fragment.app.DialogFragment
+import androidx.fragment.app.FragmentManager
 import az.rabita.lifestep.R
 import az.rabita.lifestep.databinding.FragmentMessageDialogBinding
 import az.rabita.lifestep.manager.PreferenceManager
 import az.rabita.lifestep.utils.LANG_KEY
 
-class RefactoredMessageDialog : DialogFragment() {
+object SingleMessageDialog : DialogFragment() {
 
     private lateinit var binding: FragmentMessageDialogBinding
 
     private lateinit var sharedPreferences: PreferenceManager
 
     var message: String = ""
+
+    private var isShowing = false
 
     private val openAnimation: Animation by lazy {
         AnimationUtils.loadAnimation(context, R.anim.fade_in)
@@ -67,7 +70,7 @@ class RefactoredMessageDialog : DialogFragment() {
 
         content.startAnimation(openAnimation)
 
-        lifecycleOwner = this@RefactoredMessageDialog
+        lifecycleOwner = this@SingleMessageDialog
         errorMessage = message
 
         root.setOnClickListener { dismiss() }
@@ -75,5 +78,18 @@ class RefactoredMessageDialog : DialogFragment() {
     }
 
     override fun getTheme(): Int = R.style.DialogTheme
+
+    fun popUp(fragmentManager: FragmentManager, tag: String, msg: String) {
+        if(!isShowing) {
+            isShowing = true
+            message = msg
+            show(fragmentManager, tag)
+        }
+    }
+
+    override fun dismiss() {
+        super.dismiss()
+        isShowing = false
+    }
 
 }

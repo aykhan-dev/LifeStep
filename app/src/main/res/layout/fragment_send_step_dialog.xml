@@ -6,7 +6,8 @@
 
         <variable
             name="viewModel"
-            type="az.rabita.lifestep.viewModel.fragment.profileDetails.UserProfileViewModel" />
+            type="az.rabita.lifestep.viewModel.fragment.sendStep.SendStepViewModel" />
+
     </data>
 
     <FrameLayout

@@ -9,8 +9,8 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import az.rabita.lifestep.databinding.FragmentAboutUsBinding
+import az.rabita.lifestep.ui.dialog.message.SingleMessageDialog
 import az.rabita.lifestep.utils.ERROR_TAG
-import az.rabita.lifestep.utils.Message
 import az.rabita.lifestep.utils.logout
 import az.rabita.lifestep.viewModel.fragment.aboutUs.AboutUsViewModel
 
@@ -58,8 +58,11 @@ class AboutUsFragment : Fragment() {
         errorMessage.observe(viewLifecycleOwner, Observer {
             it?.let { errorMsg ->
                 activity?.let { activity ->
-                    Message.getInstance().message = errorMsg
-                    Message.showControlled(activity.supportFragmentManager, ERROR_TAG)
+                    SingleMessageDialog.popUp(
+                        activity.supportFragmentManager,
+                        ERROR_TAG,
+                        errorMsg
+                    )
                 }
             }
         })
