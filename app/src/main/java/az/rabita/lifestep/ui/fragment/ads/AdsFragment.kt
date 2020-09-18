@@ -11,6 +11,7 @@ import androidx.navigation.fragment.findNavController
 import az.rabita.lifestep.databinding.FragmentAdsBinding
 import az.rabita.lifestep.ui.dialog.loading.LoadingDialog
 import az.rabita.lifestep.ui.dialog.message.MessageDialog
+import az.rabita.lifestep.ui.dialog.message.SingleMessageDialog
 import az.rabita.lifestep.utils.*
 import az.rabita.lifestep.viewModel.fragment.ads.AdsViewModel
 
@@ -61,11 +62,12 @@ class AdsFragment : Fragment() {
     private fun observeData(): Unit = with(viewModel) {
 
         errorMessage.observe(viewLifecycleOwner, Observer {
-            it?.let {
+            it?.let { errorMsg ->
                 activity?.let { activity ->
-                    MessageDialog(it).show(
+                    SingleMessageDialog.popUp(
                         activity.supportFragmentManager,
-                        ERROR_TAG
+                        ERROR_TAG,
+                        errorMsg
                     )
                 }
             }

@@ -10,6 +10,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import az.rabita.lifestep.databinding.FragmentPageBinding
 import az.rabita.lifestep.ui.dialog.message.MessageDialog
+import az.rabita.lifestep.ui.dialog.message.SingleMessageDialog
 import az.rabita.lifestep.utils.ERROR_TAG
 import az.rabita.lifestep.utils.logout
 import az.rabita.lifestep.viewModel.fragment.history.HistoryViewModel
@@ -62,11 +63,12 @@ class PageHistoryFragment(private val pageType: HistoryPageType) : Fragment() {
         }
 
         errorMessage.observe(viewLifecycleOwner, Observer {
-            it?.let {
+            it?.let { errorMsg ->
                 activity?.let { activity ->
-                    MessageDialog(it).show(
+                    SingleMessageDialog.popUp(
                         activity.supportFragmentManager,
-                        ERROR_TAG
+                        ERROR_TAG,
+                        errorMsg
                     )
                 }
             }

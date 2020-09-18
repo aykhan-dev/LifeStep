@@ -19,6 +19,7 @@ import az.rabita.lifestep.R
 import az.rabita.lifestep.databinding.FragmentOwnProfileDetailsBinding
 
 import az.rabita.lifestep.ui.dialog.message.MessageDialog
+import az.rabita.lifestep.ui.dialog.message.SingleMessageDialog
 import az.rabita.lifestep.utils.ERROR_TAG
 import az.rabita.lifestep.utils.logout
 import az.rabita.lifestep.utils.shortenString
@@ -127,11 +128,12 @@ class OwnProfileDetailsFragment : Fragment() {
         })
 
         errorMessage.observe(viewLifecycleOwner, Observer {
-            it?.let {
+            it?.let { errorMsg ->
                 activity?.let { activity ->
-                    MessageDialog(it).show(
+                    SingleMessageDialog.popUp(
                         activity.supportFragmentManager,
-                        ERROR_TAG
+                        ERROR_TAG,
+                        errorMsg
                     )
                 }
             }

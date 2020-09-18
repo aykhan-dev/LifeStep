@@ -18,11 +18,11 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import az.rabita.lifestep.R
 import az.rabita.lifestep.databinding.FragmentUserProfileBinding
-import az.rabita.lifestep.ui.dialog.message.MessageDialog
+import az.rabita.lifestep.pojo.dataHolder.UserProfileInfoHolder
+import az.rabita.lifestep.ui.dialog.message.SingleMessageDialog
 import az.rabita.lifestep.utils.ERROR_TAG
 import az.rabita.lifestep.utils.logout
 import az.rabita.lifestep.viewModel.fragment.profileDetails.RefactoredOtherUserProfileViewModel
-import az.rabita.lifestep.viewModel.fragment.profileDetails.UserProfileViewModel
 
 class OtherUserProfileFragment : Fragment() {
 
@@ -63,24 +63,23 @@ class OtherUserProfileFragment : Fragment() {
         viewModel = this@OtherUserProfileFragment.viewModel
 
         imageButtonBack.setOnClickListener { activity?.onBackPressed() }
-        //buttonSendSteps.setOnClickListener { this@OtherUserProfileFragment.viewModel.fetchPersonalInfo() }
+        buttonSendSteps.setOnClickListener {
+            with(this@OtherUserProfileFragment.viewModel) {
+                profileInfo.value?.let { info ->
+                    navController.navigate(
+                        OtherUserProfileFragmentDirections.actionUserProfileFragmentToSendStepDialogFragment(
+                            UserProfileInfoHolder(
+                                info.id,
+                                cachedOwnProfileInfo.value?.balance ?: 0
+                            )
+                        )
+                    )
+                }
+            }
+        }
     }
 
     private fun observeEvents(): Unit = with(viewModel) {
-
-//        eventShowSendStepsDialog.observe(viewLifecycleOwner, Observer {
-//            it?.let {
-//                if (it) {
-//                    profileInfo.value?.let { info ->
-//                        navController.navigate(
-//                            UserProfileFragmentDirections.actionUserProfileFragmentToSendStepDialogFragment(
-//                                info.id
-//                            )
-//                        )
-//                    }
-//                }
-//            }
-//        })
 
         eventExpiredToken.observe(viewLifecycleOwner, Observer {
             it?.let {
@@ -113,11 +112,11 @@ class OtherUserProfileFragment : Fragment() {
         })
 
         dailyStats.observe(viewLifecycleOwner, Observer {
-            it?.let { if(isDailyStatsShown.value == true) binding.diagram.submitData(it) }
+            it?.let { if (isDailyStatsShown.value == true) binding.diagram.submitData(it) }
         })
 
         monthlyStats.observe(viewLifecycleOwner, Observer {
-            it?.let { if(isDailyStatsShown.value == false) binding.diagram.submitData(it) }
+            it?.let { if (isDailyStatsShown.value == false) binding.diagram.submitData(it) }
         })
 
         profileInfo.observe(viewLifecycleOwner, Observer {
@@ -166,11 +165,12 @@ class OtherUserProfileFragment : Fragment() {
         })
 
         errorMessage.observe(viewLifecycleOwner, Observer {
-            it?.let {
+            it?.let { errorMsg ->
                 activity?.let { activity ->
-                    MessageDialog(it).show(
+                    SingleMessageDialog.popUp(
                         activity.supportFragmentManager,
-                        ERROR_TAG
+                        ERROR_TAG,
+                        errorMsg
                     )
                 }
             }

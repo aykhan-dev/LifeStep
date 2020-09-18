@@ -16,11 +16,13 @@ import androidx.navigation.fragment.navArgs
 import az.rabita.lifestep.R
 import az.rabita.lifestep.databinding.FragmentSendStepDialogBinding
 import az.rabita.lifestep.ui.dialog.message.MessageDialog
+import az.rabita.lifestep.ui.dialog.message.SingleMessageDialog
 import az.rabita.lifestep.utils.ERROR_TAG
 import az.rabita.lifestep.utils.hideKeyboard
 import az.rabita.lifestep.utils.logout
 import az.rabita.lifestep.utils.shortenString
 import az.rabita.lifestep.viewModel.fragment.profileDetails.UserProfileViewModel
+import az.rabita.lifestep.viewModel.fragment.sendStep.SendStepViewModel
 
 class SendStepDialogFragment : DialogFragment() {
 
@@ -30,7 +32,7 @@ class SendStepDialogFragment : DialogFragment() {
         AnimationUtils.loadAnimation(context, R.anim.fade_in)
     }
 
-    private val viewModel by viewModels<UserProfileViewModel>()
+    private val viewModel by viewModels<SendStepViewModel>()
     private val args by navArgs<SendStepDialogFragmentArgs>()
 
     override fun onCreateView(
@@ -49,6 +51,9 @@ class SendStepDialogFragment : DialogFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        viewModel.personalInfo = args.profileInfo
+
         bindUI()
     }
 
@@ -65,7 +70,7 @@ class SendStepDialogFragment : DialogFragment() {
         binding.content.startAnimation(openAnimation)
 
         buttonSendSteps.setOnClickListener {
-            this@SendStepDialogFragment.viewModel.sendStep(args.userId)
+            this@SendStepDialogFragment.viewModel.sendStep(args.profileInfo.userId)
         }
         root.setOnClickListener { dismiss() }
         content.setOnClickListener { it.hideKeyboard(context) }
@@ -74,11 +79,12 @@ class SendStepDialogFragment : DialogFragment() {
     private fun observeData(): Unit = with(viewModel) {
 
         errorMessage.observe(viewLifecycleOwner, Observer {
-            it?.let {
+            it?.let { errorMsg ->
                 activity?.let { activity ->
-                    MessageDialog(it).show(
+                    SingleMessageDialog.popUp(
                         activity.supportFragmentManager,
-                        ERROR_TAG
+                        ERROR_TAG,
+                        errorMsg
                     )
                 }
             }

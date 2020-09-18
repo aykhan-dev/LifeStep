@@ -50,8 +50,8 @@
         android:label="SendStepDialogFragment"
         tools:layout="@layout/fragment_send_step_dialog">
         <argument
-            android:name="userId"
-            app:argType="string" />
+            android:name="profileInfo"
+            app:argType="az.rabita.lifestep.pojo.dataHolder.UserProfileInfoHolder" />
     </dialog>
     <dialog
         android:id="@+id/adsDialogFragment"
