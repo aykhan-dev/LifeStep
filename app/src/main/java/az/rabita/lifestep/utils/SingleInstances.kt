@@ -8,13 +8,25 @@ object Message {
 
     private lateinit var dialogInstance: RefactoredMessageDialog
 
+    private var isShowing = false
+
     fun getInstance(): RefactoredMessageDialog {
         if (!::dialogInstance.isInitialized) dialogInstance = RefactoredMessageDialog()
         return dialogInstance
     }
 
-}
+    fun showControlled(fragmentManager: FragmentManager, tag: String): Unit = with(dialogInstance) {
+        if (!isShowing) {
+            show(fragmentManager, tag)
+            isShowing = true
+        }
+    }
 
-fun DialogFragment.show(fragmentManager: FragmentManager, tag: String) {
-    if (dialog?.isShowing == false) show(fragmentManager, tag)
+    fun dismiss() {
+        if (!::dialogInstance.isInitialized) {
+            dialogInstance.dismiss()
+            isShowing = false
+        }
+    }
+
 }

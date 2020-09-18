@@ -58,10 +58,8 @@ class AboutUsFragment : Fragment() {
         errorMessage.observe(viewLifecycleOwner, Observer {
             it?.let { errorMsg ->
                 activity?.let { activity ->
-                    Message.getInstance().apply {
-                        message = errorMsg
-                        show(activity.supportFragmentManager, ERROR_TAG)
-                    }
+                    Message.getInstance().message = errorMsg
+                    Message.showControlled(activity.supportFragmentManager, ERROR_TAG)
                 }
             }
         })
