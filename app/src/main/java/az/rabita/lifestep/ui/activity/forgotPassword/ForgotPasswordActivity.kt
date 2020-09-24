@@ -23,7 +23,7 @@ class ForgotPasswordActivity : AppCompatActivity() {
 
     private val navController by lazy { findNavController(R.id.fragment_password_host) }
 
-    private val loadingDialog = LoadingDialog()
+    private val loadingDialog = LoadingDialog
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

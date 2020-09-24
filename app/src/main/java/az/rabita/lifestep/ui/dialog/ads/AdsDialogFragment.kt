@@ -155,10 +155,10 @@ class AdsDialogFragment() : DialogFragment() {
         eventCloseAdsPage.observe(viewLifecycleOwner, Observer {
             it?.let {
                 if (it) {
-                    if (args.isForBonusSteps && viewModel.isSuccessfullyWatched) navController.navigate(
-                        NavGraphMainDirections.actionToCongratsDialog()
-                    )
-                    else dismiss()
+                    if (args.isForBonusSteps && viewModel.isSuccessfullyWatched) {
+                        navController.navigate(NavGraphMainDirections.actionToCongratsDialog())
+                    }
+                    dismiss()
                 }
             }
         })

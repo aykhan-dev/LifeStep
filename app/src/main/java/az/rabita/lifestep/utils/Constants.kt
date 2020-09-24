@@ -7,6 +7,9 @@ import com.google.android.gms.fitness.data.DataType
 const val ERROR_TAG = "error"
 const val LOADING_TAG = "loading"
 
+//NAVIGATION RESULT TAG
+ const val STEP_DONATED_RESULT = "stepDonated"
+
 //KEYS
 const val TOKEN_KEY = "token"
 const val LANG_KEY = "lang"

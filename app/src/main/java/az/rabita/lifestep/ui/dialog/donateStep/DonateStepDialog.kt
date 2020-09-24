@@ -12,6 +12,7 @@ import android.view.animation.AnimationUtils
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
+import androidx.lifecycle.SavedStateHandle
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import az.rabita.lifestep.NavGraphMainDirections
@@ -25,6 +26,7 @@ import az.rabita.lifestep.viewModel.fragment.detailedInfo.DetailedInfoViewModel
 class DonateStepDialog : DialogFragment() {
 
     private lateinit var binding: FragmentDonateStepDialogBinding;
+    private lateinit var savedStateHandle: SavedStateHandle
 
     private val viewModel by viewModels<DetailedInfoViewModel>()
     private val args by navArgs<DonateStepDialogArgs>()
@@ -46,6 +48,9 @@ class DonateStepDialog : DialogFragment() {
             it.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
             it.window?.requestFeature(Window.FEATURE_NO_TITLE)
         }
+
+        savedStateHandle = navController.previousBackStackEntry!!.savedStateHandle
+        savedStateHandle.set(STEP_DONATED_RESULT, false)
 
         binding = FragmentDonateStepDialogBinding.inflate(inflater)
         return binding.root
@@ -132,8 +137,8 @@ class DonateStepDialog : DialogFragment() {
         eventShowCongratsDialog.observe(viewLifecycleOwner, Observer {
             it?.let {
                 if (it) {
-                    loadingDialog.dismiss()
-                    navController.navigate(NavGraphMainDirections.actionToCongratsDialog())
+                    savedStateHandle.set(STEP_DONATED_RESULT, true)
+                    navController.popBackStack()
                 }
             }
         })

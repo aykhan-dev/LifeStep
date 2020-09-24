@@ -11,10 +11,10 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import az.rabita.lifestep.NavGraphMainDirections
 import az.rabita.lifestep.databinding.FragmentDetailedInfoBinding
-import az.rabita.lifestep.ui.dialog.loading.LoadingDialog
 import az.rabita.lifestep.ui.dialog.message.SingleMessageDialog
 import az.rabita.lifestep.ui.fragment.ranking.RankingRecyclerAdapter
 import az.rabita.lifestep.utils.ERROR_TAG
+import az.rabita.lifestep.utils.STEP_DONATED_RESULT
 import az.rabita.lifestep.utils.logout
 import az.rabita.lifestep.utils.moreShortenString
 import az.rabita.lifestep.viewModel.fragment.detailedInfo.DetailedInfoViewModel
@@ -59,6 +59,7 @@ class DetailedInfoFragment : Fragment() {
     override fun onStart() {
         super.onStart()
         viewModel.fetchDetailedInfo(args.assocationId)
+        checkDonationResult()
     }
 
     private fun bindUI(): Unit = with(binding) {
@@ -162,6 +163,16 @@ class DetailedInfoFragment : Fragment() {
     private fun uiInitialState(): Unit = with(binding) {
         binding.scrollContent.smoothScrollTo(0, 0)
         binding.motionLayout.transitionToStart()
+    }
+
+    private fun checkDonationResult() {
+        navController.currentBackStackEntry?.savedStateHandle?.getLiveData<Boolean>(
+            STEP_DONATED_RESULT
+        )?.observe(viewLifecycleOwner, Observer { result ->
+            if (result) {
+                navController.navigate(NavGraphMainDirections.actionToCongratsDialog())
+            }
+        })
     }
 
 }

@@ -47,11 +47,7 @@ class CongratsDialog : DialogFragment() {
 
         binding.content.startAnimation(openAnimation)
 
-        root.setOnClickListener {
-            val savedState = navController.previousBackStackEntry!!.savedStateHandle
-            savedState.set("Donated", true)
-            navController.popBackStack()
-        }
+        root.setOnClickListener { dismiss() }
     }
 
     override fun getTheme(): Int {
