@@ -31,7 +31,7 @@ class RegisterFragment : Fragment() {
 
     private val navController by lazy { findNavController() }
 
-    private val loadingDialog = LoadingDialog()
+    private val loadingDialog = LoadingDialog
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,

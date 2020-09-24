@@ -8,6 +8,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
+import az.rabita.lifestep.NavGraphMainDirections
 import az.rabita.lifestep.databinding.FragmentSettingsBinding
 import az.rabita.lifestep.ui.dialog.loading.LoadingDialog
 import az.rabita.lifestep.ui.dialog.message.SingleMessageDialog
@@ -24,7 +25,7 @@ class SettingsFragment : Fragment() {
 
     private val navController by lazy { findNavController() }
 
-    private val loadingDialog = LoadingDialog()
+    private val loadingDialog = LoadingDialog
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -58,7 +59,7 @@ class SettingsFragment : Fragment() {
             navController.navigate(SettingsFragmentDirections.actionSettingsFragmentToFriendsFragment())
         }
         cardProfile.setOnClickListener {
-            navController.navigate(SettingsFragmentDirections.actionSettingsFragmentToNavGraphProfile())
+            navController.navigate(NavGraphMainDirections.actionToOwnProfileFragment())
         }
         cardInvitation.setOnClickListener {
             navController.navigate(SettingsFragmentDirections.actionSettingsFragmentToInviteFriendFragment())

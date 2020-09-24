@@ -9,12 +9,14 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
+import az.rabita.lifestep.NavGraphMainDirections
 import az.rabita.lifestep.databinding.FragmentDetailedInfoBinding
 import az.rabita.lifestep.ui.dialog.loading.LoadingDialog
-import az.rabita.lifestep.ui.dialog.message.MessageDialog
 import az.rabita.lifestep.ui.dialog.message.SingleMessageDialog
 import az.rabita.lifestep.ui.fragment.ranking.RankingRecyclerAdapter
-import az.rabita.lifestep.utils.*
+import az.rabita.lifestep.utils.ERROR_TAG
+import az.rabita.lifestep.utils.logout
+import az.rabita.lifestep.utils.moreShortenString
 import az.rabita.lifestep.viewModel.fragment.detailedInfo.DetailedInfoViewModel
 import jp.wasabeef.recyclerview.animators.ScaleInAnimator
 
@@ -27,15 +29,11 @@ class DetailedInfoFragment : Fragment() {
 
     private val donorsAdapter = RankingRecyclerAdapter { ranker ->
         navController.navigate(
-            DetailedInfoFragmentDirections.actionDetailedInfoFragmentToUserProfileFragment(
-                ranker.id
-            )
+            NavGraphMainDirections.actionToOtherProfileFragment(ranker.id)
         )
     }
 
     private val navController by lazy { findNavController() }
-
-    private val loadingDialog = LoadingDialog()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -76,19 +74,23 @@ class DetailedInfoFragment : Fragment() {
         when (direction) {
             DetailedFragmentDirections.DONATE_STEPS -> {
                 viewModel.assocationDetails.value?.let {
+                    uiInitialState()
                     navController.navigate(
                         DetailedInfoFragmentDirections.actionDetailedInfoFragmentToDonateStepDialog(
-                            it.id
+                            it.id,
+                            args.assocationId
                         )
                     )
                 }
             }
             DetailedFragmentDirections.ALL_DONORS -> {
-                navController.navigate(
-                    DetailedInfoFragmentDirections.actionDetailedInfoFragmentToRankingFragment(
-                        postId = viewModel.assocationDetails.value?.id
+                viewModel.assocationDetails.value?.let {
+                    navController.navigate(
+                        DetailedInfoFragmentDirections.actionDetailedInfoFragmentToRankingFragment(
+                            postId = it.id
+                        )
                     )
-                )
+                }
             }
         }
     }
@@ -136,26 +138,7 @@ class DetailedInfoFragment : Fragment() {
 
     }
 
-    private fun observeStates(): Unit = with(viewModel) {
-
-        uiState.observe(viewLifecycleOwner, Observer {
-            it?.let {
-                when (it) {
-                    is UiState.Loading -> activity?.supportFragmentManager?.let { fm ->
-                        loadingDialog.show(
-                            fm,
-                            LOADING_TAG
-                        )
-                    }
-                    is UiState.LoadingFinished -> {
-                        loadingDialog.dismiss()
-                        uiState.value = null
-                    }
-                }
-            }
-        })
-
-    }
+    private fun observeStates(): Unit = with(viewModel) {}
 
     private fun observeEvents(): Unit = with(viewModel) {
 
@@ -174,6 +157,11 @@ class DetailedInfoFragment : Fragment() {
             }
         })
 
+    }
+
+    private fun uiInitialState(): Unit = with(binding) {
+        binding.scrollContent.smoothScrollTo(0, 0)
+        binding.motionLayout.transitionToStart()
     }
 
 }

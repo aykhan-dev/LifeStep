@@ -23,7 +23,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             app:defaultNavHost="true"
-            app:navGraph="@navigation/nav_graph_main_screen" />
+            app:navGraph="@navigation/nav_graph_main" />
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/fab"
@@ -51,11 +51,12 @@
             app:layout_constraintStart_toStartOf="@id/fab"
             app:layout_constraintTop_toTopOf="@id/fab" />
 
-        <az.rabita.lifestep.ui.custom.CustomCurvedLayout
+        <LinearLayout
             android:id="@+id/custom_curved_layout"
             android:layout_width="match_parent"
             android:layout_height="70dp"
             android:layout_gravity="bottom"
+            android:background="@drawable/bg_bottom_bar"
             android:clickable="true"
             android:focusable="true"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -69,9 +70,7 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:onClick="@{()->viewModel.changePage(0)}"
-                android:scaleType="center"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintWidth_percent="0.2" />
+                android:scaleType="center" />
 
             <ImageView
                 android:id="@+id/image_view_wallet"
@@ -80,9 +79,12 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:onClick="@{()->viewModel.changePage(1)}"
-                android:scaleType="center"
-                app:layout_constraintStart_toEndOf="@id/image_view_donation"
-                app:layout_constraintWidth_percent="0.2" />
+                android:scaleType="center" />
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1" />
 
             <ImageView
                 android:id="@+id/image_view_ads"
@@ -91,9 +93,7 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:onClick="@{()->viewModel.changePage(3)}"
-                android:scaleType="center"
-                app:layout_constraintEnd_toStartOf="@id/image_view_settings"
-                app:layout_constraintWidth_percent="0.2" />
+                android:scaleType="center" />
 
             <ImageView
                 android:id="@+id/image_view_settings"
@@ -102,11 +102,9 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:onClick="@{()->viewModel.changePage(4)}"
-                android:scaleType="center"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintWidth_percent="0.2" />
+                android:scaleType="center" />
 
-        </az.rabita.lifestep.ui.custom.CustomCurvedLayout>
+        </LinearLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

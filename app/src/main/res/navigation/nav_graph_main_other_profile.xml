@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph_main_other_profile"
+    app:startDestination="@id/otherUserProfileFragment">
+
+    <fragment
+        android:id="@+id/otherUserProfileFragment"
+        android:name="az.rabita.lifestep.ui.fragment.otherUserProfile.OtherUserProfileFragment"
+        android:label="OtherUserProfileFragment"
+        tools:layout="@layout/fragment_user_profile">
+        <action
+            android:id="@+id/action_otherUserProfileFragment_to_sendStepDialog"
+            app:destination="@id/sendStepDialog" />
+        <argument
+            android:name="userId"
+            app:argType="string" />
+    </fragment>
+
+    <dialog
+        android:id="@+id/sendStepDialog"
+        android:name="az.rabita.lifestep.ui.dialog.sendStep.SendStepDialogFragment"
+        android:label="SendStepDialogFragment"
+        tools:layout="@layout/fragment_send_step_dialog">
+        <action
+            android:id="@+id/action_sendStepDialog_to_otherUserProfileFragment"
+            app:destination="@id/otherUserProfileFragment"
+            app:popUpTo="@id/otherUserProfileFragment"
+            app:popUpToInclusive="true" />
+        <argument
+            android:name="profileInfo"
+            app:argType="az.rabita.lifestep.pojo.dataHolder.UserProfileInfoHolder" />
+    </dialog>
+
+</navigation>

@@ -6,6 +6,7 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
+import androidx.navigation.NavOptions
 import androidx.navigation.findNavController
 import az.rabita.lifestep.R
 import az.rabita.lifestep.databinding.ActivityMainBinding
@@ -24,6 +25,24 @@ class MainActivity : AppCompatActivity() {
     private val viewModel by viewModels<MainViewModel>()
 
     private val navController by lazy { findNavController(R.id.fragment_main_host) }
+
+    private val builder = NavOptions.Builder().setLaunchSingleTop(true)
+
+    private val ids = listOf(
+        R.id.nav_graph_main_events,
+        R.id.walletFragment,
+        R.id.homeFragment,
+        R.id.adsFragment,
+        R.id.nav_graph_main_settings
+    )
+
+    private val destinations = listOf(
+        R.id.eventsFragment,
+        R.id.walletFragment,
+        R.id.homeFragment,
+        R.id.adsFragment,
+        R.id.settingsFragment
+    )
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -44,14 +63,12 @@ class MainActivity : AppCompatActivity() {
         intent?.let {
             val data = it.getParcelableExtra<NotificationInfoHolder>(NOTIFICATION_INFO_KEY)
             data?.let {
-                navController.navigate(HomeFragmentDirections.actionHomeFragmentToNavGraphNotifications())
+                navController.navigate(HomeFragmentDirections.actionHomeFragmentToNotificationsFragment())
             }
         }
     }
 
     private fun configurations(): Unit = with(binding) {
-
-        customCurvedLayout.setupWithNavController(navController)
 
         navController.addOnDestinationChangedListener { _, destination, _ ->
             if (destination.id == R.id.homeFragment) this@MainActivity.viewModel.changePage(2)
@@ -62,7 +79,21 @@ class MainActivity : AppCompatActivity() {
     private fun navigate(): Unit = with(viewModel) {
 
         indexOfSelectedPage.observe(this@MainActivity, Observer {
-            it?.let { binding.customCurvedLayout.navigate(it) }
+            it?.let { index ->
+                if (navController.currentDestination?.id != destinations[index]) {
+                    if (index != 2) {
+                        builder.setPopUpTo(ids[2], false)
+
+                        val options = builder.build()
+
+                        try {
+                            navController.navigate(ids[index], null, options)
+                        } catch (e: IllegalArgumentException) {
+
+                        }
+                    } else navController.popBackStack(ids[2], false)
+                } else Timber.i("Reselection same page")
+            }
         })
 
     }

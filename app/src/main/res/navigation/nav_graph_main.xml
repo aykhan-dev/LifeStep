@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph_main"
+    app:startDestination="@id/homeFragment">
+
+    <action
+        android:id="@+id/action_to_message_dialog"
+        app:destination="@id/messageDialog" />
+
+    <action
+        android:id="@+id/action_to_ads_dialog"
+        app:destination="@id/adsDialog" />
+
+    <action
+        android:id="@+id/action_to_loading_dialog"
+        app:destination="@id/loadingDialog" />
+
+    <action
+        android:id="@+id/action_to_congrats_dialog"
+        app:destination="@id/congratsDialog" />
+
+    <action
+        android:id="@+id/action_to_own_profile_fragment"
+        app:destination="@id/nav_graph_main_own_profile" />
+
+    <action
+        android:id="@+id/action_to_other_profile_fragment"
+        app:destination="@id/nav_graph_main_other_profile">
+        <argument
+            android:name="userId"
+            app:argType="string" />
+    </action>
+
+    <dialog
+        android:id="@+id/messageDialog"
+        android:name="az.rabita.lifestep.ui.dialog.message.MessageDialog"
+        android:label="MessageDialog"
+        tools:layout="@layout/fragment_message_dialog" />
+
+    <dialog
+        android:id="@+id/adsDialog"
+        android:name="az.rabita.lifestep.ui.dialog.ads.AdsDialogFragment"
+        android:label="AdsDialogFragment"
+        tools:layout="@layout/fragment_ads_dialog">
+        <argument
+            android:name="adsTransactionDetails"
+            app:argType="az.rabita.lifestep.pojo.dataHolder.AdsTransactionInfoHolder" />
+        <argument
+            android:name="isForBonusSteps"
+            android:defaultValue="false"
+            app:argType="boolean" />
+    </dialog>
+
+    <dialog
+        android:id="@+id/loadingDialog"
+        android:name="az.rabita.lifestep.ui.dialog.ads.AdsDialogFragment"
+        android:label="AdsDialogFragment"
+        tools:layout="@layout/fragment_loading_dialog" />
+
+    <dialog
+        android:id="@+id/congratsDialog"
+        android:name="az.rabita.lifestep.ui.dialog.congrats.CongratsDialog"
+        android:label="CongratsDialog"
+        tools:layout="@layout/fragment_congrats_dialog" />
+
+    <fragment
+        android:id="@+id/homeFragment"
+        android:name="az.rabita.lifestep.ui.fragment.home.HomeFragment"
+        android:label="HomeFragment"
+        tools:layout="@layout/fragment_home">
+        <action
+            android:id="@+id/action_homeFragment_to_searchResultsFragment"
+            app:destination="@id/searchResultsFragment" />
+        <action
+            android:id="@+id/action_homeFragment_to_notificationsFragment"
+            app:destination="@id/notificationsFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/walletFragment"
+        android:name="az.rabita.lifestep.ui.fragment.wallet.WalletFragment"
+        android:label="WalletFragment"
+        tools:layout="@layout/fragment_wallet" />
+
+    <fragment
+        android:id="@+id/adsFragment"
+        android:name="az.rabita.lifestep.ui.fragment.ads.AdsFragment"
+        android:label="AdsFragment"
+        tools:layout="@layout/fragment_ads" />
+
+    <include app:graph="@navigation/nav_graph_main_events" />
+
+    <include app:graph="@navigation/nav_graph_main_own_profile" />
+
+    <include app:graph="@navigation/nav_graph_main_other_profile" />
+
+    <include app:graph="@navigation/nav_graph_main_settings" />
+
+    <fragment
+        android:id="@+id/searchResultsFragment"
+        android:name="az.rabita.lifestep.ui.fragment.searchResults.SearchResultsFragment"
+        android:label="SearchResultsFragment"
+        tools:layout="@layout/fragment_search_result" >
+        <argument
+            android:name="searchKeyword"
+            app:argType="string" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/notificationsFragment"
+        android:name="az.rabita.lifestep.ui.fragment.notifications.NotificationsFragment"
+        android:label="NotificationsFragment"
+        tools:layout="@layout/fragment_notifications" />
+
+</navigation>

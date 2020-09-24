@@ -8,6 +8,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
+import az.rabita.lifestep.NavGraphMainDirections
 import az.rabita.lifestep.R
 import az.rabita.lifestep.databinding.FragmentFriendsBinding
 import az.rabita.lifestep.ui.dialog.message.SingleMessageDialog
@@ -97,7 +98,7 @@ class FriendsFragment : Fragment() {
         activity?.let {
             viewPager.adapter = FriendsPagerAdapter(it) { userId ->
                 navController.navigate(
-                    FriendsFragmentDirections.actionFriendsFragmentToUserProfileFragment(userId)
+                    NavGraphMainDirections.actionToOtherProfileFragment(userId)
                 )
             }
         }

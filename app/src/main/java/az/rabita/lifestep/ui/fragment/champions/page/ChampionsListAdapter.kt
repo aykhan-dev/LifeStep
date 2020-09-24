@@ -5,7 +5,12 @@ import az.rabita.lifestep.pojo.apiPOJO.content.RankerContentPOJO
 import az.rabita.lifestep.ui.fragment.ranking.RankerDiffCallback
 import az.rabita.lifestep.utils.lib.DataBindingRecyclerAdapter
 
-class ChampionsListAdapter : DataBindingRecyclerAdapter<RankerContentPOJO>(RankerDiffCallback) {
+class ChampionsListAdapter(
+    clickListener: (RankerContentPOJO, Int) -> Unit
+) : DataBindingRecyclerAdapter<RankerContentPOJO>(
+    RankerDiffCallback,
+    clickListener = clickListener
+) {
 
     override fun getItemViewType(position: Int): Int = R.layout.item_ranking
 

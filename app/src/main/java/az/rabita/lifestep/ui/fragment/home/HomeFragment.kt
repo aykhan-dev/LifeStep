@@ -16,17 +16,16 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import az.rabita.lifestep.NavGraphMainDirections
 import az.rabita.lifestep.R
 import az.rabita.lifestep.databinding.FragmentHomeBinding
 import az.rabita.lifestep.ui.dialog.loading.LoadingDialog
-import az.rabita.lifestep.ui.dialog.message.MessageDialog
 import az.rabita.lifestep.ui.dialog.message.SingleMessageDialog
 import az.rabita.lifestep.utils.*
 import az.rabita.lifestep.viewModel.fragment.home.HomeViewModel
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayout.OnTabSelectedListener
-import jp.wasabeef.recyclerview.animators.ScaleInAnimator
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
@@ -39,7 +38,7 @@ class HomeFragment : Fragment() {
     private val navController by lazy { findNavController() }
 
     private val adapter = SearchResultRecyclerAdapter { onSearchResultItemClick(it) }
-    private val loadingDialog = LoadingDialog()
+    private val loadingDialog = LoadingDialog
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -165,9 +164,7 @@ class HomeFragment : Fragment() {
                 loadingDialog.dismiss()
                 val transactionInfo = it.asAdsTransactionInfoHolderObject()
                 navController.navigate(
-                    HomeFragmentDirections.actionHomeFragmentToAdsDialogFragment(
-                        transactionInfo
-                    )
+                    NavGraphMainDirections.actionToAdsDialog(transactionInfo)
                 )
             }
         })
@@ -238,11 +235,11 @@ class HomeFragment : Fragment() {
     }
 
     private fun navigateToNotificationsPage(): Unit = with(navController) {
-        navigate(HomeFragmentDirections.actionHomeFragmentToNavGraphNotifications())
+        navigate(HomeFragmentDirections.actionHomeFragmentToNotificationsFragment())
     }
 
     private fun onSearchResultItemClick(userId: String): Unit = with(navController) {
-        navigate(HomeFragmentDirections.actionHomeFragmentToUserProfileFragment(userId))
+        navigate(NavGraphMainDirections.actionToOtherProfileFragment(userId))
     }
 
     private fun showSearchBar(): Unit = with(binding) {

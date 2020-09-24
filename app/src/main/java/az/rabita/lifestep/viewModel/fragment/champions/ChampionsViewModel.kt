@@ -1,16 +1,14 @@
 package az.rabita.lifestep.viewModel.fragment.champions
 
 import android.app.Application
-import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
 import az.rabita.lifestep.R
 import az.rabita.lifestep.local.getDatabase
 import az.rabita.lifestep.manager.PreferenceManager
 import az.rabita.lifestep.network.NetworkState
 import az.rabita.lifestep.pojo.apiPOJO.content.RankerContentPOJO
 import az.rabita.lifestep.repository.ReportRepository
+import az.rabita.lifestep.repository.UsersRepository
 import az.rabita.lifestep.utils.DEFAULT_LANG
 import az.rabita.lifestep.utils.LANG_KEY
 import az.rabita.lifestep.utils.TOKEN_KEY
@@ -21,6 +19,7 @@ class ChampionsViewModel(app: Application) : AndroidViewModel(app) {
 
     private val context = app.applicationContext
 
+    private val usersRepository = UsersRepository.getInstance(getDatabase(context))
     private val reportRepository = ReportRepository.getInstance(getDatabase(context))
 
     private val sharedPreferences = PreferenceManager.getInstance(context)
@@ -33,6 +32,8 @@ class ChampionsViewModel(app: Application) : AndroidViewModel(app) {
 
     private val _listOfChampions = MutableLiveData<List<RankerContentPOJO>>()
     val listOfChampions: LiveData<List<RankerContentPOJO>> get() = _listOfChampions
+
+    val cachedOwnProfileInfo = usersRepository.personalInfo.asLiveData()
 
     fun fetchDailyChampions() {
         viewModelScope.launch {

@@ -9,6 +9,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import az.rabita.lifestep.NavGraphMainDirections
 import az.rabita.lifestep.databinding.FragmentNotificationsBinding
 import az.rabita.lifestep.utils.logout
 import az.rabita.lifestep.utils.openUrl
@@ -28,12 +29,10 @@ class NotificationsFragment : Fragment() {
     private val notificationsAdapter by lazy {
         NotificationRecyclerAdapter { notification ->
             when (notification.usersNotificationsTypesId) {
-                20 -> navController.navigate(NotificationsFragmentDirections.actionNotificationsFragmentToInviteFriendFragment())
-                30 -> navController.navigate(NotificationsFragmentDirections.actionNotificationsFragmentToFriendsFragment())
+                //20 -> navController.navigate(NotificationsFragmentDirections.actionNotificationsFragmentToInviteFriendFragment())
+                //30 -> navController.navigate(NotificationsFragmentDirections.actionNotificationsFragmentToFriendsFragment())
                 40 -> navController.navigate(
-                    NotificationsFragmentDirections.actionNotificationsFragmentToUserProfileFragment(
-                        notification.usersId
-                    )
+                    NavGraphMainDirections.actionToOtherProfileFragment(notification.usersId)
                 )
                 else -> if (notification.url.isNotEmpty()) openUrl(notification.url)
             }

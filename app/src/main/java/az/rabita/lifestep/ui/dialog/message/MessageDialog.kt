@@ -14,6 +14,7 @@ import az.rabita.lifestep.R
 import az.rabita.lifestep.databinding.FragmentMessageDialogBinding
 import az.rabita.lifestep.manager.PreferenceManager
 import az.rabita.lifestep.utils.LANG_KEY
+import io.alterac.blurkit.BlurKit
 
 class MessageDialog(
     private val message: String
@@ -49,6 +50,8 @@ class MessageDialog(
     }
 
     private fun bindUI(): Unit = with(binding) {
+
+        BlurKit.getInstance().blur(root, 12)
 
         imageViewIllustration.setImageResource(
             when (message) {

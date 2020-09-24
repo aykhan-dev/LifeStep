@@ -75,7 +75,6 @@ class DetailedInfoViewModel(application: Application) : AndroidViewModel(applica
             }
 
             uiState.postValue(UiState.LoadingFinished)
-
         }
     }
 

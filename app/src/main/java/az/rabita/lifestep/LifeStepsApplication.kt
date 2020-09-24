@@ -9,6 +9,7 @@ import az.rabita.lifestep.pojo.dataHolder.NotificationInfoHolder
 import az.rabita.lifestep.ui.activity.main.MainActivity
 import az.rabita.lifestep.utils.*
 import com.onesignal.OneSignal
+import io.alterac.blurkit.BlurKit
 import timber.log.Timber
 
 class LifeStepsApplication : Application() {

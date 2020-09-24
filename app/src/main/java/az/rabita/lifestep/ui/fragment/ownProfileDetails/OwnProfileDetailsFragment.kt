@@ -65,7 +65,7 @@ class OwnProfileDetailsFragment : Fragment() {
         imageButtonBack.setOnClickListener { activity?.onBackPressed() }
         imageButtonEditProfile.setOnClickListener {
             navController.navigate(
-                OwnProfileDetailsFragmentDirections.actionProfileDetailsFragmentToEditProfileFragment()
+                OwnProfileDetailsFragmentDirections.actionOwnProfileDetailsFragmentToEditProfileFragment()
             )
         }
     }

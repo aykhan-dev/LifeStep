@@ -7,6 +7,8 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
+import androidx.navigation.fragment.findNavController
+import az.rabita.lifestep.NavGraphMainDirections
 import az.rabita.lifestep.databinding.FragmentChampionsPageBinding
 import az.rabita.lifestep.ui.dialog.message.SingleMessageDialog
 import az.rabita.lifestep.utils.ERROR_TAG
@@ -19,7 +21,14 @@ class ChampionsPageFragment(private val pageType: ChampionsPageType) : Fragment(
     private lateinit var binding: FragmentChampionsPageBinding
 
     private val viewModel by viewModels<ChampionsViewModel>()
-    private val listAdapter = ChampionsListAdapter()
+    private val navController by lazy { findNavController() }
+
+    private val listAdapter = ChampionsListAdapter { user, position ->
+        navController.navigate(
+            if (user.id == viewModel.cachedOwnProfileInfo.value?.id) NavGraphMainDirections.actionToOwnProfileFragment()
+            else NavGraphMainDirections.actionToOtherProfileFragment(user.id)
+        )
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,

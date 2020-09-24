@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph_main_own_profile"
+    app:startDestination="@id/ownProfileDetailsFragment">
+
+    <fragment
+        android:id="@+id/ownProfileDetailsFragment"
+        android:name="az.rabita.lifestep.ui.fragment.ownProfileDetails.OwnProfileDetailsFragment"
+        android:label="OwnProfileDetailsFragment"
+        tools:layout="@layout/fragment_own_profile_details">
+        <action
+            android:id="@+id/action_ownProfileDetailsFragment_to_editProfileFragment"
+            app:destination="@id/editProfileFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/editProfileFragment"
+        android:name="az.rabita.lifestep.ui.fragment.editProfile.EditProfileFragment"
+        android:label="EditProfileFragment"
+        tools:layout="@layout/fragment_edit_profile">
+        <action
+            android:id="@+id/action_editProfileFragment_to_forgotPasswordActivity2"
+            app:destination="@id/forgotPasswordActivity2" />
+    </fragment>
+
+    <activity
+        android:id="@+id/forgotPasswordActivity2"
+        android:name="az.rabita.lifestep.ui.activity.forgotPassword.ForgotPasswordActivity"
+        android:label="ForgotPasswordActivity"
+        tools:layout="@layout/activity_forgot_password" />
+
+</navigation>

@@ -15,6 +15,7 @@ import az.rabita.lifestep.R
 import az.rabita.lifestep.databinding.FragmentMessageDialogBinding
 import az.rabita.lifestep.manager.PreferenceManager
 import az.rabita.lifestep.utils.LANG_KEY
+import io.alterac.blurkit.BlurKit
 
 object SingleMessageDialog : DialogFragment() {
 

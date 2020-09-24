@@ -9,6 +9,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
+import az.rabita.lifestep.NavGraphMainDirections
 import az.rabita.lifestep.databinding.FragmentSearchResultBinding
 import az.rabita.lifestep.ui.dialog.loading.LoadingDialog
 import az.rabita.lifestep.ui.dialog.message.MessageDialog
@@ -31,13 +32,11 @@ class SearchResultsFragment : Fragment() {
 
     private val adapter = LargeSearchResultsRecyclerAdapter { userId ->
         navController.navigate(
-            SearchResultsFragmentDirections.actionSearchResultsFragmentToUserProfileFragment(
-                userId
-            )
+            NavGraphMainDirections.actionToOtherProfileFragment(userId)
         )
     }
 
-    private val loadingDialog by lazy { LoadingDialog() }
+    private val loadingDialog = LoadingDialog
 
     override fun onCreateView(
         inflater: LayoutInflater,

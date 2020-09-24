@@ -24,11 +24,11 @@ class CustomCurvedLayout @JvmOverloads constructor(
     private val viewScope = CoroutineScope(Main)
 
     private val ids = listOf(
-        R.id.nav_graph_categories,
+        R.id.nav_graph_main_events,
         R.id.walletFragment,
         R.id.homeFragment,
-        R.id.nav_graph_ads,
-        R.id.nav_graph_settings
+        R.id.adsFragment,
+        R.id.nav_graph_main_settings
     )
 
     private val destinations = listOf(
@@ -155,12 +155,8 @@ class CustomCurvedLayout @JvmOverloads constructor(
                     } catch (e: IllegalArgumentException) {
 
                     }
-                } else {
-                    it.popBackStack(ids[2], false)
-                }
-            } else {
-                Timber.i("Reselection same page")
-            }
+                } else it.popBackStack(ids[2], false)
+            } else Timber.i("Reselection same page")
 
         }
     }

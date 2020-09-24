@@ -9,12 +9,12 @@ import android.view.ViewGroup
 import android.view.Window
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
-import androidx.fragment.app.DialogFragment
 import az.rabita.lifestep.R
 import az.rabita.lifestep.databinding.FragmentLoadingDialogBinding
+import az.rabita.lifestep.ui.dialog.SingleInstanceDialog
 import com.bumptech.glide.Glide
 
-class LoadingDialog : DialogFragment() {
+object LoadingDialog : SingleInstanceDialog() {
 
     private lateinit var binding: FragmentLoadingDialogBinding
 

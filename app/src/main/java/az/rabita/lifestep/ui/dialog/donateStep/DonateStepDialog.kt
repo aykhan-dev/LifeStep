@@ -14,10 +14,10 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
+import az.rabita.lifestep.NavGraphMainDirections
 import az.rabita.lifestep.R
 import az.rabita.lifestep.databinding.FragmentDonateStepDialogBinding
 import az.rabita.lifestep.ui.dialog.loading.LoadingDialog
-import az.rabita.lifestep.ui.dialog.message.MessageDialog
 import az.rabita.lifestep.ui.dialog.message.SingleMessageDialog
 import az.rabita.lifestep.utils.*
 import az.rabita.lifestep.viewModel.fragment.detailedInfo.DetailedInfoViewModel
@@ -35,7 +35,7 @@ class DonateStepDialog : DialogFragment() {
 
     private val navController by lazy { findNavController() }
 
-    private val loadingDialog = LoadingDialog()
+    private val loadingDialog = LoadingDialog
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -80,7 +80,13 @@ class DonateStepDialog : DialogFragment() {
                 switcher.isSwitchOn
             )
         }
-        root.setOnClickListener { dismiss() }
+        root.setOnClickListener {
+            navController.navigate(
+                DonateStepDialogDirections.actionDonateStepDialogToDetailedInfoFragment(
+                    args.assocationId
+                )
+            )
+        }
         content.setOnClickListener { it.hideKeyboard(context) }
     }
 
@@ -127,7 +133,7 @@ class DonateStepDialog : DialogFragment() {
             it?.let {
                 if (it) {
                     loadingDialog.dismiss()
-                    navController.navigate(DonateStepDialogDirections.actionDonateStepDialogToCongratsDialog())
+                    navController.navigate(NavGraphMainDirections.actionToCongratsDialog())
                 }
             }
         })

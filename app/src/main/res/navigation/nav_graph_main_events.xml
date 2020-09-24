@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph_main_events"
+    app:startDestination="@id/eventsFragment">
+
+    <fragment
+        android:id="@+id/eventsFragment"
+        android:name="az.rabita.lifestep.ui.fragment.events.EventsFragment"
+        android:label="EventsFragment"
+        tools:layout="@layout/fragment_events">
+        <action
+            android:id="@+id/action_eventsFragment_to_donationFragment"
+            app:destination="@id/donationFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/donationFragment"
+        android:name="az.rabita.lifestep.ui.fragment.donation.DonationFragment"
+        android:label="fragment_donation"
+        tools:layout="@layout/fragment_donation">
+        <action
+            android:id="@+id/action_donationFragment_to_detailedInfoFragment"
+            app:destination="@id/detailedInfoFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/detailedInfoFragment"
+        android:name="az.rabita.lifestep.ui.fragment.detailedInfo.DetailedInfoFragment"
+        android:label="DetailedInfoFragment"
+        tools:layout="@layout/fragment_detailed_info">
+        <action
+            android:id="@+id/action_detailedInfoFragment_to_donateStepDialog"
+            app:destination="@id/donateStepDialog" />
+        <action
+            android:id="@+id/action_detailedInfoFragment_to_rankingFragment"
+            app:destination="@id/rankingFragment" />
+        <argument
+            android:name="assocationId"
+            app:argType="string" />
+    </fragment>
+
+    <dialog
+        android:id="@+id/donateStepDialog"
+        android:name="az.rabita.lifestep.ui.dialog.donateStep.DonateStepDialog"
+        android:label="DonateStepDialog"
+        tools:layout="@layout/fragment_donate_step_dialog">
+        <action
+            android:id="@+id/action_donateStepDialog_to_detailedInfoFragment"
+            app:destination="@id/detailedInfoFragment"
+            app:popUpTo="@id/detailedInfoFragment"
+            app:popUpToInclusive="true" />
+        <argument
+            android:name="postId"
+            app:argType="string" />
+        <argument
+            android:name="assocationId"
+            app:argType="string" />
+    </dialog>
+
+    <fragment
+        android:id="@+id/rankingFragment"
+        android:name="az.rabita.lifestep.ui.fragment.ranking.RankingFragment"
+        android:label="RankingFragment"
+        tools:layout="@layout/fragment_ranking">
+        <argument
+            android:name="postId"
+            app:argType="string" />
+    </fragment>
+
+</navigation>

@@ -10,6 +10,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
+import az.rabita.lifestep.NavGraphMainDirections
 import az.rabita.lifestep.R
 import az.rabita.lifestep.databinding.FragmentAdsDialogBinding
 import az.rabita.lifestep.ui.dialog.loading.LoadingDialog
@@ -46,7 +47,7 @@ class AdsDialogFragment() : DialogFragment() {
 
     private val navController by lazy { findNavController() }
 
-    private val loadingDialog = LoadingDialog()
+    private val loadingDialog = LoadingDialog
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -155,7 +156,7 @@ class AdsDialogFragment() : DialogFragment() {
             it?.let {
                 if (it) {
                     if (args.isForBonusSteps && viewModel.isSuccessfullyWatched) navController.navigate(
-                        AdsDialogFragmentDirections.actionAdsDialogFragment2ToBonusStepDialog()
+                        NavGraphMainDirections.actionToCongratsDialog()
                     )
                     else dismiss()
                 }

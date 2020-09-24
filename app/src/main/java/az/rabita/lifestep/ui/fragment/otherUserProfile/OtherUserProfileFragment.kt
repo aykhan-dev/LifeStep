@@ -67,7 +67,7 @@ class OtherUserProfileFragment : Fragment() {
             with(this@OtherUserProfileFragment.viewModel) {
                 profileInfo.value?.let { info ->
                     navController.navigate(
-                        OtherUserProfileFragmentDirections.actionUserProfileFragmentToSendStepDialogFragment(
+                        OtherUserProfileFragmentDirections.actionOtherUserProfileFragmentToSendStepDialog(
                             UserProfileInfoHolder(
                                 info.id,
                                 cachedOwnProfileInfo.value?.balance ?: 0

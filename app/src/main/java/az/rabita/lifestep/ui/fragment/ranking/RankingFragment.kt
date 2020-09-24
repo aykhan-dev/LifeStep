@@ -10,9 +10,9 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
+import az.rabita.lifestep.NavGraphMainDirections
 import az.rabita.lifestep.R
 import az.rabita.lifestep.databinding.FragmentRankingBinding
-import az.rabita.lifestep.ui.dialog.message.MessageDialog
 import az.rabita.lifestep.ui.dialog.message.SingleMessageDialog
 import az.rabita.lifestep.utils.ERROR_TAG
 import az.rabita.lifestep.utils.logout
@@ -32,17 +32,13 @@ class RankingFragment : Fragment() {
 
     private val rankingAdapter = RankingRecyclerAdapter(showMedals = true) { ranker ->
         navController.navigate(
-            RankingFragmentDirections.actionRankingFragmentToUserProfileFragment(
-                ranker.id
-            )
+            NavGraphMainDirections.actionToOtherProfileFragment(ranker.id)
         )
     }
 
     private val rankingPagedAdapter = RankingPagedRecyclerAdapter { ranker ->
         navController.navigate(
-            RankingFragmentDirections.actionRankingFragmentToUserProfileFragment(
-                ranker.id
-            )
+            NavGraphMainDirections.actionToOtherProfileFragment(ranker.id)
         )
     }
 
