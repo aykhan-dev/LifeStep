@@ -22,13 +22,13 @@ import az.rabita.lifestep.pojo.dataHolder.UserProfileInfoHolder
 import az.rabita.lifestep.ui.dialog.message.SingleMessageDialog
 import az.rabita.lifestep.utils.ERROR_TAG
 import az.rabita.lifestep.utils.logout
-import az.rabita.lifestep.viewModel.fragment.profileDetails.RefactoredOtherUserProfileViewModel
+import az.rabita.lifestep.viewModel.fragment.profileDetails.OtherUserProfileViewModel
 
 class OtherUserProfileFragment : Fragment() {
 
     private lateinit var binding: FragmentUserProfileBinding
 
-    private val viewModel by viewModels<RefactoredOtherUserProfileViewModel>()
+    private val viewModel by viewModels<OtherUserProfileViewModel>()
     private val args by navArgs<OtherUserProfileFragmentArgs>()
 
     private val navController by lazy { findNavController() }
@@ -49,7 +49,10 @@ class OtherUserProfileFragment : Fragment() {
 
     override fun onStart() {
         super.onStart()
-        viewModel.fetchAllInOneProfileInfo(args.userId)
+        with(viewModel) {
+            updateOwnProfileData()
+            fetchAllInOneProfileInfo(args.userId)
+        }
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {

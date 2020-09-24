@@ -12,16 +12,14 @@ import android.view.animation.AnimationUtils
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import az.rabita.lifestep.R
 import az.rabita.lifestep.databinding.FragmentSendStepDialogBinding
-import az.rabita.lifestep.ui.dialog.message.MessageDialog
 import az.rabita.lifestep.ui.dialog.message.SingleMessageDialog
 import az.rabita.lifestep.utils.ERROR_TAG
 import az.rabita.lifestep.utils.hideKeyboard
 import az.rabita.lifestep.utils.logout
-import az.rabita.lifestep.utils.shortenString
-import az.rabita.lifestep.viewModel.fragment.profileDetails.UserProfileViewModel
 import az.rabita.lifestep.viewModel.fragment.sendStep.SendStepViewModel
 
 class SendStepDialogFragment : DialogFragment() {
@@ -34,6 +32,8 @@ class SendStepDialogFragment : DialogFragment() {
 
     private val viewModel by viewModels<SendStepViewModel>()
     private val args by navArgs<SendStepDialogFragmentArgs>()
+
+    private val navController by lazy { findNavController() }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -95,7 +95,13 @@ class SendStepDialogFragment : DialogFragment() {
     private fun observeEvents(): Unit = with(viewModel) {
 
         eventDismissDialog.observe(viewLifecycleOwner, Observer {
-            it?.let { if (it) dismiss() }
+            it?.let {
+                if (it) navController.navigate(
+                    SendStepDialogFragmentDirections.actionSendStepDialogToOtherUserProfileFragment(
+                        args.profileInfo.userId
+                    )
+                )
+            }
         })
 
         eventExpiredToken.observe(viewLifecycleOwner, Observer {

@@ -31,9 +31,6 @@
         <action
             android:id="@+id/action_settingsFragment_to_aboutUsFragment"
             app:destination="@id/aboutUsFragment" />
-        <action
-            android:id="@+id/action_settingsFragment_to_authActivity"
-            app:destination="@id/authActivity" />
     </fragment>
 
     <fragment
@@ -77,11 +74,5 @@
         android:name="az.rabita.lifestep.ui.fragment.aboutUs.AboutUsFragment"
         android:label="AboutUsFragment"
         tools:layout="@layout/fragment_about_us" />
-
-    <activity
-        android:id="@+id/authActivity"
-        android:name="az.rabita.lifestep.ui.activity.auth.AuthActivity"
-        android:label="AuthActivity"
-        tools:layout="@layout/activity_auth" />
 
 </navigation>

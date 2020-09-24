@@ -18,18 +18,17 @@ import androidx.navigation.fragment.findNavController
 import az.rabita.lifestep.R
 import az.rabita.lifestep.databinding.FragmentOwnProfileDetailsBinding
 
-import az.rabita.lifestep.ui.dialog.message.MessageDialog
 import az.rabita.lifestep.ui.dialog.message.SingleMessageDialog
 import az.rabita.lifestep.utils.ERROR_TAG
 import az.rabita.lifestep.utils.logout
 import az.rabita.lifestep.utils.shortenString
-import az.rabita.lifestep.viewModel.fragment.profileDetails.RefactoredOwnProfileViewModel
+import az.rabita.lifestep.viewModel.fragment.profileDetails.OwnProfileViewModel
 
 class OwnProfileDetailsFragment : Fragment() {
 
     private lateinit var binding: FragmentOwnProfileDetailsBinding
 
-    private val viewModel by viewModels<RefactoredOwnProfileViewModel>()
+    private val viewModel by viewModels<OwnProfileViewModel>()
 
     private val navController by lazy { findNavController() }
 

@@ -7,7 +7,7 @@
 
         <variable
             name="viewModel"
-            type="az.rabita.lifestep.viewModel.fragment.profileDetails.RefactoredOtherUserProfileViewModel" />
+            type="az.rabita.lifestep.viewModel.fragment.profileDetails.OtherUserProfileViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout

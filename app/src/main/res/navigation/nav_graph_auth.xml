@@ -13,9 +13,6 @@
         <action
             android:id="@+id/action_loginFragment_to_registerFragment"
             app:destination="@id/registerFragment" />
-        <action
-            android:id="@+id/action_loginFragment_to_forgotPasswordActivity"
-            app:destination="@id/forgotPasswordActivity" />
     </fragment>
 
     <fragment
@@ -23,11 +20,6 @@
         android:name="az.rabita.lifestep.ui.fragment.register.RegisterFragment"
         android:label="RegisterFragment"
         tools:layout="@layout/fragment_register" />
-    <activity
-        android:id="@+id/forgotPasswordActivity"
-        android:name="az.rabita.lifestep.ui.activity.forgotPassword.ForgotPasswordActivity"
-        android:label="ForgotPasswordActivity"
-        tools:layout="@layout/activity_forgot_password" />
 
 
 </navigation>

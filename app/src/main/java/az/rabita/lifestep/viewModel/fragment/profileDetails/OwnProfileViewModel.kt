@@ -1,40 +1,35 @@
 package az.rabita.lifestep.viewModel.fragment.profileDetails
 
 import android.app.Application
+import android.text.format.DateFormat
 import androidx.lifecycle.*
 import az.rabita.lifestep.R
 import az.rabita.lifestep.local.getDatabase
 import az.rabita.lifestep.manager.PreferenceManager
 import az.rabita.lifestep.network.NetworkState
-import az.rabita.lifestep.pojo.apiPOJO.content.PersonalInfoContentPOJO
+import az.rabita.lifestep.pojo.apiPOJO.content.DailyContentPOJO
+import az.rabita.lifestep.pojo.apiPOJO.content.MonthlyContentPOJO
 import az.rabita.lifestep.pojo.apiPOJO.model.FriendRequestModelPOJO
-import az.rabita.lifestep.pojo.dataHolder.AllInOneOtherUserInfoHolder
-import az.rabita.lifestep.repository.FriendshipRepository
+import az.rabita.lifestep.pojo.apiPOJO.model.SendStepModelPOJO
+import az.rabita.lifestep.pojo.dataHolder.AllInOneUserInfoHolder
 import az.rabita.lifestep.repository.UsersRepository
 import az.rabita.lifestep.ui.custom.BarDiagram
-import az.rabita.lifestep.ui.fragment.otherUserProfile.FriendshipStatus
 import az.rabita.lifestep.utils.*
 import kotlinx.coroutines.launch
+import java.util.*
 
-class RefactoredOtherUserProfileViewModel(app: Application) : AndroidViewModel(app) {
+class OwnProfileViewModel(app: Application) : AndroidViewModel(app) {
 
     private val context = app.applicationContext
-    private val sharedPreferences = PreferenceManager.getInstance(context)
 
     private val usersRepository = UsersRepository.getInstance(getDatabase(context))
-    private val friendshipRepository = FriendshipRepository.getInstance(
-        PaginationListeners(
-            {},
-            {},
-            { handleNetworkException(it) }
-        )
-    )
+    private val sharedPreferences = PreferenceManager.getInstance(context)
 
     private val _eventExpiredToken = MutableLiveData<Boolean>(false)
-    val eventExpiredToken: LiveData<Boolean> get() = _eventExpiredToken
+    val eventExpiredToken: LiveData<Boolean> = _eventExpiredToken
 
     private var _errorMessage = MutableLiveData<String?>()
-    val errorMessage: LiveData<String?> get() = _errorMessage
+    val errorMessage: LiveData<String?> = _errorMessage
 
     private val _dailyStats = MutableLiveData<BarDiagram.DiagramDataModel>()
     val dailyStats: LiveData<BarDiagram.DiagramDataModel> = _dailyStats
@@ -42,59 +37,25 @@ class RefactoredOtherUserProfileViewModel(app: Application) : AndroidViewModel(a
     private val _monthlyStats = MutableLiveData<BarDiagram.DiagramDataModel>()
     val monthlyStats: LiveData<BarDiagram.DiagramDataModel> = _monthlyStats
 
-    private val _profileInfo = MutableLiveData<PersonalInfoContentPOJO>()
-    val profileInfo: LiveData<PersonalInfoContentPOJO> get() = _profileInfo
-
     val isDailyStatsShown = MutableLiveData<Boolean>(true)
 
-    val cachedOwnProfileInfo = usersRepository.personalInfo.asLiveData()
+    val cachedProfileInfo = usersRepository.personalInfo.asLiveData()
 
-    val friendshipStatus: LiveData<FriendshipStatus> = MutableLiveData()
-
-    fun fetchAllInOneProfileInfo(userId: String) {
+    fun fetchAllInOneProfileInfo() {
         viewModelScope.launch {
 
             val token = sharedPreferences.getStringElement(TOKEN_KEY, "")
             val lang = sharedPreferences.getIntegerElement(LANG_KEY, DEFAULT_LANG)
 
-            when (val response = usersRepository.getUserInfoAllInOneById(token, lang, userId)) {
+            when (val response = usersRepository.getUserInfoAllInOne(token, lang)) {
                 is NetworkState.Success<*> -> run {
-                    val data = response.data as AllInOneOtherUserInfoHolder
-                    _profileInfo.postValue(data.info.also {
-                        (friendshipStatus as MutableLiveData).postValue(
-                            when (it.friendShipStatus) {
-                                0 -> FriendshipStatus.NOT_FRIEND
-                                10 -> FriendshipStatus.PENDING
-                                20 -> FriendshipStatus.IS_FRIEND
-                                //30 -> FriendshipStatus.REJECTED
-                                else -> FriendshipStatus.NOT_FRIEND
-                            }
-                        )
-                    })
+                    val data = response.data as AllInOneUserInfoHolder
                     _dailyStats.postValue(extractDiagramData(data.dailyStats))
                     _monthlyStats.postValue(extractDiagramData(data.monthlyStats))
                 }
                 is NetworkState.ExpiredToken -> startExpireTokenProcess()
                 is NetworkState.UnhandledHttpError -> showMessageDialog(response.error)
                 is NetworkState.HandledHttpError -> showMessageDialog(response.error)
-                is NetworkState.NetworkException -> handleNetworkException(response.exception)
-            }
-
-        }
-    }
-
-    fun sendFriendRequest() {
-        viewModelScope.launch {
-
-            val token = sharedPreferences.getStringElement(TOKEN_KEY, "")
-            val lang = sharedPreferences.getIntegerElement(LANG_KEY, DEFAULT_LANG)
-            val model = FriendRequestModelPOJO(friendId = profileInfo.value?.id ?: "")
-
-            when (val response = friendshipRepository.sendFriendRequest(token, lang, model)) {
-                is NetworkState.Success<*> -> fetchAllInOneProfileInfo(profileInfo.value?.id ?: "")
-                is NetworkState.ExpiredToken -> startExpireTokenProcess()
-                is NetworkState.HandledHttpError -> showMessageDialog(response.error)
-                is NetworkState.UnhandledHttpError -> showMessageDialog(response.error)
                 is NetworkState.NetworkException -> handleNetworkException(response.exception)
             }
 

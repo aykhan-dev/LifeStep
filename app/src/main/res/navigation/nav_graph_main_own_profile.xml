@@ -21,12 +21,13 @@
         android:label="EditProfileFragment"
         tools:layout="@layout/fragment_edit_profile">
         <action
-            android:id="@+id/action_editProfileFragment_to_forgotPasswordActivity2"
-            app:destination="@id/forgotPasswordActivity2" />
+            android:id="@+id/action_editProfileFragment_to_forgotPasswordActivity"
+            app:destination="@id/forgotPasswordActivity"
+            app:launchSingleTop="true"/>
     </fragment>
 
     <activity
-        android:id="@+id/forgotPasswordActivity2"
+        android:id="@+id/forgotPasswordActivity"
         android:name="az.rabita.lifestep.ui.activity.forgotPassword.ForgotPasswordActivity"
         android:label="ForgotPasswordActivity"
         tools:layout="@layout/activity_forgot_password" />
