@@ -187,14 +187,14 @@ fun extractDiagramData(data: List<*>): BarDiagram.DiagramDataModel {
             }
             is DailyContentPOJO -> {
                 maxValue = maxValue.coerceAtLeast(i.count)
-                columns.add(i.createdDate.substring(8, 10))
+                columns.add(i.shortName)
                 values.add(i.count)
             }
         }
     }
 
     return BarDiagram.DiagramDataModel(
-        maxValue = maxValue,
+        maxValue = if(maxValue == 0L) 10 else maxValue,
         columnTexts = columns,
         values = values
     )

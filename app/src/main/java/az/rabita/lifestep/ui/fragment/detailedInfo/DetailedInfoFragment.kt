@@ -28,9 +28,7 @@ class DetailedInfoFragment : Fragment() {
     private val args by navArgs<DetailedInfoFragmentArgs>()
 
     private val donorsAdapter = RankingRecyclerAdapter { ranker ->
-        navController.navigate(
-            NavGraphMainDirections.actionToOtherProfileFragment(ranker.id)
-        )
+        navController.navigate(NavGraphMainDirections.actionToOtherProfileFragment(ranker.id))
     }
 
     private val navController by lazy { findNavController() }

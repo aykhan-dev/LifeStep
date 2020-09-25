@@ -63,7 +63,7 @@ class HomeFragment : Fragment() {
 
     override fun onStart() {
         super.onStart()
-        //lifecycleScope.launchWhenStarted { permissions() }
+        lifecycleScope.launchWhenStarted { permissions() }
         viewModel.fetchWeeklyStats()
     }
 
