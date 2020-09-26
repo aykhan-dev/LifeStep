@@ -221,7 +221,7 @@ abstract class NotificationsDao {
         WeeklyStat::class,
         Notifications::class
     ],
-    version = 2
+    version = 3
 )
 abstract class AppDatabase : RoomDatabase() {
     abstract val categoriesDao: CategoriesDao

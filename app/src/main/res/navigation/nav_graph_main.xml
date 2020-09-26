@@ -102,7 +102,7 @@
         android:id="@+id/searchResultsFragment"
         android:name="az.rabita.lifestep.ui.fragment.searchResults.SearchResultsFragment"
         android:label="SearchResultsFragment"
-        tools:layout="@layout/fragment_search_result" >
+        tools:layout="@layout/fragment_search_result">
         <argument
             android:name="searchKeyword"
             app:argType="string" />

@@ -1,5 +1,6 @@
 package az.rabita.lifestep.ui.fragment.otherUserProfile
 
+import android.content.Intent
 import android.graphics.Typeface
 import android.os.Bundle
 import android.text.Spannable
@@ -19,6 +20,7 @@ import androidx.navigation.fragment.navArgs
 import az.rabita.lifestep.R
 import az.rabita.lifestep.databinding.FragmentUserProfileBinding
 import az.rabita.lifestep.pojo.dataHolder.UserProfileInfoHolder
+import az.rabita.lifestep.ui.activity.imageReview.ImageReviewActivity
 import az.rabita.lifestep.ui.dialog.message.SingleMessageDialog
 import az.rabita.lifestep.utils.ERROR_TAG
 import az.rabita.lifestep.utils.logout
@@ -78,6 +80,13 @@ class OtherUserProfileFragment : Fragment() {
                         )
                     )
                 }
+            }
+        }
+        imageViewProfile.setOnClickListener { view ->
+            this@OtherUserProfileFragment.viewModel.profileInfo.value?.let {
+                val intent = Intent(requireActivity(), ImageReviewActivity::class.java)
+                intent.putExtra("profileImageUrl", it.originalUrl)
+                startActivity(intent)
             }
         }
     }

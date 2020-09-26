@@ -21,13 +21,13 @@
             android:id="@+id/image_button_back"
             android:layout_width="0dp"
             android:layout_height="0dp"
+            android:background="@android:color/transparent"
             android:scaleType="center"
             android:src="@drawable/ic_back"
             app:layout_constraintBottom_toBottomOf="@id/text_view_title"
             app:layout_constraintDimensionRatio="1:1"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0"
-            android:background="@android:color/transparent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="@id/text_view_title"
             app:layout_constraintWidth_percent="0.15" />
@@ -68,10 +68,10 @@
             app:layout_constraintVertical_bias="0.6" />
 
         <androidx.core.widget.NestedScrollView
-            android:theme="@style/ScrollableTheme"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:fillViewport="true"
+            android:theme="@style/ScrollableTheme"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintTop_toBottomOf="@id/guideline">
 
@@ -101,7 +101,8 @@
                         imageUrl="@{viewModel.cachedProfileInfo.url}"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:scaleType="centerCrop" />
+                        android:scaleType="centerCrop"
+                        android:transitionName="profileImage" />
 
                 </com.google.android.material.card.MaterialCardView>
 

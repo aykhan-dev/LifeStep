@@ -9,7 +9,6 @@ import az.rabita.lifestep.pojo.dataHolder.NotificationInfoHolder
 import az.rabita.lifestep.ui.activity.main.MainActivity
 import az.rabita.lifestep.utils.*
 import com.onesignal.OneSignal
-import io.alterac.blurkit.BlurKit
 import timber.log.Timber
 
 class LifeStepsApplication : Application() {
@@ -35,7 +34,7 @@ class LifeStepsApplication : Application() {
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
                 intent.putExtra(NOTIFICATION_INFO_KEY, holder)
                 startActivity(intent)
-            } // ?: toast("Notification Data is null")
+            }
         }
 
         OneSignal

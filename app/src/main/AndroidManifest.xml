@@ -18,7 +18,7 @@
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true"
         tools:targetApi="n">
-        <activity android:name=".ui.activity.app.AppActivity" />
+
         <activity
             android:name="com.theartofdev.edmodo.cropper.CropImageActivity"
             android:theme="@style/Base.Theme.AppCompat" />
@@ -37,6 +37,9 @@
         </activity>
         <activity
             android:name=".ui.activity.auth.AuthActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.activity.imageReview.ImageReviewActivity"
             android:screenOrientation="portrait" />
         <activity
             android:name=".ui.activity.main.MainActivity"

@@ -13,6 +13,7 @@ data class PersonalInfo(
     val email: String,
     val phone: String,
     val url: String,
+    val originalImageUrl: String,
     val balance: Long,
     val friendsCount: Int,
     val invitationCode: String,
