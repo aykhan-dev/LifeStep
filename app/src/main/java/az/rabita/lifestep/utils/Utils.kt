@@ -3,10 +3,13 @@ package az.rabita.lifestep.utils
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.graphics.Bitmap
+import android.graphics.ImageDecoder
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.net.Uri
 import android.os.Build
+import android.provider.MediaStore
 import android.text.format.DateFormat
 import android.view.View
 import android.view.View.INVISIBLE
@@ -22,10 +25,12 @@ import az.rabita.lifestep.pojo.apiPOJO.content.AdsTransactionContentPOJO
 import az.rabita.lifestep.pojo.apiPOJO.content.DailyContentPOJO
 import az.rabita.lifestep.pojo.apiPOJO.content.MonthlyContentPOJO
 import az.rabita.lifestep.pojo.dataHolder.AdsTransactionInfoHolder
-import az.rabita.lifestep.ui.activity.auth.AuthActivity
 import az.rabita.lifestep.ui.custom.BarDiagram
 import retrofit2.Response
 import timber.log.Timber
+import java.io.ByteArrayOutputStream
+import java.io.File
+import java.io.FileOutputStream
 import java.util.*
 import kotlin.math.pow
 
@@ -194,8 +199,36 @@ fun extractDiagramData(data: List<*>): BarDiagram.DiagramDataModel {
     }
 
     return BarDiagram.DiagramDataModel(
-        maxValue = if(maxValue == 0L) 10 else maxValue,
+        maxValue = if (maxValue == 0L) 10 else maxValue,
         columnTexts = columns,
         values = values
     )
+}
+
+fun Context.getBitmapFromUri(uri: Uri): Bitmap {
+    return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+        val source = ImageDecoder.createSource(contentResolver, uri)
+        ImageDecoder.decodeBitmap(source)
+    } else MediaStore.Images.Media.getBitmap(contentResolver, uri)
+}
+
+fun Bitmap.toByteArray(compressFormat: Bitmap.CompressFormat, quality: Int): ByteArray {
+    val stream = ByteArrayOutputStream()
+    compress(compressFormat, quality, stream)
+    return stream.toByteArray()
+}
+
+fun Context.convertByteArrayToFile(byteArray: ByteArray, path: String): File? {
+    return try {
+        val file = File(cacheDir, path)
+        with(FileOutputStream(file)) {
+            write(byteArray)
+            flush()
+            close()
+        }
+        file
+    } catch (exc: Exception) {
+        Timber.e(exc)
+        null
+    }
 }

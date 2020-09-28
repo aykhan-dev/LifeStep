@@ -2,6 +2,7 @@ package az.rabita.lifestep.ui.fragment.editProfile
 
 import android.app.Activity.RESULT_OK
 import android.content.Intent
+import android.graphics.Bitmap
 import android.os.Bundle
 import android.provider.MediaStore
 import android.view.LayoutInflater
@@ -18,8 +19,8 @@ import az.rabita.lifestep.ui.dialog.loading.LoadingDialog
 import az.rabita.lifestep.ui.dialog.message.SingleMessageDialog
 import az.rabita.lifestep.utils.*
 import az.rabita.lifestep.viewModel.fragment.editProfile.EditProfileViewModel
-import com.theartofdev.edmodo.cropper.CropImage
-import com.theartofdev.edmodo.cropper.CropImageView
+import timber.log.Timber
+import java.util.*
 
 
 class EditProfileFragment : Fragment() {
@@ -163,17 +164,20 @@ class EditProfileFragment : Fragment() {
         ).show(requireActivity().supportFragmentManager, "Image Picker")
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+    override fun onActivityResult(requestCode: Int, resultCode: Int, intent: Intent?) {
         when (requestCode) {
-            CAMERA -> {
+            CAMERA, GALLERY -> {
                 if (resultCode == RESULT_OK) {
-
-                } else context?.toast("Result failed: $CAMERA")
-            }
-            GALLERY -> {
-                if (resultCode == RESULT_OK) {
-
-                } else context?.toast("Result failed: $GALLERY")
+                    intent?.data?.let { uri ->
+                        val bitmap = requireContext().getBitmapFromUri(uri)
+                        val byteArray = bitmap.toByteArray(Bitmap.CompressFormat.JPEG, 50)
+                        val file = requireContext().convertByteArrayToFile(
+                            byteArray = byteArray,
+                            path = "${UUID.randomUUID()}.jpeg"
+                        )
+                        file?.let(viewModel::updateProfileImage)
+                    }
+                } else Timber.e("Result failed")
             }
         }
     }
