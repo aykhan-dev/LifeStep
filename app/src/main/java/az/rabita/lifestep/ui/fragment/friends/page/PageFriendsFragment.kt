@@ -66,7 +66,7 @@ class PageFriendsFragment(
 
     private fun observeData(): Unit = with(viewModel) {
 
-        errorMessage.observe(viewLifecycleOwner, Observer {
+        errorMessage.observe(viewLifecycleOwner, {
             it?.let { errorMsg ->
                 activity?.let { activity ->
                     SingleMessageDialog.popUp(
@@ -102,7 +102,7 @@ class PageFriendsFragment(
 
     private fun observeStates(): Unit = with(viewModel) {
 
-        uiState.observe(viewLifecycleOwner, Observer {
+        uiState.observe(viewLifecycleOwner, {
             it?.let {
                 when (it) {
                     is UiState.Loading -> activity?.supportFragmentManager?.let { fm ->
@@ -123,7 +123,7 @@ class PageFriendsFragment(
 
     private fun observeEvents(): Unit = with(viewModel) {
 
-        eventExpiredToken.observe(viewLifecycleOwner, Observer {
+        eventExpiredToken.observe(viewLifecycleOwner, {
             it?.let {
                 if (it) {
                     activity?.logout()

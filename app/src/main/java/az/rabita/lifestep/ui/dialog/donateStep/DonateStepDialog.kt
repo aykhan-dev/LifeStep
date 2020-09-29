@@ -97,7 +97,7 @@ class DonateStepDialog : DialogFragment() {
 
     private fun observeData(): Unit = with(viewModel) {
 
-        errorMessage.observe(viewLifecycleOwner, Observer {
+        errorMessage.observe(viewLifecycleOwner, {
             it?.let { errorMsg ->
                 activity?.let { activity ->
                     SingleMessageDialog.popUp(
@@ -113,7 +113,7 @@ class DonateStepDialog : DialogFragment() {
 
     private fun observeStates(): Unit = with(viewModel) {
 
-        uiState.observe(viewLifecycleOwner, Observer {
+        uiState.observe(viewLifecycleOwner, {
             it?.let {
                 when (it) {
                     is UiState.Loading -> activity?.supportFragmentManager?.let { fm ->
@@ -134,7 +134,7 @@ class DonateStepDialog : DialogFragment() {
 
     private fun observeEvents(): Unit = with(viewModel) {
 
-        eventShowCongratsDialog.observe(viewLifecycleOwner, Observer {
+        eventShowCongratsDialog.observe(viewLifecycleOwner, {
             it?.let {
                 if (it) {
                     savedStateHandle.set(STEP_DONATED_RESULT, true)
@@ -143,7 +143,7 @@ class DonateStepDialog : DialogFragment() {
             }
         })
 
-        eventExpiredToken.observe(viewLifecycleOwner, Observer {
+        eventExpiredToken.observe(viewLifecycleOwner, {
             it?.let {
                 if (it) {
                     activity?.logout()

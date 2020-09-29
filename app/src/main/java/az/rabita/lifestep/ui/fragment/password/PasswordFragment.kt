@@ -55,7 +55,7 @@ class PasswordFragment : Fragment() {
 
     private fun observeData(): Unit = with(viewModel) {
 
-        textOfButtonShow1.observe(viewLifecycleOwner, Observer {
+        textOfButtonShow1.observe(viewLifecycleOwner, {
             it?.let { text ->
                 with(binding) {
                     when (text) {
@@ -67,7 +67,7 @@ class PasswordFragment : Fragment() {
             }
         })
 
-        textOfButtonShow2.observe(viewLifecycleOwner, Observer {
+        textOfButtonShow2.observe(viewLifecycleOwner, {
             it?.let { text ->
                 with(binding) {
                     when (text) {

@@ -57,12 +57,12 @@ class PageHistoryFragment(private val pageType: HistoryPageType) : Fragment() {
     private fun observeData(): Unit = with(viewModel) {
 
         lifecycleScope.launch {
-            fetchListOfDonations(pageType).observe(viewLifecycleOwner, Observer {
+            fetchListOfDonations(pageType).observe(viewLifecycleOwner, {
                 adapter.submitData(lifecycle, it)
             })
         }
 
-        errorMessage.observe(viewLifecycleOwner, Observer {
+        errorMessage.observe(viewLifecycleOwner, {
             it?.let { errorMsg ->
                 activity?.let { activity ->
                     SingleMessageDialog.popUp(
@@ -78,7 +78,7 @@ class PageHistoryFragment(private val pageType: HistoryPageType) : Fragment() {
 
     private fun observeEvents(): Unit = with(viewModel) {
 
-        eventExpiredToken.observe(viewLifecycleOwner, Observer {
+        eventExpiredToken.observe(viewLifecycleOwner, {
             it?.let {
                 if (it) {
                     activity?.logout()

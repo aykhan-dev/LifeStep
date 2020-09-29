@@ -112,7 +112,7 @@ class AdsDialogFragment() : DialogFragment() {
 
     private fun observeData(): Unit = with(viewModel) {
 
-        remainingTime.observe(viewLifecycleOwner, Observer {
+        remainingTime.observe(viewLifecycleOwner, {
             it?.let {
                 val seconds: Long = TimeUnit.SECONDS.toSeconds(it)
                 val minutes: Long = TimeUnit.SECONDS.toMinutes(it)
@@ -124,7 +124,7 @@ class AdsDialogFragment() : DialogFragment() {
 
     private fun observeStates(): Unit = with(viewModel) {
 
-        uiState.observe(viewLifecycleOwner, Observer {
+        uiState.observe(viewLifecycleOwner, {
             it?.let {
                 when (it) {
                     is UiState.Loading -> {
@@ -137,7 +137,7 @@ class AdsDialogFragment() : DialogFragment() {
             }
         })
 
-        isMuted.observe(viewLifecycleOwner, Observer {
+        isMuted.observe(viewLifecycleOwner, {
             it?.let { simplePlayer?.volume = if (it) 0f else 1f }
         })
 
@@ -145,14 +145,14 @@ class AdsDialogFragment() : DialogFragment() {
 
     private fun observeEvents(): Unit = with(viewModel) {
 
-        eventExpireToken.observe(viewLifecycleOwner, Observer {
+        eventExpireToken.observe(viewLifecycleOwner, {
             it?.let {
                 activity?.logout()
                 endExpireTokenProcess()
             }
         })
 
-        eventCloseAdsPage.observe(viewLifecycleOwner, Observer {
+        eventCloseAdsPage.observe(viewLifecycleOwner, {
             it?.let {
                 if (it) {
                     if (args.isForBonusSteps && viewModel.isSuccessfullyWatched) {

@@ -51,7 +51,7 @@ class ForgotPasswordActivity : AppCompatActivity() {
 
     private fun observeStates(): Unit = with(viewModel) {
 
-        uiState.observe(this@ForgotPasswordActivity, Observer {
+        uiState.observe(this@ForgotPasswordActivity, {
             it?.let {
                 when (it) {
                     is UiState.Loading -> supportFragmentManager.let { fm ->
@@ -72,7 +72,7 @@ class ForgotPasswordActivity : AppCompatActivity() {
 
     private fun observeData(): Unit = with(viewModel) {
 
-        errorMessage.observe(this@ForgotPasswordActivity, Observer {
+        errorMessage.observe(this@ForgotPasswordActivity, {
             it?.let {
                 MessageDialog(it).show(supportFragmentManager, ERROR_TAG)
             }
@@ -82,7 +82,7 @@ class ForgotPasswordActivity : AppCompatActivity() {
 
     private fun navigate(): Unit = with(viewModel) {
 
-        eventBack.observe(this@ForgotPasswordActivity, Observer {
+        eventBack.observe(this@ForgotPasswordActivity, {
             it?.let { if (it) finish() }
         })
 

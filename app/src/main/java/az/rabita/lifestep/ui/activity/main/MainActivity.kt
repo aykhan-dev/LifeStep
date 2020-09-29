@@ -78,7 +78,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun navigate(): Unit = with(viewModel) {
 
-        indexOfSelectedPage.observe(this@MainActivity, Observer {
+        indexOfSelectedPage.observe(this@MainActivity, {
             it?.let { index ->
                 if (navController.currentDestination?.id != destinations[index]) {
                     if (index != 2) {

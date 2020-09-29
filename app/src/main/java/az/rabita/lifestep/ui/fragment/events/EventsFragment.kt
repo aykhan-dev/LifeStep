@@ -67,11 +67,11 @@ class EventsFragment : Fragment() {
 
     private fun observeData(): Unit = with(viewModel) {
 
-        listOfCategories.observe(viewLifecycleOwner, Observer {
+        listOfCategories.observe(viewLifecycleOwner, {
             it?.let { adapter.submitList(it) }
         })
 
-        errorMessage.observe(viewLifecycleOwner, Observer {
+        errorMessage.observe(viewLifecycleOwner, {
             it?.let { errorMsg ->
                 activity?.let { activity ->
                     SingleMessageDialog.popUp(
@@ -87,7 +87,7 @@ class EventsFragment : Fragment() {
 
     private fun observeEvents(): Unit = with(viewModel) {
 
-        eventExpiredToken.observe(viewLifecycleOwner, Observer {
+        eventExpiredToken.observe(viewLifecycleOwner, {
             it?.let {
                 if (it) {
                     activity?.logout()

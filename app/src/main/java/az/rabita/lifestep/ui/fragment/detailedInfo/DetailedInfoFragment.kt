@@ -104,11 +104,11 @@ class DetailedInfoFragment : Fragment() {
         navController.currentBackStackEntry
             ?.savedStateHandle
             ?.getLiveData<Boolean>("Donated")
-            ?.observe(viewLifecycleOwner, Observer {
+            ?.observe(viewLifecycleOwner, {
                 viewModel.fetchDetailedInfo(args.assocationId)
             })
 
-        assocationDetails.observe(viewLifecycleOwner, Observer {
+        assocationDetails.observe(viewLifecycleOwner, {
             it?.let {
                 with(binding) {
                     textViewDonatedCount.text = it.balance.moreShortenString()
@@ -117,13 +117,13 @@ class DetailedInfoFragment : Fragment() {
             }
         })
 
-        topDonorsList.observe(viewLifecycleOwner, Observer {
+        topDonorsList.observe(viewLifecycleOwner, {
             it?.let {
                 donorsAdapter.submitList(it)
             }
         })
 
-        errorMessage.observe(viewLifecycleOwner, Observer {
+        errorMessage.observe(viewLifecycleOwner, {
             it?.let { errorMsg ->
                 activity?.let { activity ->
                     SingleMessageDialog.popUp(
@@ -141,13 +141,13 @@ class DetailedInfoFragment : Fragment() {
 
     private fun observeEvents(): Unit = with(viewModel) {
 
-        eventShowDonateStepsDialog.observe(viewLifecycleOwner, Observer {
+        eventShowDonateStepsDialog.observe(viewLifecycleOwner, {
             it?.let {
                 if (it) navigateTo(DetailedFragmentDirections.DONATE_STEPS)
             }
         })
 
-        eventExpiredToken.observe(viewLifecycleOwner, Observer {
+        eventExpiredToken.observe(viewLifecycleOwner, {
             it?.let {
                 if (it) {
                     activity?.logout()
@@ -166,7 +166,7 @@ class DetailedInfoFragment : Fragment() {
     private fun checkDonationResult() {
         navController.currentBackStackEntry?.savedStateHandle?.getLiveData<Boolean>(
             STEP_DONATED_RESULT
-        )?.observe(viewLifecycleOwner, Observer { result ->
+        )?.observe(viewLifecycleOwner, { result ->
             if (result) {
                 navController.navigate(NavGraphMainDirections.actionToCongratsDialog())
             }

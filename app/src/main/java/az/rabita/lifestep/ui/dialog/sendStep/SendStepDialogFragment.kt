@@ -78,7 +78,7 @@ class SendStepDialogFragment : DialogFragment() {
 
     private fun observeData(): Unit = with(viewModel) {
 
-        errorMessage.observe(viewLifecycleOwner, Observer {
+        errorMessage.observe(viewLifecycleOwner, {
             it?.let { errorMsg ->
                 activity?.let { activity ->
                     SingleMessageDialog.popUp(
@@ -94,7 +94,7 @@ class SendStepDialogFragment : DialogFragment() {
 
     private fun observeEvents(): Unit = with(viewModel) {
 
-        eventDismissDialog.observe(viewLifecycleOwner, Observer {
+        eventDismissDialog.observe(viewLifecycleOwner, {
             it?.let {
                 if (it) navController.navigate(
                     SendStepDialogFragmentDirections.actionSendStepDialogToOtherUserProfileFragment(
@@ -104,7 +104,7 @@ class SendStepDialogFragment : DialogFragment() {
             }
         })
 
-        eventExpiredToken.observe(viewLifecycleOwner, Observer {
+        eventExpiredToken.observe(viewLifecycleOwner, {
             it?.let {
                 if (it) {
                     activity?.logout()

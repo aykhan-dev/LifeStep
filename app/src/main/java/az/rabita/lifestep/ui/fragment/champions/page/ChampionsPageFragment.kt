@@ -23,7 +23,7 @@ class ChampionsPageFragment(private val pageType: ChampionsPageType) : Fragment(
     private val viewModel by viewModels<ChampionsViewModel>()
     private val navController by lazy { findNavController() }
 
-    private val listAdapter = ChampionsListAdapter { user, position ->
+    private val listAdapter = ChampionsListAdapter { user, _ ->
         navController.navigate(
             if (user.id == viewModel.cachedOwnProfileInfo.value?.id) NavGraphMainDirections.actionToOwnProfileFragment()
             else NavGraphMainDirections.actionToOtherProfileFragment(user.id)
@@ -67,11 +67,11 @@ class ChampionsPageFragment(private val pageType: ChampionsPageType) : Fragment(
     }
 
     private fun observeData(): Unit = with(viewModel) {
-        listOfChampions.observe(viewLifecycleOwner, Observer { it?.let(listAdapter::submitList) })
+        listOfChampions.observe(viewLifecycleOwner, { it?.let(listAdapter::submitList) })
     }
 
     private fun observeEvents(): Unit = with(viewModel) {
-        eventExpiredToken.observe(viewLifecycleOwner, Observer {
+        eventExpiredToken.observe(viewLifecycleOwner, {
             it?.let {
                 if (it) {
                     endExpireTokenProcess()
@@ -80,7 +80,7 @@ class ChampionsPageFragment(private val pageType: ChampionsPageType) : Fragment(
             }
         })
 
-        errorMessage.observe(viewLifecycleOwner, Observer {
+        errorMessage.observe(viewLifecycleOwner, {
             it?.let { errorMsg ->
                 activity?.let { activity ->
                     SingleMessageDialog.popUp(

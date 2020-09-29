@@ -52,7 +52,7 @@ class EmailFragment : Fragment() {
 
     private fun observeData(): Unit = with(viewModel) {
 
-        errorMessage.observe(viewLifecycleOwner, Observer {
+        errorMessage.observe(viewLifecycleOwner, {
             it?.let { errorMsg ->
                 activity?.let { activity ->
                     SingleMessageDialog.popUp(
@@ -68,7 +68,7 @@ class EmailFragment : Fragment() {
 
     private fun observeEvents(): Unit = with(viewModel) {
 
-        eventNavigateToPinFragment.observe(viewLifecycleOwner, Observer {
+        eventNavigateToPinFragment.observe(viewLifecycleOwner, {
             it?.let { if (it) navController.navigate(EmailFragmentDirections.actionEmailFragmentToPinFragment()) }
         })
 

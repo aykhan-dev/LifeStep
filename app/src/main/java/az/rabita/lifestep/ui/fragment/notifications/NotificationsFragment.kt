@@ -88,7 +88,7 @@ class NotificationsFragment : Fragment() {
 
     private fun observeEvents(): Unit = with(viewModel) {
 
-        eventExpiredToken.observe(viewLifecycleOwner, Observer {
+        eventExpiredToken.observe(viewLifecycleOwner, {
             it?.let {
                 if (it) {
                     activity?.logout()

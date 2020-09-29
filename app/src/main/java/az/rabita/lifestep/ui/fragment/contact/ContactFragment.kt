@@ -67,11 +67,11 @@ class ContactFragment : Fragment() {
 
     private fun observeData(): Unit = with(viewModel) {
 
-        listOfContacts.observe(viewLifecycleOwner, Observer {
+        listOfContacts.observe(viewLifecycleOwner, {
             it?.let { contactsAdapter.submitList(it) }
         })
 
-        errorMessage.observe(viewLifecycleOwner, Observer {
+        errorMessage.observe(viewLifecycleOwner, {
             it?.let { errorMsg ->
                 activity?.let { activity ->
                     SingleMessageDialog.popUp(
@@ -87,7 +87,7 @@ class ContactFragment : Fragment() {
 
     private fun observeEvents(): Unit = with(viewModel) {
 
-        eventExpiredToken.observe(viewLifecycleOwner, Observer {
+        eventExpiredToken.observe(viewLifecycleOwner, {
             it?.let {
                 if (it) {
                     activity?.logout()

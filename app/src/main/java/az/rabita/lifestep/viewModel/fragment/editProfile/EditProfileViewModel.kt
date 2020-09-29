@@ -13,7 +13,9 @@ import kotlinx.coroutines.launch
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
+import timber.log.Timber
 import java.io.File
+import java.util.*
 
 
 class EditProfileViewModel(application: Application) : AndroidViewModel(application) {
@@ -109,8 +111,13 @@ class EditProfileViewModel(application: Application) : AndroidViewModel(applicat
             val token = sharedPreferences.getStringElement(TOKEN_KEY, "")
             val lang = sharedPreferences.getIntegerElement(LANG_KEY, DEFAULT_LANG)
 
+            Timber.e("✅ file is sending ${Calendar.getInstance().time}")
+
             when (val response = usersRepository.changeProfilePhoto(token, lang, body)) {
-                is NetworkState.Success<*> -> fetchPersonalInfo()
+                is NetworkState.Success<*> -> {
+                    fetchPersonalInfo()
+                    Timber.e("✅ file has been sent ${Calendar.getInstance().time}")
+                }
                 is NetworkState.ExpiredToken -> startExpireTokenProcess()
                 is NetworkState.HandledHttpError -> showMessageDialog(response.error)
                 is NetworkState.UnhandledHttpError -> showMessageDialog(response.error)
@@ -159,6 +166,5 @@ class EditProfileViewModel(application: Application) : AndroidViewModel(applicat
     }
 
     private fun getString(res: Int) = context.getString(res)
-
 
 }

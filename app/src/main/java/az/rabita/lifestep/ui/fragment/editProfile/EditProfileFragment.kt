@@ -1,24 +1,22 @@
 package az.rabita.lifestep.ui.fragment.editProfile
 
-import android.app.Activity.RESULT_OK
 import android.content.Intent
 import android.graphics.Bitmap
 import android.os.Bundle
-import android.provider.MediaStore
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import az.rabita.lifestep.databinding.FragmentEditProfileBinding
 import az.rabita.lifestep.ui.activity.forgotPassword.ForgotPasswordActivity
-import az.rabita.lifestep.ui.dialog.imagePicker.ImagePickerSheet
 import az.rabita.lifestep.ui.dialog.loading.LoadingDialog
 import az.rabita.lifestep.ui.dialog.message.SingleMessageDialog
 import az.rabita.lifestep.utils.*
 import az.rabita.lifestep.viewModel.fragment.editProfile.EditProfileViewModel
+import com.vansuita.pickimage.bundle.PickSetup
+import com.vansuita.pickimage.dialog.PickImageDialog
 import timber.log.Timber
 import java.util.*
 
@@ -86,7 +84,7 @@ class EditProfileFragment : Fragment() {
 
     private fun observeData(): Unit = with(viewModel) {
 
-        profileInfo.observe(viewLifecycleOwner, Observer {
+        profileInfo.observe(viewLifecycleOwner, {
             it?.let {
                 viewModel.nameInput.postValue(it.name)
                 viewModel.surnameInput.postValue(it.surname)
@@ -94,7 +92,7 @@ class EditProfileFragment : Fragment() {
             }
         })
 
-        errorMessage.observe(viewLifecycleOwner, Observer {
+        errorMessage.observe(viewLifecycleOwner, {
             it?.let { errorMsg ->
                 activity?.let { activity ->
                     SingleMessageDialog.popUp(
@@ -110,7 +108,7 @@ class EditProfileFragment : Fragment() {
 
     private fun observeStates(): Unit = with(viewModel) {
 
-        uiState.observe(viewLifecycleOwner, Observer {
+        uiState.observe(viewLifecycleOwner, {
             it?.let {
                 when (it) {
                     is UiState.Loading -> activity?.supportFragmentManager?.let { fm ->
@@ -131,13 +129,13 @@ class EditProfileFragment : Fragment() {
 
     private fun observeEvents(): Unit = with(viewModel) {
 
-        eventCloseEditProfilePage.observe(viewLifecycleOwner, Observer {
+        eventCloseEditProfilePage.observe(viewLifecycleOwner, {
             it?.let {
                 if (it) activity?.onBackPressed()
             }
         })
 
-        eventExpiredToken.observe(viewLifecycleOwner, Observer {
+        eventExpiredToken.observe(viewLifecycleOwner, {
             it?.let {
                 if (it) {
                     activity?.logout()
@@ -149,37 +147,23 @@ class EditProfileFragment : Fragment() {
     }
 
     private fun pickImage() {
-        ImagePickerSheet(
-            onCameraSelect = {
-                val takePicture = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-                startActivityForResult(takePicture, CAMERA)
-            },
-            onGallerySelect = {
-                val takePicture = Intent(
-                    Intent.ACTION_PICK,
-                    MediaStore.Images.Media.EXTERNAL_CONTENT_URI
-                )
-                startActivityForResult(takePicture, GALLERY)
-            }
-        ).show(requireActivity().supportFragmentManager, "Image Picker")
-    }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, intent: Intent?) {
-        when (requestCode) {
-            CAMERA, GALLERY -> {
-                if (resultCode == RESULT_OK) {
-                    intent?.data?.let { uri ->
-                        val bitmap = requireContext().getBitmapFromUri(uri)
-                        val byteArray = bitmap.toByteArray(Bitmap.CompressFormat.JPEG, 50)
-                        val file = requireContext().convertByteArrayToFile(
-                            byteArray = byteArray,
-                            path = "${UUID.randomUUID()}.jpeg"
-                        )
-                        file?.let(viewModel::updateProfileImage)
-                    }
-                } else Timber.e("Result failed")
+        PickImageDialog.build(PickSetup())
+            .setOnPickResult {
+                it?.let {
+                    Timber.e("✅ file uri has been received ${Calendar.getInstance().time}")
+                    val bitmap = it.bitmap
+                    val byteArray = bitmap.toByteArray(Bitmap.CompressFormat.JPEG, 50)
+                    val file = requireContext().convertByteArrayToFile(
+                        byteArray = byteArray,
+                        path = "${UUID.randomUUID()}.jpeg"
+                    )
+                    Timber.e("✅ file has been created ${Calendar.getInstance().time}")
+                    file?.let(viewModel::updateProfileImage)
+                }
             }
-        }
+            .show(parentFragmentManager)
+
     }
 
 }

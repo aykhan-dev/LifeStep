@@ -69,7 +69,7 @@ class OwnProfileDetailsFragment : Fragment() {
                 OwnProfileDetailsFragmentDirections.actionOwnProfileDetailsFragmentToEditProfileFragment()
             )
         }
-        imageViewProfile.setOnClickListener { view ->
+        imageViewProfile.setOnClickListener {
             this@OwnProfileDetailsFragment.viewModel.cachedProfileInfo.value?.let {
                 val intent = Intent(requireActivity(), ImageReviewActivity::class.java)
                 intent.putExtra("profileImageUrl", it.originalImageUrl)
@@ -80,7 +80,7 @@ class OwnProfileDetailsFragment : Fragment() {
 
     private fun observeData(): Unit = with(viewModel) {
 
-        cachedProfileInfo.observe(viewLifecycleOwner, Observer {
+        cachedProfileInfo.observe(viewLifecycleOwner, {
             it?.let {
 
                 binding.textViewFullName.text =
@@ -127,15 +127,15 @@ class OwnProfileDetailsFragment : Fragment() {
             }
         })
 
-        dailyStats.observe(viewLifecycleOwner, Observer {
+        dailyStats.observe(viewLifecycleOwner, {
             it?.let { if (isDailyStatsShown.value == true) binding.diagram.submitData(it) }
         })
 
-        monthlyStats.observe(viewLifecycleOwner, Observer {
+        monthlyStats.observe(viewLifecycleOwner, {
             it?.let { if (isDailyStatsShown.value == false) binding.diagram.submitData(it) }
         })
 
-        errorMessage.observe(viewLifecycleOwner, Observer {
+        errorMessage.observe(viewLifecycleOwner, {
             it?.let { errorMsg ->
                 activity?.let { activity ->
                     SingleMessageDialog.popUp(
@@ -151,7 +151,7 @@ class OwnProfileDetailsFragment : Fragment() {
 
     private fun observeEvents(): Unit = with(viewModel) {
 
-        eventExpiredToken.observe(viewLifecycleOwner, Observer {
+        eventExpiredToken.observe(viewLifecycleOwner, {
             it?.let {
                 if (it) {
                     activity?.logout()

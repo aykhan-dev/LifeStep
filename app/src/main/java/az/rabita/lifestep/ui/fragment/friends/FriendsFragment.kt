@@ -58,7 +58,7 @@ class FriendsFragment : Fragment() {
 
     private fun observeData(): Unit = with(viewModel) {
 
-        friendshipStats.observe(viewLifecycleOwner, Observer {
+        friendshipStats.observe(viewLifecycleOwner, {
             it?.let {
                 binding.tabLayoutFriends.getTabAt(0)?.text =
                     getString(R.string.my_friends, it.friendsCount.toString())
@@ -67,7 +67,7 @@ class FriendsFragment : Fragment() {
             }
         })
 
-        errorMessage.observe(viewLifecycleOwner, Observer {
+        errorMessage.observe(viewLifecycleOwner, {
             it?.let { errorMsg ->
                 activity?.let { activity ->
                     SingleMessageDialog.popUp(
@@ -83,7 +83,7 @@ class FriendsFragment : Fragment() {
 
     private fun observeEvents(): Unit = with(viewModel) {
 
-        eventExpiredToken.observe(viewLifecycleOwner, Observer {
+        eventExpiredToken.observe(viewLifecycleOwner, {
             it?.let {
                 if (it) {
                     activity?.logout()

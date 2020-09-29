@@ -68,7 +68,7 @@ class RegisterFragment : Fragment() {
 
     private fun observeStates(): Unit = with(viewModel) {
 
-        authViewModel.stateFabClick.observe(viewLifecycleOwner, Observer {
+        authViewModel.stateFabClick.observe(viewLifecycleOwner, {
             it?.let {
                 if (it) {
                     if (
@@ -81,7 +81,7 @@ class RegisterFragment : Fragment() {
             }
         })
 
-        uiState.observe(viewLifecycleOwner, Observer {
+        uiState.observe(viewLifecycleOwner, {
             it?.let {
                 when (it) {
                     is UiState.Loading -> activity?.supportFragmentManager?.let { fm ->
@@ -102,7 +102,7 @@ class RegisterFragment : Fragment() {
 
     private fun observeData(): Unit = with(viewModel) {
 
-        errorMessage.observe(viewLifecycleOwner, Observer {
+        errorMessage.observe(viewLifecycleOwner, {
             it?.let {
                 MessageDialog(it).show(
                     requireActivity().supportFragmentManager,
@@ -115,7 +115,7 @@ class RegisterFragment : Fragment() {
 
     private fun observeEvents(): Unit = with(viewModel) {
 
-        eventNavigateToMainActivity.observe(viewLifecycleOwner, Observer {
+        eventNavigateToMainActivity.observe(viewLifecycleOwner, {
             it?.let {
                 if (it) {
                     val activity = requireActivity()
@@ -125,7 +125,7 @@ class RegisterFragment : Fragment() {
             }
         })
 
-        eventNavigateToNextRegisterFragment.observe(viewLifecycleOwner, Observer {
+        eventNavigateToNextRegisterFragment.observe(viewLifecycleOwner, {
             it?.let { if (it) binding.viewPager.currentItem = 1 }
         })
 

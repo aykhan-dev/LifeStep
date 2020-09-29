@@ -66,11 +66,11 @@ class DonationFragment : Fragment() {
 
     private fun observeData(): Unit = with(viewModel) {
 
-        listOfAssocations.observe(viewLifecycleOwner, Observer {
+        listOfAssocations.observe(viewLifecycleOwner, {
             it?.let { donationAdapter.submitList(it) }
         })
 
-        errorMessage.observe(viewLifecycleOwner, Observer {
+        errorMessage.observe(viewLifecycleOwner, {
             it?.let { errorMsg ->
                 activity?.let { activity ->
                     SingleMessageDialog.popUp(
@@ -86,7 +86,7 @@ class DonationFragment : Fragment() {
 
     private fun observeEvents(): Unit = with(viewModel) {
 
-        eventExpiredToken.observe(viewLifecycleOwner, Observer {
+        eventExpiredToken.observe(viewLifecycleOwner, {
             it?.let {
                 if (it) {
                     activity?.logout()

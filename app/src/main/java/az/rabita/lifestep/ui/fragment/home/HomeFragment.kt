@@ -146,7 +146,7 @@ class HomeFragment : Fragment() {
 
     private fun observeStates(): Unit = with(viewModel) {
 
-        searchingState.observe(viewLifecycleOwner, Observer {
+        searchingState.observe(viewLifecycleOwner, {
             it?.let {
                 val flag = it is UiState.Loading
                 binding.recyclerViewResults.isVisible = !flag
@@ -159,7 +159,7 @@ class HomeFragment : Fragment() {
 
     private fun observeData(): Unit = with(viewModel) {
 
-        adsTransaction.observe(viewLifecycleOwner, Observer {
+        adsTransaction.observe(viewLifecycleOwner, {
             it?.let {
                 loadingDialog.dismiss()
                 val transactionInfo = it.asAdsTransactionInfoHolderObject()
@@ -169,7 +169,7 @@ class HomeFragment : Fragment() {
             }
         })
 
-        weeklyStats.observe(viewLifecycleOwner, Observer {
+        weeklyStats.observe(viewLifecycleOwner, {
             it?.let { list ->
                 lifecycleScope.launch {
                     if (list.isNotEmpty() && list.size == 7) {
@@ -188,7 +188,7 @@ class HomeFragment : Fragment() {
             }
         })
 
-        listOfSearchResult.observe(viewLifecycleOwner, Observer {
+        listOfSearchResult.observe(viewLifecycleOwner, {
             it?.let {
                 with(binding) {
                     with(frameLayoutSearchResults) {
@@ -207,7 +207,7 @@ class HomeFragment : Fragment() {
             }
         })
 
-        errorMessage.observe(viewLifecycleOwner, Observer {
+        errorMessage.observe(viewLifecycleOwner, {
             it?.let { errorMsg ->
                 activity?.let { activity ->
                     SingleMessageDialog.popUp(
@@ -223,7 +223,7 @@ class HomeFragment : Fragment() {
 
     private fun observeEvents(): Unit = with(viewModel) {
 
-        eventExpiredToken.observe(viewLifecycleOwner, Observer {
+        eventExpiredToken.observe(viewLifecycleOwner, {
             it?.let {
                 if (it) {
                     activity?.logout()

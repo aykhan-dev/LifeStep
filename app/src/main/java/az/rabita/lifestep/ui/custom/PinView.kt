@@ -22,6 +22,7 @@ import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.TextView
+import androidx.core.content.ContextCompat
 import androidx.core.widget.addTextChangedListener
 import az.rabita.lifestep.R
 
@@ -434,10 +435,16 @@ class PinView @JvmOverloads constructor(
         // Accent colour, default to android:colorAccent from theme
         val accentColor = TypedValue()
         theme.resolveAttribute(R.attr.colorAccent, accentColor, true)
-        this.accentColor = array.getColor(
-            R.styleable.PinView_pinAccentColor,
-            if (accentColor.resourceId > 0) resources.getColor(accentColor.resourceId) else accentColor.data
-        )
+
+        this.accentColor = context?.let {
+            array.getColor(
+                R.styleable.PinView_pinAccentColor,
+                if (accentColor.resourceId > 0) ContextCompat.getColor(
+                    it,
+                    accentColor.resourceId
+                ) else accentColor.data
+            )
+        } ?: 0
 
         // Mask character
         val maskCharacter = array.getString(R.styleable.PinView_mask)

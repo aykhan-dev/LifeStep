@@ -63,7 +63,7 @@ class LoginFragment : Fragment() {
 
     private fun observeStates(): Unit = with(viewModel) {
 
-        authViewModel.stateFabClick.observe(viewLifecycleOwner, Observer {
+        authViewModel.stateFabClick.observe(viewLifecycleOwner, {
             it?.let {
                 if (it) {
                     if (
@@ -75,7 +75,7 @@ class LoginFragment : Fragment() {
             }
         })
 
-        stateToRegisterButtonClick.observe(viewLifecycleOwner, Observer {
+        stateToRegisterButtonClick.observe(viewLifecycleOwner, {
             it?.let {
                 if (it) {
                     navController.navigate(LoginFragmentDirections.actionLoginFragmentToRegisterFragment())
@@ -83,7 +83,7 @@ class LoginFragment : Fragment() {
             }
         })
 
-        uiState.observe(viewLifecycleOwner, Observer {
+        uiState.observe(viewLifecycleOwner, {
             it?.let {
                 when (it) {
                     is UiState.Loading -> activity?.supportFragmentManager?.let { fm ->
@@ -104,7 +104,7 @@ class LoginFragment : Fragment() {
 
     private fun observeData(): Unit = with(viewModel) {
 
-        errorMessage.observe(viewLifecycleOwner, Observer {
+        errorMessage.observe(viewLifecycleOwner, {
             it?.let { errorMsg ->
                 activity?.let { activity ->
                     SingleMessageDialog.popUp(
@@ -120,7 +120,7 @@ class LoginFragment : Fragment() {
 
     private fun observeEvents(): Unit = with(viewModel) {
 
-        eventNavigateToMainActivity.observe(viewLifecycleOwner, Observer {
+        eventNavigateToMainActivity.observe(viewLifecycleOwner, {
             it?.let {
                 if (it) {
                     startActivity(Intent(requireActivity(), MainActivity::class.java))
@@ -128,7 +128,7 @@ class LoginFragment : Fragment() {
             }
         })
 
-        eventExpiredToken.observe(viewLifecycleOwner, Observer {
+        eventExpiredToken.observe(viewLifecycleOwner, {
             it?.let {
                 if (it) {
                     activity?.logout()

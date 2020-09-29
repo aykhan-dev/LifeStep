@@ -61,7 +61,7 @@ class PinFragment : Fragment() {
 
     private fun observeData(): Unit = with(viewModel) {
 
-        errorMessage.observe(viewLifecycleOwner, Observer {
+        errorMessage.observe(viewLifecycleOwner, {
             it?.let { errorMsg ->
                 activity?.let { activity ->
                     SingleMessageDialog.popUp(
@@ -77,7 +77,7 @@ class PinFragment : Fragment() {
 
     private fun observeEvents(): Unit = with(viewModel) {
 
-        eventNavigateToPasswordFragment.observe(viewLifecycleOwner, Observer {
+        eventNavigateToPasswordFragment.observe(viewLifecycleOwner, {
             it?.let {
                 if (it) navController.navigate(PinFragmentDirections.actionPinFragmentToPasswordFragment())
             }

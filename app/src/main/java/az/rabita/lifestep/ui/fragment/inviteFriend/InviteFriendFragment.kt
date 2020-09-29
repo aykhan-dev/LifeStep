@@ -62,7 +62,7 @@ class InviteFriendFragment : Fragment() {
 
     private fun observeData(): Unit = with(viewModel) {
 
-        errorMessage.observe(viewLifecycleOwner, Observer {
+        errorMessage.observe(viewLifecycleOwner, {
             it?.let { errorMsg ->
                 activity?.let { activity ->
                     SingleMessageDialog.popUp(
@@ -75,17 +75,17 @@ class InviteFriendFragment : Fragment() {
         })
 
         //It is needed, else inviteFriendContent's value will be null
-        inviteFriendContentMessage.observe(viewLifecycleOwner, Observer { })
+        inviteFriendContentMessage.observe(viewLifecycleOwner, { })
 
     }
 
     private fun observeEvents(): Unit = with(viewModel) {
 
-        eventSendSharingMessage.observe(viewLifecycleOwner, Observer {
+        eventSendSharingMessage.observe(viewLifecycleOwner, {
             it?.let { if (it) sendMessage() }
         })
 
-        eventExpiredToken.observe(viewLifecycleOwner, Observer {
+        eventExpiredToken.observe(viewLifecycleOwner, {
             it?.let {
                 if (it) {
                     activity?.logout()

@@ -197,8 +197,8 @@ class ForgotPasswordViewModel(application: Application) : AndroidViewModel(appli
 
     override fun onCleared() {
         super.onCleared()
-        emailInput.removeObserver { }
-        pinInput.removeObserver { }
+        emailInput.removeObserver {  }
+        pinInput.removeObserver {  }
     }
 
 }

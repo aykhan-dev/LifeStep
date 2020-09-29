@@ -30,12 +30,6 @@ class RankingFragment : Fragment() {
 
     private val navController by lazy { findNavController() }
 
-    private val rankingAdapter = RankingRecyclerAdapter(showMedals = true) { ranker ->
-        navController.navigate(
-            NavGraphMainDirections.actionToOtherProfileFragment(ranker.id)
-        )
-    }
-
     private val rankingPagedAdapter = RankingPagedRecyclerAdapter { ranker ->
         navController.navigate(
             NavGraphMainDirections.actionToOtherProfileFragment(ranker.id)
@@ -64,41 +58,32 @@ class RankingFragment : Fragment() {
 
     override fun onStart() {
         super.onStart()
-        if (args.postId != null) viewModel.fetchAllDonors(args.postId!!)
-        else viewModel.fetchAllChampions()
+        viewModel.fetchAllDonors(args.postId)
     }
 
     private fun bindUI(): Unit = with(binding) {
         lifecycleOwner = this@RankingFragment
 
-        if (args.postId != null) textViewTitle.text = getString(R.string.step_donors)
-        else textViewTitle.text = getString(R.string.champions)
-
+        textViewTitle.text = getString(R.string.step_donors)
         imageButtonBack.setOnClickListener { activity?.onBackPressed() }
     }
 
     private fun configureRecyclerView(): Unit = with(binding.recyclerViewChampions) {
-        adapter = if (args.postId != null) rankingPagedAdapter else rankingAdapter
+        adapter = rankingPagedAdapter
         itemAnimator = ScaleInAnimator().apply { addDuration = 100 }
     }
 
     private fun observeData(): Unit = with(viewModel) {
 
-        if (args.postId != null) {
-            lifecycleScope.launch {
-                args.postId?.let {
-                    fetchAllDonors(it).observe(viewLifecycleOwner, Observer { data ->
-                        rankingPagedAdapter.submitData(lifecycle, data)
-                    })
-                }
+        lifecycleScope.launch {
+            args.postId.let {
+                fetchAllDonors(it).observe(viewLifecycleOwner, { data ->
+                    rankingPagedAdapter.submitData(lifecycle, data)
+                })
             }
-        } else {
-            listOfChampions.observe(viewLifecycleOwner, Observer {
-                it?.let { rankingAdapter.submitList(it) }
-            })
         }
 
-        errorMessage.observe(viewLifecycleOwner, Observer {
+        errorMessage.observe(viewLifecycleOwner, {
             it?.let { errorMsg ->
                 activity?.let { activity ->
                     SingleMessageDialog.popUp(
@@ -114,7 +99,7 @@ class RankingFragment : Fragment() {
 
     private fun observeEvents(): Unit = with(viewModel) {
 
-        eventExpiredToken.observe(viewLifecycleOwner, Observer {
+        eventExpiredToken.observe(viewLifecycleOwner, {
             it?.let {
                 if (it) {
                     activity?.logout()

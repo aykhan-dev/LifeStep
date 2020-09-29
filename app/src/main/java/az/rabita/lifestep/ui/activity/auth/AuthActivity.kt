@@ -46,7 +46,7 @@ class AuthActivity : AppCompatActivity() {
 
     private fun observeStates() = with(loginViewModel) {
 
-        stateToRegisterButtonClick.observe(this@AuthActivity, Observer {
+        stateToRegisterButtonClick.observe(this@AuthActivity, {
             it?.let { if (it) binding.motionLayout.transitionToEnd() }
         })
 

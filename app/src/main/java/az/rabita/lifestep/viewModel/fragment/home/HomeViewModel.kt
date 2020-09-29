@@ -223,7 +223,7 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
 
     override fun onCleared() {
         super.onCleared()
-        searchInput.removeObserver { }
+        searchInput.removeObserver{ }
     }
 
 }

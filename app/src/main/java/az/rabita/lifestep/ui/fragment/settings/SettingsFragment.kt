@@ -87,7 +87,7 @@ class SettingsFragment : Fragment() {
 
     private fun observeData(): Unit = with(viewModel) {
 
-        errorMessage.observe(viewLifecycleOwner, Observer {
+        errorMessage.observe(viewLifecycleOwner, {
             it?.let { errorMsg ->
                 activity?.let { activity ->
                     SingleMessageDialog.popUp(
@@ -103,7 +103,7 @@ class SettingsFragment : Fragment() {
 
     private fun observeEvents(): Unit = with(viewModel) {
 
-        eventExpiredToken.observe(viewLifecycleOwner, Observer {
+        eventExpiredToken.observe(viewLifecycleOwner, {
             it?.let {
                 if (it) {
                     endExpireTokenProcess()
@@ -112,7 +112,7 @@ class SettingsFragment : Fragment() {
             }
         })
 
-        eventLogOut.observe(viewLifecycleOwner, Observer {
+        eventLogOut.observe(viewLifecycleOwner, {
             it?.let {
                 if (it) {
                     endLogOut()

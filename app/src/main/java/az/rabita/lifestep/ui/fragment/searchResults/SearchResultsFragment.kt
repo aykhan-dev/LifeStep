@@ -75,13 +75,13 @@ class SearchResultsFragment : Fragment() {
     }
 
     private fun observeData(): Unit = with(viewModel) {
-        listOfSearchResult.observe(viewLifecycleOwner, Observer {
+        listOfSearchResult.observe(viewLifecycleOwner, {
             it?.let {
                 if (it.isNotEmpty()) adapter.submitList(it)
             }
         })
 
-        errorMessage.observe(viewLifecycleOwner, Observer {
+        errorMessage.observe(viewLifecycleOwner, {
             it?.let { errorMsg ->
                 activity?.let { activity ->
                     SingleMessageDialog.popUp(
@@ -95,7 +95,7 @@ class SearchResultsFragment : Fragment() {
     }
 
     private fun observeStates(): Unit = with(viewModel) {
-        searchingState.observe(viewLifecycleOwner, Observer {
+        searchingState.observe(viewLifecycleOwner, {
             it?.let {
                 when (it) {
                     is UiState.Loading -> {
@@ -110,7 +110,7 @@ class SearchResultsFragment : Fragment() {
     }
 
     private fun observeEvents(): Unit = with(viewModel) {
-        eventExpiredToken.observe(viewLifecycleOwner, Observer {
+        eventExpiredToken.observe(viewLifecycleOwner, {
             it?.let {
                 if (it) {
                     activity?.logout()
