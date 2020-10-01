@@ -232,3 +232,12 @@ fun Context.convertByteArrayToFile(byteArray: ByteArray, path: String): File? {
         null
     }
 }
+
+fun Activity.makeEdgeToEdge() {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+        window.setDecorFitsSystemWindows(true)
+    } else {
+        window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LAYOUT_STABLE or
+                View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+    }
+}
