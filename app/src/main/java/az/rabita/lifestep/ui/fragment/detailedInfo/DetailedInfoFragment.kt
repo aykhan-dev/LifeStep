@@ -6,7 +6,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import az.rabita.lifestep.NavGraphMainDirections
@@ -28,7 +27,10 @@ class DetailedInfoFragment : Fragment() {
     private val args by navArgs<DetailedInfoFragmentArgs>()
 
     private val donorsAdapter = RankingRecyclerAdapter { ranker ->
-        navController.navigate(NavGraphMainDirections.actionToOtherProfileFragment(ranker.id))
+        viewModel.profileInfo.value?.let { info ->
+            if (info.id == ranker.id) navController.navigate(NavGraphMainDirections.actionToOwnProfileFragment())
+            else navController.navigate(NavGraphMainDirections.actionToOtherProfileFragment(ranker.id))
+        }
     }
 
     private val navController by lazy { findNavController() }

@@ -14,11 +14,10 @@ class PageMyFriendsViewHolder(
     @SuppressLint("SetTextI18n")
     fun bind(
         friend: FriendContentPOJO,
-        position: Int,
-        clickListener: (userId: String, isAccepted: Boolean?, position: Int) -> Unit
+        clickListener: (userId: String, isAccepted: Boolean?) -> Unit
     ) = with(binding) {
         data = friend
-        root.setOnClickListener { clickListener(friend.id, null, position) }
+        root.setOnClickListener { clickListener(friend.id, null) }
     }
 
     companion object {

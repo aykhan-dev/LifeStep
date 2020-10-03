@@ -1,3 +1,5 @@
+@file:Suppress("UNCHECKED_CAST")
+
 package az.rabita.lifestep.viewModel.fragment.champions
 
 import android.app.Application

@@ -1,8 +1,5 @@
 package az.rabita.lifestep.ui.custom
 
-import android.animation.ObjectAnimator
-import android.animation.TypeEvaluator
-import android.animation.ValueAnimator
 import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Canvas
@@ -11,7 +8,6 @@ import android.graphics.Paint
 import android.util.AttributeSet
 import android.util.TypedValue
 import android.view.MotionEvent
-import android.view.animation.AccelerateInterpolator
 import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import az.rabita.lifestep.R
@@ -304,7 +300,6 @@ class BarDiagram @JvmOverloads constructor(
 
     data class Bar(val value: Long, val ratio: Float)
 
-    data class DrawPoint(var x: Float = 0f, var y: Float = 0f)
 
     data class BarLine(
         val bar: Bar,
@@ -321,3 +316,5 @@ class BarDiagram @JvmOverloads constructor(
     }
 
 }
+
+data class DrawPoint(var x: Float = 0f, var y: Float = 0f)

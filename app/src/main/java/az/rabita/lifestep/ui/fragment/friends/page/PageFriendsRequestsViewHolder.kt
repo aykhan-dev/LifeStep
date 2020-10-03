@@ -12,13 +12,12 @@ class PageFriendsRequestsViewHolder private constructor(
 
     fun bind(
         friend: FriendContentPOJO,
-        position: Int,
-        clickListener: (userId: String, isAccepted: Boolean?, position: Int) -> Unit
-    ) = with(binding) {
+        clickListener: (userId: String, isAccepted: Boolean?) -> Unit
+    ): Unit = with(binding) {
         data = friend
-        buttonAccept.setOnClickListener { clickListener(friend.id, true, position) }
-        buttonDecline.setOnClickListener { clickListener(friend.id, false, position) }
-        root.setOnClickListener { clickListener(friend.id, null, position) }
+        buttonAccept.setOnClickListener { clickListener(friend.id, true) }
+        buttonDecline.setOnClickListener { clickListener(friend.id, false) }
+        root.setOnClickListener { clickListener(friend.id, null) }
     }
 
     companion object {
