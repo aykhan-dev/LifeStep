@@ -4,8 +4,9 @@ import android.content.Context
 import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.ViewCompat
+import androidx.core.view.updatePadding
 import androidx.databinding.DataBindingUtil
-import androidx.lifecycle.Observer
 import androidx.navigation.NavOptions
 import androidx.navigation.findNavController
 import az.rabita.lifestep.R
@@ -15,6 +16,7 @@ import az.rabita.lifestep.pojo.dataHolder.NotificationInfoHolder
 import az.rabita.lifestep.ui.fragment.home.HomeFragmentDirections
 import az.rabita.lifestep.utils.DEFAULT_LANG_KEY
 import az.rabita.lifestep.utils.NOTIFICATION_INFO_KEY
+import az.rabita.lifestep.utils.makeEdgeToEdge
 import az.rabita.lifestep.viewModel.activity.main.MainViewModel
 import timber.log.Timber
 
@@ -48,6 +50,8 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
 
+        makeEdgeToEdge()
+
         bindUI()
         analyzeIntentComingFromNotificationEvent()
         navigate()
@@ -57,6 +61,11 @@ class MainActivity : AppCompatActivity() {
     private fun bindUI(): Unit = with(binding) {
         lifecycleOwner = this@MainActivity
         viewModel = this@MainActivity.viewModel
+
+        ViewCompat.setOnApplyWindowInsetsListener(customCurvedLayout) { view, insets ->
+            view.updatePadding(bottom = view.paddingBottom + insets.stableInsets.bottom)
+            return@setOnApplyWindowInsetsListener insets
+        }
     }
 
     private fun analyzeIntentComingFromNotificationEvent() {
