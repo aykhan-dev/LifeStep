@@ -1,22 +1,18 @@
 package az.rabita.lifestep.viewModel.fragment.profileDetails
 
 import android.app.Application
-import android.text.format.DateFormat
 import androidx.lifecycle.*
 import az.rabita.lifestep.R
 import az.rabita.lifestep.local.getDatabase
 import az.rabita.lifestep.manager.PreferenceManager
 import az.rabita.lifestep.network.NetworkState
-import az.rabita.lifestep.pojo.apiPOJO.content.DailyContentPOJO
-import az.rabita.lifestep.pojo.apiPOJO.content.MonthlyContentPOJO
-import az.rabita.lifestep.pojo.apiPOJO.model.FriendRequestModelPOJO
-import az.rabita.lifestep.pojo.apiPOJO.model.SendStepModelPOJO
 import az.rabita.lifestep.pojo.dataHolder.AllInOneUserInfoHolder
 import az.rabita.lifestep.repository.UsersRepository
 import az.rabita.lifestep.ui.custom.BarDiagram
 import az.rabita.lifestep.utils.*
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import java.util.*
+import kotlinx.coroutines.withContext
 
 class OwnProfileViewModel(app: Application) : AndroidViewModel(app) {
 
@@ -42,7 +38,7 @@ class OwnProfileViewModel(app: Application) : AndroidViewModel(app) {
     val cachedProfileInfo = usersRepository.personalInfo.asLiveData()
 
     fun fetchAllInOneProfileInfo() {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
 
             val token = sharedPreferences.getStringElement(TOKEN_KEY, "")
             val lang = sharedPreferences.getIntegerElement(LANG_KEY, DEFAULT_LANG)
@@ -72,19 +68,17 @@ class OwnProfileViewModel(app: Application) : AndroidViewModel(app) {
         _monthlyStats.notifyObservers()
     }
 
-    private fun handleNetworkException(exception: String?) {
-        viewModelScope.launch {
+    private suspend fun handleNetworkException(exception: String?) {
             if (context.isInternetConnectionAvailable()) showMessageDialog(exception)
             else showMessageDialog(context.getString(R.string.no_internet_connection))
         }
-    }
 
-    private fun showMessageDialog(message: String?) {
+    private suspend fun showMessageDialog(message: String?): Unit = withContext(Dispatchers.Main) {
         _errorMessage.value = message
         _errorMessage.value = null
     }
 
-    private fun startExpireTokenProcess() {
+    private suspend fun startExpireTokenProcess(): Unit = withContext(Dispatchers.Main) {
         sharedPreferences.setStringElement(TOKEN_KEY, "")
         if (_eventExpiredToken.value == false) _eventExpiredToken.value = true
     }

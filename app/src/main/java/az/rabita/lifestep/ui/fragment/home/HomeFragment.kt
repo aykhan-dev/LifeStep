@@ -13,7 +13,6 @@ import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import az.rabita.lifestep.NavGraphMainDirections
@@ -26,7 +25,9 @@ import az.rabita.lifestep.viewModel.fragment.home.HomeViewModel
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayout.OnTabSelectedListener
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import timber.log.Timber
 
 class HomeFragment : Fragment() {
@@ -39,6 +40,15 @@ class HomeFragment : Fragment() {
 
     private val adapter = SearchResultRecyclerAdapter { onSearchResultItemClick(it) }
     private val loadingDialog = LoadingDialog
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        lifecycleScope.launchWhenResumed {
+            withContext(Dispatchers.IO) {
+                permissions()
+            }
+        }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -63,7 +73,7 @@ class HomeFragment : Fragment() {
 
     override fun onStart() {
         super.onStart()
-        lifecycleScope.launchWhenStarted { permissions() }
+        viewModel.fetchOwnProfileInfo()
         viewModel.fetchWeeklyStats()
     }
 
@@ -159,6 +169,9 @@ class HomeFragment : Fragment() {
 
     private fun observeData(): Unit = with(viewModel) {
 
+        //DON'T REMOVE THIS LINE, ELSE IT WILL BE NULL
+        cachedOwnProfileInfo.observe(viewLifecycleOwner, {})
+
         adsTransaction.observe(viewLifecycleOwner, {
             it?.let {
                 loadingDialog.dismiss()
@@ -239,7 +252,10 @@ class HomeFragment : Fragment() {
     }
 
     private fun onSearchResultItemClick(userId: String): Unit = with(navController) {
-        navigate(NavGraphMainDirections.actionToOtherProfileFragment(userId))
+        viewModel.cachedOwnProfileInfo.value?.let {
+            if (it.id == userId) navigate(NavGraphMainDirections.actionToOwnProfileFragment())
+            else navigate(NavGraphMainDirections.actionToOtherProfileFragment(userId))
+        }
     }
 
     private fun showSearchBar(): Unit = with(binding) {
@@ -270,7 +286,8 @@ class HomeFragment : Fragment() {
 
     private fun googleAuthFlow() {
 
-        val account = GoogleSignIn.getAccountForExtension(requireActivity(), FITNESS_OPTIONS)
+        val account =
+            GoogleSignIn.getAccountForExtension(requireActivity(), FITNESS_OPTIONS)
 
         if (!GoogleSignIn.hasPermissions(account, FITNESS_OPTIONS)) {
 
@@ -289,15 +306,16 @@ class HomeFragment : Fragment() {
         super.onActivityResult(requestCode, resultCode, data)
         when (requestCode) {
             GOOGLE_FIT_PERMISSIONS_REQUEST_CODE -> {
-                val result = GoogleSignIn.getSignedInAccountFromIntent(data).addOnFailureListener {
-                    Timber.e(it)
-                }
+                val result =
+                    GoogleSignIn.getSignedInAccountFromIntent(data).addOnFailureListener {
+                        Timber.e(it)
+                    }
                 result.let {
                     if (result.isSuccessful) {
                         Timber.i("Google fit permission accepted")
                         viewModel.accessGoogleFit()
                     } else {
-                        viewModel.showMessageDialog(getString(R.string.google_auth_fail_message))
+                        viewModel.showMessageDialogSync(getString(R.string.google_auth_fail_message))
                     }
                 }
             }
@@ -314,5 +332,4 @@ class HomeFragment : Fragment() {
             ACTIVITY_RECOGNITION_REQUEST_CODE -> googleAuthFlow()
         }
     }
-
 }

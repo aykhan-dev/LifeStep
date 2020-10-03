@@ -1,6 +1,8 @@
 package az.rabita.lifestep.viewModel.fragment.searchResults
 
 import android.app.Application
+import kotlinx.coroutines.Dispatchers
+
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -11,9 +13,10 @@ import az.rabita.lifestep.manager.PreferenceManager
 import az.rabita.lifestep.network.NetworkState
 import az.rabita.lifestep.pojo.apiPOJO.content.SearchResultContentPOJO
 import az.rabita.lifestep.repository.UsersRepository
-import az.rabita.lifestep.ui.dialog.loading.LoadingDialog
 import az.rabita.lifestep.utils.*
+
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 @Suppress("UNCHECKED_CAST")
 class SearchResultsViewModel(application: Application) : AndroidViewModel(application) {
@@ -33,8 +36,10 @@ class SearchResultsViewModel(application: Application) : AndroidViewModel(applic
 
     val searchingState = MutableLiveData<UiState>()
 
+    val cachedOwnProfileInfo = usersRepository.cachedProfileInfo
+
     fun fetchSearchResults(searchInput: String) {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
 
             searchingState.postValue(UiState.Loading)
 
@@ -45,7 +50,7 @@ class SearchResultsViewModel(application: Application) : AndroidViewModel(applic
                 usersRepository.searchUserByFullName(token, lang, searchInput)) {
                 is NetworkState.Success<*> -> {
                     val data = response.data as List<SearchResultContentPOJO>
-                    _listOfSearchResult.value = data
+                    _listOfSearchResult.postValue(data)
                 }
                 is NetworkState.ExpiredToken -> startExpireTokenProcess()
                 is NetworkState.HandledHttpError -> showMessageDialog(response.error)
@@ -58,19 +63,17 @@ class SearchResultsViewModel(application: Application) : AndroidViewModel(applic
         }
     }
 
-    private fun handleNetworkException(exception: String?) {
-        viewModelScope.launch {
+    private suspend fun handleNetworkException(exception: String?) {
             if (context.isInternetConnectionAvailable()) showMessageDialog(exception)
             else showMessageDialog(context.getString(R.string.no_internet_connection))
         }
-    }
 
-    private fun showMessageDialog(message: String?) {
+    private suspend fun showMessageDialog(message: String?): Unit = withContext(Dispatchers.Main) {
         _errorMessage.value = message
         _errorMessage.value = null
     }
 
-    private fun startExpireTokenProcess() {
+    private suspend fun startExpireTokenProcess(): Unit = withContext(Dispatchers.Main) {
         sharedPreferences.setStringElement(TOKEN_KEY, "")
         if (_eventExpiredToken.value == false) _eventExpiredToken.value = true
     }

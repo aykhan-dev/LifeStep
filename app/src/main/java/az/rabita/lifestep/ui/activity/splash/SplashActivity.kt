@@ -6,8 +6,6 @@ import android.os.Bundle
 import android.os.CountDownTimer
 import android.view.animation.AnimationUtils
 import androidx.appcompat.app.AppCompatActivity
-import androidx.databinding.DataBindingUtil
-import androidx.lifecycle.lifecycleScope
 import az.rabita.lifestep.R
 import az.rabita.lifestep.databinding.ActivitySplashNewBinding
 import az.rabita.lifestep.manager.LocaleManager
@@ -16,7 +14,6 @@ import az.rabita.lifestep.ui.activity.auth.AuthActivity
 import az.rabita.lifestep.ui.activity.main.MainActivity
 import az.rabita.lifestep.utils.DEFAULT_LANG_KEY
 import az.rabita.lifestep.utils.TOKEN_KEY
-import kotlinx.coroutines.launch
 
 class SplashActivity : AppCompatActivity() {
 
@@ -28,35 +25,31 @@ class SplashActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = DataBindingUtil.setContentView(this, R.layout.activity_splash_new)
-        bindUI()
-        lifecycleScope.launch {
-            mIntent = Intent(
-                applicationContext,
-                if (sharedPreferences.getStringElement(TOKEN_KEY, "").isEmpty())
-                    AuthActivity::class.java
-                else
-                    MainActivity::class.java
-            )
-            timer = object : CountDownTimer(1500L, 1500L) {
-                override fun onFinish() {
-                    startActivity(mIntent)
-                    finish()
-                }
+        binding = ActivitySplashNewBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
-                override fun onTick(p0: Long) {}
+        mIntent = Intent(
+            applicationContext,
+            if (sharedPreferences.getStringElement(TOKEN_KEY, "").isEmpty())
+                AuthActivity::class.java
+            else
+                MainActivity::class.java
+        )
+
+        timer = object : CountDownTimer(1500L, 1500L) {
+            override fun onFinish() {
+                startActivity(mIntent)
+                finish()
             }
-            timer.start()
 
-            setUpLogoGIF()
+            override fun onTick(p0: Long) {}
         }
+        timer.start()
+
+        setUpLogo()
     }
 
-    private fun bindUI(): Unit = with(binding) {
-        lifecycleOwner = this@SplashActivity
-    }
-
-    private fun setUpLogoGIF(): Unit = with(binding) {
+    private fun setUpLogo(): Unit = with(binding) {
         imageViewLogo.startAnimation(
             AnimationUtils.loadAnimation(
                 applicationContext,

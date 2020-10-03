@@ -21,7 +21,9 @@ import com.google.android.gms.fitness.Fitness
 import com.google.android.gms.fitness.HistoryClient
 import com.google.android.gms.fitness.data.DataType
 import com.google.android.gms.fitness.data.Field
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.util.*
 
 @Suppress("UNCHECKED_CAST")
@@ -55,8 +57,26 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
     val searchingState = MutableLiveData<UiState>()
     val uiState = MutableLiveData<UiState>()
 
+    val cachedOwnProfileInfo = usersRepository.cachedProfileInfo
+
+    fun fetchOwnProfileInfo() {
+        viewModelScope.launch(Dispatchers.IO) {
+
+            val token = sharedPreferences.getStringElement(TOKEN_KEY, "")
+            val lang = sharedPreferences.getIntegerElement(LANG_KEY, LANG_AZ)
+
+            when (val response = usersRepository.getPersonalInfo(token, lang)) {
+                is NetworkState.ExpiredToken -> startExpireTokenProcess()
+                is NetworkState.HandledHttpError -> showMessageDialog(response.error)
+                is NetworkState.UnhandledHttpError -> showMessageDialog(response.error)
+                is NetworkState.NetworkException -> handleNetworkException(response.exception)
+            }
+
+        }
+    }
+
     fun fetchSearchResults() {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
 
             searchingState.postValue(UiState.Loading)
 
@@ -67,7 +87,7 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
                 usersRepository.searchUserByFullName(token, lang, searchInput.value ?: "")) {
                 is NetworkState.Success<*> -> {
                     val data = response.data as List<SearchResultContentPOJO>
-                    _listOfSearchResult.value = data
+                    _listOfSearchResult.postValue(data)
                 }
                 is NetworkState.ExpiredToken -> startExpireTokenProcess()
                 is NetworkState.HandledHttpError -> showMessageDialog(response.error)
@@ -81,7 +101,7 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun fetchWeeklyStats() {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
 
             val token = sharedPreferences.getStringElement(TOKEN_KEY, "")
             val lang = sharedPreferences.getIntegerElement(LANG_KEY, DEFAULT_LANG)
@@ -101,7 +121,7 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     private fun sendCurrentStepData(steps: Long) {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
 
             val token = sharedPreferences.getStringElement(TOKEN_KEY, "")
             val lang = sharedPreferences.getIntegerElement(LANG_KEY, DEFAULT_LANG)
@@ -126,7 +146,7 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun convertSteps() {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
 
             val token = sharedPreferences.getStringElement(TOKEN_KEY, "")
             val lang = sharedPreferences.getIntegerElement(LANG_KEY, DEFAULT_LANG)
@@ -148,7 +168,7 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun createAdsTransaction() {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
 
             uiState.postValue(UiState.Loading)
 
@@ -161,8 +181,8 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
                 is NetworkState.Success<*> -> {
                     val data = response.data as List<AdsTransactionContentPOJO>
                     if (data.isNotEmpty()) {
-                        _adsTransaction.value = data[0]
-                        _adsTransaction.value = null
+                        _adsTransaction.postValue(data[0])
+                        _adsTransaction.postValue(null)
                     }
                 }
                 is NetworkState.ExpiredToken -> startExpireTokenProcess()
@@ -177,7 +197,7 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun accessGoogleFit() {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             val account = GoogleSignIn.getAccountForExtension(context, FITNESS_OPTIONS)
             val historyClient = Fitness.getHistoryClient(context, account)
             fetchStepCountFromGoogleFit(historyClient)
@@ -185,34 +205,35 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     private fun fetchStepCountFromGoogleFit(historyClient: HistoryClient) {
-        viewModelScope.launch {
-            historyClient
-                .readDailyTotalFromLocalDevice(DataType.TYPE_STEP_COUNT_DELTA)
-                .addOnSuccessListener {
-                    val total =
-                        if (it.isEmpty) 0 else it.dataPoints[0].getValue(Field.FIELD_STEPS).asInt()
-                            .toLong()
-                    sendCurrentStepData(total)
-                }
-                .addOnFailureListener { failure ->
-                    context.toast(failure.message)
-                }
-        }
+        historyClient
+            .readDailyTotalFromLocalDevice(DataType.TYPE_STEP_COUNT_DELTA)
+            .addOnSuccessListener {
+                val total =
+                    if (it.isEmpty) 0 else it.dataPoints[0].getValue(Field.FIELD_STEPS).asInt()
+                        .toLong()
+                sendCurrentStepData(total)
+            }
+            .addOnFailureListener { failure ->
+                context.toast(failure.message)
+            }
     }
 
-    private fun handleNetworkException(exception: String?) {
-        viewModelScope.launch {
-            if (context.isInternetConnectionAvailable()) showMessageDialog(exception)
-            else showMessageDialog(context.getString(R.string.no_internet_connection))
-        }
+    private suspend fun handleNetworkException(exception: String?) {
+        if (context.isInternetConnectionAvailable()) showMessageDialog(exception)
+        else showMessageDialog(context.getString(R.string.no_internet_connection))
     }
 
-    fun showMessageDialog(message: String?) {
+    fun showMessageDialogSync(message: String?) {
         _errorMessage.value = message
         _errorMessage.value = null
     }
 
-    private fun startExpireTokenProcess() {
+    suspend fun showMessageDialog(message: String?): Unit = withContext(Dispatchers.Main) {
+        _errorMessage.value = message
+        _errorMessage.value = null
+    }
+
+    private suspend fun startExpireTokenProcess(): Unit = withContext(Dispatchers.Main) {
         sharedPreferences.setStringElement(TOKEN_KEY, "")
         if (_eventExpiredToken.value == false) _eventExpiredToken.value = true
     }
@@ -223,7 +244,7 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
 
     override fun onCleared() {
         super.onCleared()
-        searchInput.removeObserver{ }
+        searchInput.removeObserver { }
     }
 
 }

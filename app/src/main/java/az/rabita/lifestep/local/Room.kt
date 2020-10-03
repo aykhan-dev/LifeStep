@@ -3,7 +3,6 @@ package az.rabita.lifestep.local
 import android.content.Context
 import androidx.lifecycle.LiveData
 import androidx.paging.DataSource
-import androidx.paging.PagingSource
 import androidx.room.*
 import androidx.room.OnConflictStrategy.REPLACE
 import az.rabita.lifestep.pojo.apiPOJO.entity.*
@@ -17,6 +16,9 @@ abstract class UsersDao {
 
     @Query("select * from personalInfo where saveId = 1")
     abstract fun getPersonalInfo(): Flow<PersonalInfo>
+
+    @Query("select * from personalInfo where saveId = 1")
+    abstract fun getCachedProfileInfo(): LiveData<PersonalInfo>
 
     @Query("delete from personalInfo")
     abstract suspend fun deletePersonalInfo()

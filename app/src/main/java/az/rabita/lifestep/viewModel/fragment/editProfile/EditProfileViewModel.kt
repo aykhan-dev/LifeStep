@@ -9,7 +9,9 @@ import az.rabita.lifestep.network.NetworkState
 import az.rabita.lifestep.pojo.apiPOJO.model.ChangedProfileDetailsModelPOJO
 import az.rabita.lifestep.repository.UsersRepository
 import az.rabita.lifestep.utils.*
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
@@ -50,7 +52,7 @@ class EditProfileViewModel(application: Application) : AndroidViewModel(applicat
     val uiState = MutableLiveData<UiState>()
 
     fun fetchPersonalInfo() {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
 
             uiState.postValue(UiState.Loading)
 
@@ -70,7 +72,7 @@ class EditProfileViewModel(application: Application) : AndroidViewModel(applicat
     }
 
     fun saveChanges() {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
 
             if (!validateFields()) return@launch
 
@@ -99,7 +101,7 @@ class EditProfileViewModel(application: Application) : AndroidViewModel(applicat
     }
 
     fun updateProfileImage(file: File) {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             uiState.postValue(UiState.Loading)
 
             val requestFile: RequestBody =
@@ -130,33 +132,46 @@ class EditProfileViewModel(application: Application) : AndroidViewModel(applicat
 
     private fun validateFields(): Boolean = when {
         (nameInput.value ?: "").isEmpty() -> {
-            showMessageDialog(getString(R.string.invalid_name))
+            showMessageDialogSync(getString(R.string.invalid_name))
             false
         }
         (surnameInput.value ?: "").isEmpty() -> {
-            showMessageDialog(getString(R.string.invalid_surname))
+            showMessageDialogSync(getString(R.string.invalid_surname))
             false
         }
         (phoneInput.value ?: "").isEmpty() -> {
-            showMessageDialog(getString(R.string.invalid_phone))
+            showMessageDialogSync(getString(R.string.invalid_phone))
             false
         }
         else -> true
     }
 
-    private fun handleNetworkException(exception: String?) {
-        viewModelScope.launch {
+    private fun handleNetworkExceptionSync(exception: String?) {
+        if (context.isInternetConnectionAvailable()) showMessageDialogSync(exception)
+        else showMessageDialogSync(context.getString(R.string.no_internet_connection))
+    }
+
+    private suspend fun handleNetworkException(exception: String?) {
             if (context.isInternetConnectionAvailable()) showMessageDialog(exception)
             else showMessageDialog(context.getString(R.string.no_internet_connection))
         }
-    }
 
-    private fun showMessageDialog(message: String?) {
+    private fun showMessageDialogSync(message: String?) {
         _errorMessage.value = message
         _errorMessage.value = null
     }
 
-    private fun startExpireTokenProcess() {
+    private suspend fun showMessageDialog(message: String?): Unit = withContext(Dispatchers.Main) {
+        _errorMessage.value = message
+        _errorMessage.value = null
+    }
+
+    private fun startExpireTokenProcessSync() {
+        sharedPreferences.setStringElement(TOKEN_KEY, "")
+        if (_eventExpiredToken.value == false) _eventExpiredToken.postValue(true)
+    }
+
+    private suspend fun startExpireTokenProcess(): Unit = withContext(Dispatchers.Main) {
         sharedPreferences.setStringElement(TOKEN_KEY, "")
         if (_eventExpiredToken.value == false) _eventExpiredToken.value = true
     }

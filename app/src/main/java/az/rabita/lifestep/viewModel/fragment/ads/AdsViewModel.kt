@@ -15,7 +15,9 @@ import az.rabita.lifestep.repository.AdsRepository
 import az.rabita.lifestep.repository.ContentsRepository
 import az.rabita.lifestep.repository.TransactionsRepository
 import az.rabita.lifestep.utils.*
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 @Suppress("UNCHECKED_CAST")
 class AdsViewModel(application: Application) : AndroidViewModel(application) {
@@ -42,7 +44,7 @@ class AdsViewModel(application: Application) : AndroidViewModel(application) {
     val uiState = MutableLiveData<UiState>()
 
     fun fetchAdsPageContent() {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
 
             val token = sharedPreferences.getStringElement(TOKEN_KEY, "")
             val lang = sharedPreferences.getIntegerElement(LANG_KEY, DEFAULT_LANG)
@@ -58,7 +60,7 @@ class AdsViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun getBonusSteps() {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
 
             val token = sharedPreferences.getStringElement(TOKEN_KEY, "")
             val lang = sharedPreferences.getIntegerElement(LANG_KEY, DEFAULT_LANG)
@@ -76,9 +78,9 @@ class AdsViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun createAdsTransaction() {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
 
-            uiState.value = (UiState.Loading)
+            uiState.postValue(UiState.Loading)
 
             val token = sharedPreferences.getStringElement(TOKEN_KEY, "")
             val lang = sharedPreferences.getIntegerElement(LANG_KEY, 10)
@@ -88,7 +90,7 @@ class AdsViewModel(application: Application) : AndroidViewModel(application) {
             when (val response = adsRepository.createAdsTransaction(token, lang, model)) {
                 is NetworkState.Success<*> -> {
                     val data = response.data as List<AdsTransactionContentPOJO>
-                    if (data.isNotEmpty()) _adsTransaction.value = data[0]
+                    if (data.isNotEmpty()) _adsTransaction.postValue(data[0])
                 }
                 is NetworkState.ExpiredToken -> startExpireTokenProcess()
                 is NetworkState.HandledHttpError -> showMessageDialog(response.error)
@@ -96,24 +98,22 @@ class AdsViewModel(application: Application) : AndroidViewModel(application) {
                 is NetworkState.NetworkException -> handleNetworkException(response.exception)
             }
 
-            uiState.value = (UiState.LoadingFinished)
+            uiState.postValue(UiState.LoadingFinished)
 
         }
     }
 
-    private fun handleNetworkException(exception: String?) {
-        viewModelScope.launch {
-            if (context.isInternetConnectionAvailable()) showMessageDialog(exception)
-            else showMessageDialog(context.getString(R.string.no_internet_connection))
-        }
+    private suspend fun handleNetworkException(exception: String?) {
+        if (context.isInternetConnectionAvailable()) showMessageDialog(exception)
+        else showMessageDialog(context.getString(R.string.no_internet_connection))
     }
 
-    private fun showMessageDialog(message: String?) {
+    private suspend fun showMessageDialog(message: String?): Unit = withContext(Dispatchers.Main) {
         _errorMessage.value = message
         _errorMessage.value = null
     }
 
-    private fun startExpireTokenProcess() {
+    private suspend fun startExpireTokenProcess(): Unit = withContext(Dispatchers.Main) {
         sharedPreferences.setStringElement(TOKEN_KEY, "")
         if (_eventExpiredToken.value == false) _eventExpiredToken.value = true
     }

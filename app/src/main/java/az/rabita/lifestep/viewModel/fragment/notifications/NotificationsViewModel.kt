@@ -1,6 +1,8 @@
 package az.rabita.lifestep.viewModel.fragment.notifications
 
 import android.app.Application
+import kotlinx.coroutines.Dispatchers
+
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -14,7 +16,9 @@ import az.rabita.lifestep.utils.LANG_KEY
 import az.rabita.lifestep.utils.NO_INTERNET_CONNECTION
 import az.rabita.lifestep.utils.TOKEN_KEY
 import az.rabita.lifestep.utils.isInternetConnectionAvailable
+
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class NotificationsViewModel(application: Application) : AndroidViewModel(application) {
 
@@ -32,7 +36,7 @@ class NotificationsViewModel(application: Application) : AndroidViewModel(applic
     val listOfNotifications = notificationsRepository.listOfNotifications
 
     fun fetchListOfNotifications() {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             val token = sharedPreferences.getStringElement(TOKEN_KEY, "")
             val lang = sharedPreferences.getIntegerElement(LANG_KEY, 10)
 
@@ -45,21 +49,19 @@ class NotificationsViewModel(application: Application) : AndroidViewModel(applic
         }
     }
 
-    private fun handleNetworkException(exception: String?) {
-        viewModelScope.launch {
+    private suspend fun handleNetworkException(exception: String?) {
             if (context.isInternetConnectionAvailable()) showMessageDialog(exception)
             else showMessageDialog(context.getString(R.string.no_internet_connection))
         }
-    }
 
-    private fun showMessageDialog(message: String?) {
+    private suspend fun showMessageDialog(message: String?): Unit = withContext(Dispatchers.Main) {
         _errorMessage.value = message
         _errorMessage.value = null
     }
 
-    private fun startExpireTokenProcess() {
+    private suspend fun startExpireTokenProcess(): Unit = withContext(Dispatchers.IO){
         sharedPreferences.setStringElement(TOKEN_KEY, "")
-        if (_eventExpiredToken.value == false) _eventExpiredToken.value = true
+        if (_eventExpiredToken.value == false) _eventExpiredToken.postValue(true)
     }
 
     fun endExpireTokenProcess() {

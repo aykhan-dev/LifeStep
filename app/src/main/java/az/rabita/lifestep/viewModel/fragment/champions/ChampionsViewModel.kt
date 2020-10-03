@@ -15,7 +15,9 @@ import az.rabita.lifestep.utils.DEFAULT_LANG
 import az.rabita.lifestep.utils.LANG_KEY
 import az.rabita.lifestep.utils.TOKEN_KEY
 import az.rabita.lifestep.utils.isInternetConnectionAvailable
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class ChampionsViewModel(app: Application) : AndroidViewModel(app) {
 
@@ -38,14 +40,14 @@ class ChampionsViewModel(app: Application) : AndroidViewModel(app) {
     val cachedOwnProfileInfo = usersRepository.personalInfo.asLiveData()
 
     fun fetchDailyChampions() {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             val token = sharedPreferences.getStringElement(TOKEN_KEY, "")
             val lang = sharedPreferences.getIntegerElement(LANG_KEY, DEFAULT_LANG)
 
             when (val response = reportRepository.getChampionsOfDay(token, lang)) {
                 is NetworkState.Success<*> -> run {
                     val data = response.data as List<RankerContentPOJO>
-                    _listOfChampions.value = data
+                    _listOfChampions.postValue(data)
                 }
                 is NetworkState.ExpiredToken -> startExpireTokenProcess()
                 is NetworkState.HandledHttpError -> showMessageDialog(response.error)
@@ -56,14 +58,14 @@ class ChampionsViewModel(app: Application) : AndroidViewModel(app) {
     }
 
     fun fetchWeeklyChampions() {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             val token = sharedPreferences.getStringElement(TOKEN_KEY, "")
             val lang = sharedPreferences.getIntegerElement(LANG_KEY, DEFAULT_LANG)
 
             when (val response = reportRepository.getChampionsOfWeek(token, lang)) {
                 is NetworkState.Success<*> -> run {
                     val data = response.data as List<RankerContentPOJO>
-                    _listOfChampions.value = data
+                    _listOfChampions.postValue(data)
                 }
                 is NetworkState.ExpiredToken -> startExpireTokenProcess()
                 is NetworkState.HandledHttpError -> showMessageDialog(response.error)
@@ -74,14 +76,14 @@ class ChampionsViewModel(app: Application) : AndroidViewModel(app) {
     }
 
     fun fetchMonthlyChampions() {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             val token = sharedPreferences.getStringElement(TOKEN_KEY, "")
             val lang = sharedPreferences.getIntegerElement(LANG_KEY, DEFAULT_LANG)
 
             when (val response = reportRepository.getChampionsOfMonth(token, lang)) {
                 is NetworkState.Success<*> -> run {
                     val data = response.data as List<RankerContentPOJO>
-                    _listOfChampions.value = data
+                    _listOfChampions.postValue(data)
                 }
                 is NetworkState.ExpiredToken -> startExpireTokenProcess()
                 is NetworkState.HandledHttpError -> showMessageDialog(response.error)
@@ -91,19 +93,17 @@ class ChampionsViewModel(app: Application) : AndroidViewModel(app) {
         }
     }
 
-    private fun handleNetworkException(exception: String?) {
-        viewModelScope.launch {
+    private suspend fun handleNetworkException(exception: String?) {
             if (context.isInternetConnectionAvailable()) showMessageDialog(exception)
             else showMessageDialog(context.getString(R.string.no_internet_connection))
         }
-    }
 
-    private fun showMessageDialog(message: String?) {
+    private suspend fun showMessageDialog(message: String?): Unit = withContext(Dispatchers.Main) {
         _errorMessage.value = message
         _errorMessage.value = null
     }
 
-    private fun startExpireTokenProcess() {
+    private suspend fun startExpireTokenProcess(): Unit = withContext(Dispatchers.Main) {
         sharedPreferences.setStringElement(TOKEN_KEY, "")
         if (_eventExpiredToken.value == false) _eventExpiredToken.value = true
     }

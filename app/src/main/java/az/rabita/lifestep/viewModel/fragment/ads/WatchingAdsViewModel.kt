@@ -1,6 +1,8 @@
 package az.rabita.lifestep.viewModel.fragment.ads
 
 import android.app.Application
+import kotlinx.coroutines.Dispatchers
+
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -14,7 +16,9 @@ import az.rabita.lifestep.pojo.apiPOJO.model.ConvertStepsModelPOJO
 import az.rabita.lifestep.repository.AdsRepository
 import az.rabita.lifestep.repository.ReportRepository
 import az.rabita.lifestep.utils.*
+
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 @Suppress("UNCHECKED_CAST")
 class WatchingAdsViewModel(application: Application) : AndroidViewModel(application) {
@@ -51,7 +55,7 @@ class WatchingAdsViewModel(application: Application) : AndroidViewModel(applicat
         forBonusSteps: Boolean,
         totalWatchTime: Int
     ) {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
 
             uiState.postValue(UiState.Loading)
 
@@ -112,12 +116,12 @@ class WatchingAdsViewModel(application: Application) : AndroidViewModel(applicat
         isMuted.value = !(isMuted.value ?: false)
     }
 
-    private fun handleNetworkException(exception: String?) {
-        if (context.isInternetConnectionAvailable()) showMessageDialog(exception)
-        else showMessageDialog(context.getString(R.string.no_internet_connection))
-    }
+    private suspend fun handleNetworkException(exception: String?) {
+            if (context.isInternetConnectionAvailable()) showMessageDialog(exception)
+            else showMessageDialog(context.getString(R.string.no_internet_connection))
+        }
 
-    private fun showMessageDialog(message: String?) {
+    private suspend fun showMessageDialog(message: String?): Unit = withContext(Dispatchers.Main) {
         _errorMessage.value = message
         _errorMessage.value = null
     }

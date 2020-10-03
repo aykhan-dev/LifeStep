@@ -56,13 +56,13 @@ class SettingsFragment : Fragment() {
         viewModel = this@SettingsFragment.viewModel
 
         cardFriends.setOnClickListener {
-            navController.navigate(SettingsFragmentDirections.actionSettingsFragmentToFriendsFragment())
+            navController.navigate(NavGraphMainDirections.actionToFriendsFragment())
         }
         cardProfile.setOnClickListener {
             navController.navigate(NavGraphMainDirections.actionToOwnProfileFragment())
         }
         cardInvitation.setOnClickListener {
-            navController.navigate(SettingsFragmentDirections.actionSettingsFragmentToInviteFriendFragment())
+            navController.navigate(NavGraphMainDirections.actionToInviteAFriendFragment())
         }
         cardHistory.setOnClickListener {
             navController.navigate(SettingsFragmentDirections.actionSettingsFragmentToHistoryFragment())

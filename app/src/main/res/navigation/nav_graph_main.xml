@@ -33,6 +33,14 @@
             app:argType="string" />
     </action>
 
+    <action
+        android:id="@+id/action_to_friends_fragment"
+        app:destination="@id/friendsFragment" />
+
+    <action
+        android:id="@+id/action_to_invite_a_friend_fragment"
+        app:destination="@id/inviteFriendFragment" />
+
     <dialog
         android:id="@+id/messageDialog"
         android:name="az.rabita.lifestep.ui.dialog.message.MessageDialog"
@@ -113,5 +121,17 @@
         android:name="az.rabita.lifestep.ui.fragment.notifications.NotificationsFragment"
         android:label="NotificationsFragment"
         tools:layout="@layout/fragment_notifications" />
+
+    <fragment
+        android:id="@+id/friendsFragment"
+        android:name="az.rabita.lifestep.ui.fragment.friends.FriendsFragment"
+        android:label="FriendsFragment"
+        tools:layout="@layout/fragment_friends" />
+
+    <fragment
+        android:id="@+id/inviteFriendFragment"
+        android:name="az.rabita.lifestep.ui.fragment.inviteFriend.InviteFriendFragment"
+        android:label="InviteFriendFragment"
+        tools:layout="@layout/fragment_invite_friend" />
 
 </navigation>

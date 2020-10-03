@@ -6,7 +6,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
@@ -31,9 +30,10 @@ class RankingFragment : Fragment() {
     private val navController by lazy { findNavController() }
 
     private val rankingPagedAdapter = RankingPagedRecyclerAdapter { ranker ->
-        navController.navigate(
-            NavGraphMainDirections.actionToOtherProfileFragment(ranker.id)
-        )
+        viewModel.cachedOwnProfileInfo.value?.let { info ->
+            if (info.id == ranker.id) navController.navigate(NavGraphMainDirections.actionToOwnProfileFragment())
+            else navController.navigate(NavGraphMainDirections.actionToOtherProfileFragment(ranker.id))
+        }
     }
 
     override fun onCreateView(
@@ -74,6 +74,9 @@ class RankingFragment : Fragment() {
     }
 
     private fun observeData(): Unit = with(viewModel) {
+
+        //DON'T REMOVE THIS LINE ELSE IT WILL BE NULL
+        cachedOwnProfileInfo.observe(viewLifecycleOwner, { })
 
         lifecycleScope.launch {
             args.postId.let {

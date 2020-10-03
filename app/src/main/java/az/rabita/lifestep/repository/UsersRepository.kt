@@ -8,16 +8,17 @@ import androidx.paging.liveData
 import az.rabita.lifestep.local.AppDatabase
 import az.rabita.lifestep.manager.SingletonHolder
 import az.rabita.lifestep.network.ApiInitHelper
+import az.rabita.lifestep.network.NetworkResult
+import az.rabita.lifestep.network.NetworkResultFailureType
 import az.rabita.lifestep.network.NetworkState
 import az.rabita.lifestep.pagingSource.DonorsPagingSource
 import az.rabita.lifestep.pojo.apiPOJO.content.RankerContentPOJO
 import az.rabita.lifestep.pojo.apiPOJO.model.*
 import az.rabita.lifestep.pojo.dataHolder.AllInOneOtherUserInfoHolder
 import az.rabita.lifestep.pojo.dataHolder.AllInOneUserInfoHolder
-import az.rabita.lifestep.utils.NETWORK_PAGE_SIZE
-import az.rabita.lifestep.utils.STATIC_TOKEN
-import az.rabita.lifestep.utils.asOwnProfileInfoEntityObject
-import az.rabita.lifestep.utils.checkNetworkRequestResponse
+import az.rabita.lifestep.utils.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import okhttp3.MultipartBody
 import java.io.IOException
 
@@ -28,27 +29,30 @@ class UsersRepository private constructor(database: AppDatabase) {
     private val usersDao = database.usersDao
     private val usersService = ApiInitHelper.usersService
 
-    val personalInfo get() = usersDao.getPersonalInfo()
+    val personalInfo = usersDao.getPersonalInfo()
+    val cachedProfileInfo = usersDao.getCachedProfileInfo()
 
     suspend fun loginUser(lang: Int, model: LoginModelPOJO) = try {
         val response = usersService.loginUser(lang, STATIC_TOKEN, model)
-        checkNetworkRequestResponse(response)
+        checkNetworkRequestResponseRefactored(response)
     } catch (e: IOException) {
-        NetworkState.NetworkException(e.message)
+        NetworkResult.Failure(NetworkResultFailureType.ERROR, e.message ?: "")
     }
 
     suspend fun registerUser(lang: Int, model: RegisterModelPOJO) = try {
         val response = usersService.registerUser(lang, STATIC_TOKEN, model)
-        checkNetworkRequestResponse(response)
+        checkNetworkRequestResponseRefactored(response)
     } catch (e: IOException) {
-        NetworkState.NetworkException(e.message)
+        NetworkResult.Failure(NetworkResultFailureType.ERROR, e.message ?: "")
     }
 
-    suspend fun checkEmail(lang: Int, model: CheckEmailModelPOJO) = try {
-        val response = usersService.checkEmail(lang, STATIC_TOKEN, model)
-        checkNetworkRequestResponse(response)
-    } catch (e: IOException) {
-        NetworkState.NetworkException(e.message)
+    suspend fun checkEmail(lang: Int, model: CheckEmailModelPOJO) = withContext(Dispatchers.IO) {
+        return@withContext try {
+            val response = usersService.checkEmail(lang, STATIC_TOKEN, model)
+            checkNetworkRequestResponseRefactored(response)
+        } catch (e: IOException) {
+            NetworkResult.Failure(NetworkResultFailureType.ERROR, e.message ?: "")
+        }
     }
 
     suspend fun getDonorsOnlyForPost(token: String, lang: Int, usersId: String): NetworkState =
@@ -212,5 +216,4 @@ class UsersRepository private constructor(database: AppDatabase) {
         } catch (e: Exception) {
             NetworkState.NetworkException(e.message)
         }
-
 }

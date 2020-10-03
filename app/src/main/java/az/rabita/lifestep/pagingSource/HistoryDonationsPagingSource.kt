@@ -40,12 +40,8 @@ class HistoryDonationsPagingSource(
                         onExpireTokenListener()
                         LoadResult.Error(Exception(EXPIRE_TOKEN))
                     }
-                } else {
-                    LoadResult.Error(Exception(NULL_BODY))
-                }
-            } else {
-                LoadResult.Error(Exception(NOT_SUCCESSFUL))
-            }
+                } else LoadResult.Error(Exception(NULL_BODY))
+            } else LoadResult.Error(Exception(NOT_SUCCESSFUL))
 
         } catch (exception: Exception) {
             onErrorListener(NO_INTERNET_CONNECTION)

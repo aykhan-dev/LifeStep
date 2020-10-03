@@ -58,6 +58,7 @@ class DetailedInfoFragment : Fragment() {
 
     override fun onStart() {
         super.onStart()
+        viewModel.fetchPersonalInfo()
         viewModel.fetchDetailedInfo(args.assocationId)
         checkDonationResult()
     }
@@ -102,6 +103,8 @@ class DetailedInfoFragment : Fragment() {
     }
 
     private fun observeData(): Unit = with(viewModel) {
+
+        profileInfo.observe(viewLifecycleOwner, {}) //DON'T REMOVE THIS LINE ELSE IT WILL BE NULL
 
         navController.currentBackStackEntry
             ?.savedStateHandle

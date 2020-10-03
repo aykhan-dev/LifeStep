@@ -16,7 +16,9 @@ import az.rabita.lifestep.pojo.apiPOJO.model.FriendshipActionModelPOJO
 import az.rabita.lifestep.repository.FriendshipRepository
 import az.rabita.lifestep.repository.ReportRepository
 import az.rabita.lifestep.utils.*
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class FriendsViewModel(application: Application) : AndroidViewModel(application) {
 
@@ -24,13 +26,7 @@ class FriendsViewModel(application: Application) : AndroidViewModel(application)
     private val sharedPreferences by lazy { PreferenceManager.getInstance(context) }
 
     private val reportRepository = ReportRepository.getInstance(getDatabase(context))
-    private val friendshipRepository = FriendshipRepository.getInstance(
-        PaginationListeners(
-            onErrorListener = { msg -> showMessageDialog(msg) },
-            onExpireTokenListener = { startExpireTokenProcess() },
-            onNetworkExceptionListener = { handleNetworkException(it) }
-        )
-    )
+    private val friendshipRepository = FriendshipRepository
 
     private val _eventExpiredToken = MutableLiveData<Boolean>().apply { value = false }
     val eventExpiredToken: LiveData<Boolean> get() = _eventExpiredToken
@@ -50,8 +46,8 @@ class FriendsViewModel(application: Application) : AndroidViewModel(application)
             token = sharedPreferences.getStringElement(TOKEN_KEY, ""),
             lang = sharedPreferences.getIntegerElement(LANG_KEY, 10),
             service = ApiInitHelper.friendshipService,
-            onErrorListener = { showMessageDialog(it) },
-            onExpireTokenListener = { startExpireTokenProcess() }
+            onErrorListener = { handleNetworkExceptionSync(it) },
+            onExpireTokenListener = { startExpireTokenProcessSync() }
         )
     }.flow.cachedIn(viewModelScope)
 
@@ -60,13 +56,13 @@ class FriendsViewModel(application: Application) : AndroidViewModel(application)
             token = sharedPreferences.getStringElement(TOKEN_KEY, ""),
             lang = sharedPreferences.getIntegerElement(LANG_KEY, 10),
             service = ApiInitHelper.friendshipService,
-            onErrorListener = { showMessageDialog(it) },
-            onExpireTokenListener = { startExpireTokenProcess() }
+            onErrorListener = { handleNetworkExceptionSync(it) },
+            onExpireTokenListener = { startExpireTokenProcessSync() }
         )
     }.flow.cachedIn(viewModelScope)
 
     fun processFriendshipRequest(userId: String, isAccepted: Boolean) {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
 
             uiState.postValue(UiState.Loading)
 
@@ -89,7 +85,7 @@ class FriendsViewModel(application: Application) : AndroidViewModel(application)
     }
 
     fun fetchFriendshipStats() {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             val token = sharedPreferences.getStringElement(TOKEN_KEY, "")
             val lang = sharedPreferences.getIntegerElement(LANG_KEY, DEFAULT_LANG)
 
@@ -102,19 +98,32 @@ class FriendsViewModel(application: Application) : AndroidViewModel(application)
         }
     }
 
-    private fun handleNetworkException(exception: String?) {
-        viewModelScope.launch {
-            if (context.isInternetConnectionAvailable()) showMessageDialog(exception)
-            else showMessageDialog(context.getString(R.string.no_internet_connection))
-        }
+    private fun handleNetworkExceptionSync(exception: String?) {
+        if (context.isInternetConnectionAvailable()) showMessageDialogSync(exception)
+        else showMessageDialogSync(context.getString(R.string.no_internet_connection))
     }
 
-    private fun showMessageDialog(message: String?) {
+    private suspend fun handleNetworkException(exception: String?) {
+        if (context.isInternetConnectionAvailable()) showMessageDialog(exception)
+        else showMessageDialog(context.getString(R.string.no_internet_connection))
+    }
+
+    private fun showMessageDialogSync(message: String?) {
         _errorMessage.value = message
         _errorMessage.value = null
     }
 
-    private fun startExpireTokenProcess() {
+    private suspend fun showMessageDialog(message: String?): Unit = withContext(Dispatchers.Main) {
+        _errorMessage.value = message
+        _errorMessage.value = null
+    }
+
+    private fun startExpireTokenProcessSync() {
+        sharedPreferences.setStringElement(TOKEN_KEY, "")
+        if (_eventExpiredToken.value == false) _eventExpiredToken.postValue(true)
+    }
+
+    private suspend fun startExpireTokenProcess(): Unit = withContext(Dispatchers.Main) {
         sharedPreferences.setStringElement(TOKEN_KEY, "")
         if (_eventExpiredToken.value == false) _eventExpiredToken.value = true
     }

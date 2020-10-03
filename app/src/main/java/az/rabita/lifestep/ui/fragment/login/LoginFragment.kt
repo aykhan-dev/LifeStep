@@ -19,6 +19,7 @@ import az.rabita.lifestep.ui.dialog.message.SingleMessageDialog
 import az.rabita.lifestep.utils.*
 import az.rabita.lifestep.viewModel.activity.auth.AuthViewModel
 import az.rabita.lifestep.viewModel.fragment.login.LoginViewModel
+import timber.log.Timber
 
 class LoginFragment : Fragment() {
 

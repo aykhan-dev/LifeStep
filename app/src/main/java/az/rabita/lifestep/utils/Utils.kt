@@ -19,6 +19,8 @@ import android.widget.Toast
 import androidx.core.text.isDigitsOnly
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.MutableLiveData
+import az.rabita.lifestep.network.NetworkResult
+import az.rabita.lifestep.network.NetworkResultFailureType
 import az.rabita.lifestep.network.NetworkState
 import az.rabita.lifestep.pojo.apiPOJO.ServerResponsePOJO
 import az.rabita.lifestep.pojo.apiPOJO.content.AdsTransactionContentPOJO
@@ -26,6 +28,8 @@ import az.rabita.lifestep.pojo.apiPOJO.content.DailyContentPOJO
 import az.rabita.lifestep.pojo.apiPOJO.content.MonthlyContentPOJO
 import az.rabita.lifestep.pojo.dataHolder.AdsTransactionInfoHolder
 import az.rabita.lifestep.ui.custom.BarDiagram
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import retrofit2.Response
 import timber.log.Timber
 import java.io.ByteArrayOutputStream
@@ -178,32 +182,47 @@ fun <T> checkNetworkRequestResponse(response: Response<ServerResponsePOJO<T>>): 
     } else NetworkState.UnhandledHttpError(response.message() + response.code())
 }
 
-fun extractDiagramData(data: List<*>): BarDiagram.DiagramDataModel {
-    var maxValue = 0L
-    val columns = mutableListOf<String>()
-    val values = mutableListOf<Long>()
-
-    for (i in data) {
-        when (i) {
-            is MonthlyContentPOJO -> {
-                maxValue = maxValue.coerceAtLeast(i.count)
-                columns.add(i.monthName)
-                values.add(i.count)
+fun <T> checkNetworkRequestResponseRefactored(response: Response<ServerResponsePOJO<T>>): NetworkResult {
+    return if (response.isSuccessful && response.code() == 200) {
+        response.body()?.let { body ->
+            when (val code = body.status.code) {
+                200, 201 -> NetworkResult.Success(body.content)
+                else -> NetworkResult.Failure(
+                    if (code == 300) NetworkResultFailureType.EXPIRED_TOKEN else NetworkResultFailureType.ERROR,
+                    body.status.text
+                )
             }
-            is DailyContentPOJO -> {
-                maxValue = maxValue.coerceAtLeast(i.count)
-                columns.add(i.shortName)
-                values.add(i.count)
+        } ?: NetworkResult.Failure(NetworkResultFailureType.ERROR, "")
+    } else NetworkResult.Failure(NetworkResultFailureType.ERROR, response.message())
+}
+
+suspend fun extractDiagramData(data: List<*>): BarDiagram.DiagramDataModel =
+    withContext(Dispatchers.Default) {
+        var maxValue = 0L
+        val columns = mutableListOf<String>()
+        val values = mutableListOf<Long>()
+
+        for (i in data) {
+            when (i) {
+                is MonthlyContentPOJO -> {
+                    maxValue = maxValue.coerceAtLeast(i.count)
+                    columns.add(i.monthName)
+                    values.add(i.count)
+                }
+                is DailyContentPOJO -> {
+                    maxValue = maxValue.coerceAtLeast(i.count)
+                    columns.add(i.shortName)
+                    values.add(i.count)
+                }
             }
         }
-    }
 
-    return BarDiagram.DiagramDataModel(
-        maxValue = if (maxValue == 0L) 10 else maxValue,
-        columnTexts = columns,
-        values = values
-    )
-}
+        return@withContext BarDiagram.DiagramDataModel(
+            maxValue = if (maxValue == 0L) 10 else maxValue,
+            columnTexts = columns,
+            values = values
+        )
+    }
 
 fun Context.getBitmapFromUri(uri: Uri): Bitmap {
     return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {

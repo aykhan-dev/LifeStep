@@ -8,6 +8,8 @@ import androidx.lifecycle.viewModelScope
 import az.rabita.lifestep.R
 import az.rabita.lifestep.local.getDatabase
 import az.rabita.lifestep.manager.PreferenceManager
+import az.rabita.lifestep.network.NetworkResult
+import az.rabita.lifestep.network.NetworkResultFailureType
 import az.rabita.lifestep.network.NetworkState
 import az.rabita.lifestep.pojo.apiPOJO.content.TokenContentPOJO
 import az.rabita.lifestep.pojo.apiPOJO.model.CheckEmailModelPOJO
@@ -15,7 +17,9 @@ import az.rabita.lifestep.pojo.apiPOJO.model.RegisterModelPOJO
 import az.rabita.lifestep.repository.UsersRepository
 import az.rabita.lifestep.utils.*
 import com.onesignal.OneSignal
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 @Suppress("UNCHECKED_CAST")
 class RegistrationViewModel(application: Application) : AndroidViewModel(application) {
@@ -26,16 +30,16 @@ class RegistrationViewModel(application: Application) : AndroidViewModel(applica
     private val usersRepository = UsersRepository.getInstance(getDatabase(context))
 
     private var _eventNavigateToNextRegisterFragment = MutableLiveData<Boolean>()
-    val eventNavigateToNextRegisterFragment: LiveData<Boolean> get() = _eventNavigateToNextRegisterFragment
+    val eventNavigateToNextRegisterFragment: LiveData<Boolean> = _eventNavigateToNextRegisterFragment
 
     private var _eventNavigateToMainActivity = MutableLiveData<Boolean>()
-    val eventNavigateToMainActivity: LiveData<Boolean> get() = _eventNavigateToMainActivity
+    val eventNavigateToMainActivity: LiveData<Boolean> = _eventNavigateToMainActivity
 
     private val _errorMessage = MutableLiveData<String>()
-    val errorMessage: LiveData<String> get() = _errorMessage
+    val errorMessage: LiveData<String> = _errorMessage
 
-    private val _expireToken = MutableLiveData<Boolean>()
-    val expireToken: LiveData<Boolean> get() = _expireToken
+    private val _eventExpiredToken = MutableLiveData<Boolean>()
+    val eventExpiredToken: LiveData<Boolean> = _eventExpiredToken
 
     val emailInput = MutableLiveData<String>()
     val passwordInput = MutableLiveData<String>()
@@ -50,26 +54,29 @@ class RegistrationViewModel(application: Application) : AndroidViewModel(applica
     val uiState = MutableLiveData<UiState>()
 
     fun firstRegistrationPartChecking() {
-        viewModelScope.launch {
 
-            if (areValidFirstRegistrationFields()) {
+        if (areValidFirstRegistrationFields()) {
+
+            val model = CheckEmailModelPOJO(
+                email = emailInput.value ?: "",
+                password = passwordInput.value ?: "",
+                passwordConfirm = passwordConfirmInput.value ?: ""
+            )
+
+            viewModelScope.launch {
 
                 uiState.postValue(UiState.Loading)
-
-                val model = CheckEmailModelPOJO(
-                    email = emailInput.value ?: "",
-                    password = passwordInput.value ?: "",
-                    passwordConfirm = passwordConfirmInput.value ?: ""
-                )
 
                 val lang = sharedPreferences.getIntegerElement(LANG_KEY, DEFAULT_LANG)
 
                 when (val response = usersRepository.checkEmail(lang, model)) {
-                    is NetworkState.Success<*> -> _eventNavigateToNextRegisterFragment.onOff()
-                    is NetworkState.ExpiredToken -> startExpireTokenProcess()
-                    is NetworkState.HandledHttpError -> showMessageDialog(response.error)
-                    is NetworkState.UnhandledHttpError -> showMessageDialog(response.error)
-                    is NetworkState.NetworkException -> handleNetworkException(response.exception)
+                    is NetworkState.Success<*> -> withContext(Dispatchers.Main) {
+                        _eventNavigateToNextRegisterFragment.onOff()
+                    }
+                    is NetworkResult.Failure -> when (response.type) {
+                        NetworkResultFailureType.EXPIRED_TOKEN -> startExpireTokenProcess()
+                        else -> handleNetworkException(response.message)
+                    }
                 }
 
                 uiState.postValue(UiState.LoadingFinished)
@@ -79,26 +86,28 @@ class RegistrationViewModel(application: Application) : AndroidViewModel(applica
     }
 
     fun secondRegistrationPartChecking() {
-        viewModelScope.launch {
 
-            val playerId = OneSignal.getPermissionSubscriptionState().subscriptionStatus.userId
+        val playerId = OneSignal.getPermissionSubscriptionState().subscriptionStatus.userId
 
-            if (!playerId.isNullOrEmpty()) {
-                if (areValidSecondRegistrationFields()) {
+        if (!playerId.isNullOrEmpty()) {
+
+            if (areValidSecondRegistrationFields()) {
+
+                val model = RegisterModelPOJO(
+                    gender = genderInput.value ?: 0,
+                    email = emailInput.value ?: "",
+                    playerId = playerId,
+                    name = nameInput.value ?: "",
+                    surname = surnameInput.value ?: "",
+                    invitationCode = invitationCodeInput.value ?: "",
+                    phone = phoneInput.value ?: "",
+                    password = passwordInput.value ?: "",
+                    repeatPassword = passwordConfirmInput.value ?: ""
+                )
+
+                viewModelScope.launch(Dispatchers.IO) {
 
                     uiState.postValue(UiState.Loading)
-
-                    val model = RegisterModelPOJO(
-                        gender = genderInput.value ?: 0,
-                        email = emailInput.value ?: "",
-                        playerId = playerId,
-                        name = nameInput.value ?: "",
-                        surname = surnameInput.value ?: "",
-                        invitationCode = invitationCodeInput.value ?: "",
-                        phone = phoneInput.value ?: "",
-                        password = passwordInput.value ?: "",
-                        repeatPassword = passwordConfirmInput.value ?: ""
-                    )
 
                     val lang = sharedPreferences.getIntegerElement(LANG_KEY, DEFAULT_LANG)
 
@@ -106,38 +115,38 @@ class RegistrationViewModel(application: Application) : AndroidViewModel(applica
                         is NetworkState.Success<*> -> {
                             val data = response.data as List<TokenContentPOJO>
                             sharedPreferences.setStringElement(TOKEN_KEY, data[0].token)
-                            _eventNavigateToMainActivity.onOff()
+                            withContext(Dispatchers.Main) {
+                                _eventNavigateToMainActivity.onOff()
+                            }
                         }
-                        is NetworkState.ExpiredToken -> startExpireTokenProcess()
-                        is NetworkState.HandledHttpError -> showMessageDialog(response.error)
-                        is NetworkState.UnhandledHttpError -> showMessageDialog(response.error)
-                        is NetworkState.NetworkException -> handleNetworkException(response.exception)
+                        is NetworkResult.Failure -> when (response.type) {
+                            NetworkResultFailureType.EXPIRED_TOKEN -> startExpireTokenProcess()
+                            else -> handleNetworkException(response.message)
+                        }
                     }
 
                     uiState.postValue(UiState.LoadingFinished)
 
                 }
-            } else {
-                showMessageDialog(getString(R.string.device_id_error_message))
             }
-        }
+        } else showMessageDialogSync(getString(R.string.device_id_error_message))
     }
 
     private fun areValidFirstRegistrationFields(): Boolean = when {
         (!isEmailValid(emailInput.value ?: "")) -> {
-            showMessageDialog(getString(R.string.invalid_email))
+            showMessageDialogSync(getString(R.string.invalid_email))
             false
         }
         (!isPasswordValid(passwordInput.value ?: "")) -> {
-            showMessageDialog(getString(R.string.invalid_password))
+            showMessageDialogSync(getString(R.string.invalid_password))
             false
         }
         (!isPasswordValid(passwordConfirmInput.value ?: "")) -> {
-            showMessageDialog(getString(R.string.invalid_password_confirm))
+            showMessageDialogSync(getString(R.string.invalid_password_confirm))
             false
         }
         (passwordInput.value ?: "" != passwordConfirmInput.value ?: "") -> {
-            showMessageDialog(getString(R.string.not_same_passwords))
+            showMessageDialogSync(getString(R.string.not_same_passwords))
             false
         }
         else -> true
@@ -145,43 +154,46 @@ class RegistrationViewModel(application: Application) : AndroidViewModel(applica
 
     private fun areValidSecondRegistrationFields(): Boolean = when {
         (nameInput.value ?: "").isEmpty() -> {
-            showMessageDialog(getString(R.string.invalid_name))
+            showMessageDialogSync(getString(R.string.invalid_name))
             false
         }
         (surnameInput.value ?: "").isEmpty() -> {
-            showMessageDialog(getString(R.string.invalid_surname))
+            showMessageDialogSync(getString(R.string.invalid_surname))
             false
         }
         (genderInput.value == null) -> {
-            showMessageDialog(getString(R.string.invalid_gender))
+            showMessageDialogSync(getString(R.string.invalid_gender))
             false
         }
         (phoneInput.value ?: "").isEmpty() -> {
-            showMessageDialog(getString(R.string.invalid_phone))
+            showMessageDialogSync(getString(R.string.invalid_phone))
             false
         }
         else -> true
     }
 
-    private fun handleNetworkException(exception: String?) {
-        viewModelScope.launch {
-            if (context.isInternetConnectionAvailable()) showMessageDialog(exception)
-            else showMessageDialog(context.getString(R.string.no_internet_connection))
-        }
+    private suspend fun handleNetworkException(exception: String?) {
+        if (context.isInternetConnectionAvailable()) showMessageDialog(exception)
+        else showMessageDialog(context.getString(R.string.no_internet_connection))
     }
 
-    private fun showMessageDialog(message: String?) {
+    private fun showMessageDialogSync(message: String?) {
         _errorMessage.value = message
         _errorMessage.value = null
     }
 
-    private fun startExpireTokenProcess() {
+    private suspend fun showMessageDialog(message: String?): Unit = withContext(Dispatchers.Main) {
+        _errorMessage.value = message
+        _errorMessage.value = null
+    }
+
+    private suspend fun startExpireTokenProcess(): Unit = withContext(Dispatchers.Main) {
         sharedPreferences.setStringElement(TOKEN_KEY, "")
-        if (_expireToken.value == false) _expireToken.value = true
+        if (_eventExpiredToken.value == false) _eventExpiredToken.value = true
     }
 
     fun endExpireTokenProcess() {
-        _expireToken.value = false
+        _eventExpiredToken.value = false
     }
 
     private fun getString(resId: Int): String = context.getString(resId)

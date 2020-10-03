@@ -1,6 +1,8 @@
 package az.rabita.lifestep.viewModel.fragment.sendStep
 
 import android.app.Application
+import kotlinx.coroutines.Dispatchers
+
 import android.text.format.DateFormat
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
@@ -15,6 +17,7 @@ import az.rabita.lifestep.pojo.dataHolder.UserProfileInfoHolder
 import az.rabita.lifestep.repository.TransactionsRepository
 import az.rabita.lifestep.utils.*
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.util.*
 
 class SendStepViewModel(app: Application) : AndroidViewModel(app) {
@@ -45,7 +48,7 @@ class SendStepViewModel(app: Application) : AndroidViewModel(app) {
     }
 
     fun sendStep(userId: String) {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
 
             val token = sharedPreferences.getStringElement(TOKEN_KEY, "")
             val lang = sharedPreferences.getIntegerElement(LANG_KEY, DEFAULT_LANG)
@@ -70,19 +73,17 @@ class SendStepViewModel(app: Application) : AndroidViewModel(app) {
         }
     }
 
-    private fun handleNetworkException(exception: String?) {
-        viewModelScope.launch {
+    private suspend fun handleNetworkException(exception: String?) {
             if (context.isInternetConnectionAvailable()) showMessageDialog(exception)
             else showMessageDialog(context.getString(R.string.no_internet_connection))
         }
-    }
 
-    private fun showMessageDialog(message: String?) {
+    private suspend fun showMessageDialog(message: String?): Unit = withContext(Dispatchers.Main) {
         _errorMessage.value = message
         _errorMessage.value = null
     }
 
-    private fun startExpireTokenProcess() {
+    private suspend fun startExpireTokenProcess(): Unit = withContext(Dispatchers.Main) {
         sharedPreferences.setStringElement(TOKEN_KEY, "")
         if (_eventExpiredToken.value == false) _eventExpiredToken.value = true
     }

@@ -11,12 +11,6 @@
         android:label="SettingsFragment"
         tools:layout="@layout/fragment_settings">
         <action
-            android:id="@+id/action_settingsFragment_to_friendsFragment"
-            app:destination="@id/friendsFragment" />
-        <action
-            android:id="@+id/action_settingsFragment_to_inviteFriendFragment"
-            app:destination="@id/inviteFriendFragment" />
-        <action
             android:id="@+id/action_settingsFragment_to_historyFragment"
             app:destination="@id/historyFragment" />
         <action
@@ -32,18 +26,6 @@
             android:id="@+id/action_settingsFragment_to_aboutUsFragment"
             app:destination="@id/aboutUsFragment" />
     </fragment>
-
-    <fragment
-        android:id="@+id/friendsFragment"
-        android:name="az.rabita.lifestep.ui.fragment.friends.FriendsFragment"
-        android:label="FriendsFragment"
-        tools:layout="@layout/fragment_friends" />
-
-    <fragment
-        android:id="@+id/inviteFriendFragment"
-        android:name="az.rabita.lifestep.ui.fragment.inviteFriend.InviteFriendFragment"
-        android:label="InviteFriendFragment"
-        tools:layout="@layout/fragment_invite_friend" />
 
     <fragment
         android:id="@+id/historyFragment"

@@ -8,17 +8,14 @@ import az.rabita.lifestep.manager.PreferenceManager
 import az.rabita.lifestep.network.NetworkState
 import az.rabita.lifestep.repository.ReportRepository
 import az.rabita.lifestep.utils.*
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers.IO
-import kotlinx.coroutines.cancel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class SettingsViewModel(application: Application) : AndroidViewModel(application) {
 
     private val context = application.applicationContext
     private val sharedPreferences = PreferenceManager.getInstance(context)
-
-    private val scope = CoroutineScope(IO)
 
     private val reportRepository = ReportRepository.getInstance(getDatabase(context))
 
@@ -34,7 +31,7 @@ class SettingsViewModel(application: Application) : AndroidViewModel(application
     val errorMessage: LiveData<String?> get() = _errorMessage
 
     fun fetchFriendshipStats() {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
 
             val token = sharedPreferences.getStringElement(TOKEN_KEY, "")
             val lang = sharedPreferences.getIntegerElement(LANG_KEY, DEFAULT_LANG)
@@ -50,7 +47,7 @@ class SettingsViewModel(application: Application) : AndroidViewModel(application
     }
 
     fun logOut() {
-        scope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             with(getDatabase(context)) {
                 usersDao.deletePersonalInfoSync()
                 with(reportDao) {
@@ -65,19 +62,17 @@ class SettingsViewModel(application: Application) : AndroidViewModel(application
         }
     }
 
-    private fun handleNetworkException(exception: String?) {
-        viewModelScope.launch {
+    private suspend fun handleNetworkException(exception: String?) {
             if (context.isInternetConnectionAvailable()) showMessageDialog(exception)
             else showMessageDialog(context.getString(R.string.no_internet_connection))
         }
-    }
 
-    private fun showMessageDialog(message: String?) {
+    private suspend fun showMessageDialog(message: String?): Unit = withContext(Dispatchers.Main) {
         _errorMessage.value = message
         _errorMessage.value = null
     }
 
-    private fun startExpireTokenProcess() {
+    private suspend fun startExpireTokenProcess(): Unit = withContext(Dispatchers.Main) {
         sharedPreferences.setStringElement(TOKEN_KEY, "")
         if (_eventExpiredToken.value == false) _eventExpiredToken.value = true
     }
@@ -88,11 +83,6 @@ class SettingsViewModel(application: Application) : AndroidViewModel(application
 
     fun endLogOut() {
         _eventLogOut.value = false
-    }
-
-    override fun onCleared() {
-        super.onCleared()
-        scope.cancel()
     }
 
 }

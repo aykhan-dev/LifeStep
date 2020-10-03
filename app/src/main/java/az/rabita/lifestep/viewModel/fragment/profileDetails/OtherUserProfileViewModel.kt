@@ -14,7 +14,9 @@ import az.rabita.lifestep.repository.UsersRepository
 import az.rabita.lifestep.ui.custom.BarDiagram
 import az.rabita.lifestep.ui.fragment.otherUserProfile.FriendshipStatus
 import az.rabita.lifestep.utils.*
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class OtherUserProfileViewModel(app: Application) : AndroidViewModel(app) {
 
@@ -22,13 +24,7 @@ class OtherUserProfileViewModel(app: Application) : AndroidViewModel(app) {
     private val sharedPreferences = PreferenceManager.getInstance(context)
 
     private val usersRepository = UsersRepository.getInstance(getDatabase(context))
-    private val friendshipRepository = FriendshipRepository.getInstance(
-        PaginationListeners(
-            {},
-            {},
-            { handleNetworkException(it) }
-        )
-    )
+    private val friendshipRepository = FriendshipRepository
 
     private val _eventExpiredToken = MutableLiveData<Boolean>(false)
     val eventExpiredToken: LiveData<Boolean> get() = _eventExpiredToken
@@ -52,7 +48,7 @@ class OtherUserProfileViewModel(app: Application) : AndroidViewModel(app) {
     val friendshipStatus: LiveData<FriendshipStatus> = MutableLiveData()
 
     fun fetchAllInOneProfileInfo(userId: String) {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
 
             val token = sharedPreferences.getStringElement(TOKEN_KEY, "")
             val lang = sharedPreferences.getIntegerElement(LANG_KEY, DEFAULT_LANG)
@@ -84,12 +80,12 @@ class OtherUserProfileViewModel(app: Application) : AndroidViewModel(app) {
     }
 
     fun updateOwnProfileData() {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
 
             val token = sharedPreferences.getStringElement(TOKEN_KEY, "")
             val lang = sharedPreferences.getIntegerElement(LANG_KEY, DEFAULT_LANG)
 
-            when(val response = usersRepository.getPersonalInfo(token, lang)) {
+            when (val response = usersRepository.getPersonalInfo(token, lang)) {
                 is NetworkState.ExpiredToken -> startExpireTokenProcess()
                 is NetworkState.HandledHttpError -> showMessageDialog(response.error)
                 is NetworkState.UnhandledHttpError -> showMessageDialog(response.error)
@@ -100,7 +96,7 @@ class OtherUserProfileViewModel(app: Application) : AndroidViewModel(app) {
     }
 
     fun sendFriendRequest() {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
 
             val token = sharedPreferences.getStringElement(TOKEN_KEY, "")
             val lang = sharedPreferences.getIntegerElement(LANG_KEY, DEFAULT_LANG)
@@ -127,19 +123,17 @@ class OtherUserProfileViewModel(app: Application) : AndroidViewModel(app) {
         _monthlyStats.notifyObservers()
     }
 
-    private fun handleNetworkException(exception: String?) {
-        viewModelScope.launch {
-            if (context.isInternetConnectionAvailable()) showMessageDialog(exception)
-            else showMessageDialog(context.getString(R.string.no_internet_connection))
-        }
+    private suspend fun handleNetworkException(exception: String?) {
+        if (context.isInternetConnectionAvailable()) showMessageDialog(exception)
+        else showMessageDialog(context.getString(R.string.no_internet_connection))
     }
 
-    private fun showMessageDialog(message: String?) {
+    private suspend fun showMessageDialog(message: String?): Unit = withContext(Dispatchers.Main) {
         _errorMessage.value = message
         _errorMessage.value = null
     }
 
-    private fun startExpireTokenProcess() {
+    private suspend fun startExpireTokenProcess(): Unit = withContext(Dispatchers.Main) {
         sharedPreferences.setStringElement(TOKEN_KEY, "")
         if (_eventExpiredToken.value == false) _eventExpiredToken.value = true
     }

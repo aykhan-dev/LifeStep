@@ -1,6 +1,8 @@
 package az.rabita.lifestep
 
 import android.app.Application
+import kotlinx.coroutines.Dispatchers
+
 import android.content.Context
 import android.content.Intent
 import az.rabita.lifestep.manager.LocaleManager

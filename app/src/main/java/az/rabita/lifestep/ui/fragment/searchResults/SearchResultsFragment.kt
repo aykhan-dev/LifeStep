@@ -6,13 +6,11 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import az.rabita.lifestep.NavGraphMainDirections
 import az.rabita.lifestep.databinding.FragmentSearchResultBinding
 import az.rabita.lifestep.ui.dialog.loading.LoadingDialog
-import az.rabita.lifestep.ui.dialog.message.MessageDialog
 import az.rabita.lifestep.ui.dialog.message.SingleMessageDialog
 import az.rabita.lifestep.utils.ERROR_TAG
 import az.rabita.lifestep.utils.LOADING_TAG
@@ -31,9 +29,10 @@ class SearchResultsFragment : Fragment() {
     private val navController by lazy { findNavController() }
 
     private val adapter = LargeSearchResultsRecyclerAdapter { userId ->
-        navController.navigate(
-            NavGraphMainDirections.actionToOtherProfileFragment(userId)
-        )
+        viewModel.cachedOwnProfileInfo.value?.let { info ->
+            if (info.id == userId) navController.navigate(NavGraphMainDirections.actionToOwnProfileFragment())
+            else navController.navigate(NavGraphMainDirections.actionToOtherProfileFragment(userId))
+        }
     }
 
     private val loadingDialog = LoadingDialog
@@ -75,6 +74,10 @@ class SearchResultsFragment : Fragment() {
     }
 
     private fun observeData(): Unit = with(viewModel) {
+
+        //DON'T REMOVE THIS LINE, ELSE IT WILL BE NULL
+        cachedOwnProfileInfo.observe(viewLifecycleOwner, {})
+
         listOfSearchResult.observe(viewLifecycleOwner, {
             it?.let {
                 if (it.isNotEmpty()) adapter.submitList(it)

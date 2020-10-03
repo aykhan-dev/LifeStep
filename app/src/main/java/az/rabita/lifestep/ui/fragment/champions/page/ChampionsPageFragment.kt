@@ -6,7 +6,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import az.rabita.lifestep.NavGraphMainDirections
 import az.rabita.lifestep.databinding.FragmentChampionsPageBinding
@@ -24,10 +23,10 @@ class ChampionsPageFragment(private val pageType: ChampionsPageType) : Fragment(
     private val navController by lazy { findNavController() }
 
     private val listAdapter = ChampionsListAdapter { user, _ ->
-        navController.navigate(
-            if (user.id == viewModel.cachedOwnProfileInfo.value?.id) NavGraphMainDirections.actionToOwnProfileFragment()
-            else NavGraphMainDirections.actionToOtherProfileFragment(user.id)
-        )
+        viewModel.cachedOwnProfileInfo.value?.let { info ->
+            if (info.id == user.id) navController.navigate(NavGraphMainDirections.actionToOwnProfileFragment())
+            else navController.navigate(NavGraphMainDirections.actionToOtherProfileFragment(user.id))
+        }
     }
 
     override fun onCreateView(
@@ -67,6 +66,10 @@ class ChampionsPageFragment(private val pageType: ChampionsPageType) : Fragment(
     }
 
     private fun observeData(): Unit = with(viewModel) {
+
+        //DON'T REMOVE THIS LINE, ELSE IT WILL BE NULL
+        cachedOwnProfileInfo.observe(viewLifecycleOwner, {})
+
         listOfChampions.observe(viewLifecycleOwner, { it?.let(listAdapter::submitList) })
     }
 

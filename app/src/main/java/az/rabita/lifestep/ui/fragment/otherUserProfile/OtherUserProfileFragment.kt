@@ -11,10 +11,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import az.rabita.lifestep.R
@@ -106,7 +104,7 @@ class OtherUserProfileFragment : Fragment() {
 
     private fun observeData(): Unit = with(viewModel) {
 
-        //DON'T REMOVE THIS LINE
+        //DON'T REMOVE THIS LINE ELSE IT WILL BE NULL
         cachedOwnProfileInfo.observe(viewLifecycleOwner, { })
 
         friendshipStatus.observe(viewLifecycleOwner, {
@@ -137,11 +135,6 @@ class OtherUserProfileFragment : Fragment() {
 
                 binding.textViewFullName.text =
                     getString(R.string.two_lined_format, it.surname, it.name)
-
-                if (it.id == cachedOwnProfileInfo.value?.id ?: "") {
-                    binding.buttonSendFriendRequest.isVisible = false
-                    binding.buttonSendSteps.isVisible = false
-                }
 
                 val spannableFriends =
                     SpannableString("${it.friendsCount}\n${getString(R.string.friends)}")
