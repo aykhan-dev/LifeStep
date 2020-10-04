@@ -6,10 +6,8 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import az.rabita.lifestep.databinding.FragmentDonationBinding
-import az.rabita.lifestep.ui.dialog.message.MessageDialog
 import az.rabita.lifestep.ui.dialog.message.SingleMessageDialog
 import az.rabita.lifestep.utils.ERROR_TAG
 import az.rabita.lifestep.utils.logout
@@ -50,7 +48,7 @@ class DonationFragment : Fragment() {
 
     override fun onStart() {
         super.onStart()
-        viewModel.fetchListOfDonations(1)
+        viewModel.fetchListOfAssocations(1)
     }
 
     private fun bindUI(): Unit = with(binding) {

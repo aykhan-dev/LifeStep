@@ -5,9 +5,12 @@ import androidx.lifecycle.*
 import az.rabita.lifestep.R
 import az.rabita.lifestep.local.getDatabase
 import az.rabita.lifestep.manager.PreferenceManager
-import az.rabita.lifestep.network.NetworkState
+import az.rabita.lifestep.network.NetworkResult
+import az.rabita.lifestep.network.NetworkResultFailureType
 import az.rabita.lifestep.pojo.apiPOJO.content.AssocationDetailsContentPOJO
 import az.rabita.lifestep.pojo.apiPOJO.content.RankerContentPOJO
+import az.rabita.lifestep.pojo.apiPOJO.model.DonateStepModelPOJO
+import az.rabita.lifestep.pojo.apiPOJO.model.DonorsModelPOJO
 import az.rabita.lifestep.repository.AssocationsRepository
 import az.rabita.lifestep.repository.TransactionsRepository
 import az.rabita.lifestep.repository.UsersRepository
@@ -26,7 +29,7 @@ class DetailedInfoViewModel(application: Application) : AndroidViewModel(applica
     private val transactionsRepository = TransactionsRepository
     private val assocationsRepository = AssocationsRepository.getInstance(getDatabase(context))
 
-    private val _eventExpiredToken = MutableLiveData<Boolean>().apply { value = false }
+    private val _eventExpiredToken = MutableLiveData(false)
     val eventExpiredToken: LiveData<Boolean> get() = _eventExpiredToken
 
     private val _eventShowDonateStepsDialog = MutableLiveData<Boolean>()
@@ -56,68 +59,77 @@ class DetailedInfoViewModel(application: Application) : AndroidViewModel(applica
     val uiState = MutableLiveData<UiState>()
 
     fun fetchDetailedInfo(assocationId: String) {
-        viewModelScope.launch(Dispatchers.IO) {
 
-            uiState.postValue(UiState.Loading)
+        viewModelScope.launch {
+
+            uiState.value = UiState.Loading
 
             val token = sharedPreferences.getStringElement(TOKEN_KEY, "")
             val lang = sharedPreferences.getIntegerElement(LANG_KEY, DEFAULT_LANG)
 
             when (val response =
                 assocationsRepository.getAssocationDetails(token, lang, assocationId)) {
-                is NetworkState.Success<*> -> {
+                is NetworkResult.Success<*> -> {
                     val data = response.data as List<AssocationDetailsContentPOJO>
-                    _assocationDetails.postValue(data[0])
+                    _assocationDetails.value = data[0]
                     fetchTopDonorsList(data[0].id)
                 }
-                is NetworkState.ExpiredToken -> startExpireTokenProcess()
-                is NetworkState.HandledHttpError -> showMessageDialog(response.error)
-                is NetworkState.UnhandledHttpError -> showMessageDialog(response.error)
-                is NetworkState.NetworkException -> handleNetworkException(response.exception)
+                is NetworkResult.Failure -> when (response.type) {
+                    NetworkResultFailureType.EXPIRED_TOKEN -> startExpireTokenProcess()
+                    else -> handleNetworkException(response.message)
+                }
             }
 
-            uiState.postValue(UiState.LoadingFinished)
+            uiState.value = UiState.LoadingFinished
+
         }
+
     }
 
     private fun fetchTopDonorsList(assocationId: String) {
-        viewModelScope.launch(Dispatchers.IO) {
+
+        viewModelScope.launch {
 
             val token = sharedPreferences.getStringElement(TOKEN_KEY, "")
             val lang = sharedPreferences.getIntegerElement(LANG_KEY, DEFAULT_LANG)
 
-            when (val response = usersRepository.getDonorsOnlyForPost(token, lang, assocationId)) {
-                is NetworkState.Success<*> -> {
+            val model = DonorsModelPOJO(userId = assocationId, pageNumber = 1)
+
+            when (val response = usersRepository.getDonorsOnlyForPost(token, lang, model)) {
+                is NetworkResult.Success<*> -> {
                     val data = response.data as List<RankerContentPOJO>
                     _topDonorsList.postValue(data)
                 }
-                is NetworkState.ExpiredToken -> startExpireTokenProcess()
-                is NetworkState.HandledHttpError -> showMessageDialog(response.error)
-                is NetworkState.UnhandledHttpError -> showMessageDialog(response.error)
-                is NetworkState.NetworkException -> handleNetworkException(response.exception)
+                is NetworkResult.Failure -> when (response.type) {
+                    NetworkResultFailureType.EXPIRED_TOKEN -> startExpireTokenProcess()
+                    else -> handleNetworkException(response.message)
+                }
             }
 
         }
+
     }
 
     fun fetchPersonalInfo() {
-        viewModelScope.launch(Dispatchers.IO) {
+
+        viewModelScope.launch {
 
             val token = sharedPreferences.getStringElement(TOKEN_KEY, "")
             val lang = sharedPreferences.getIntegerElement(LANG_KEY, DEFAULT_LANG)
 
             when (val response = usersRepository.getPersonalInfo(token, lang)) {
-                is NetworkState.ExpiredToken -> startExpireTokenProcess()
-                is NetworkState.HandledHttpError -> showMessageDialog(response.error)
-                is NetworkState.UnhandledHttpError -> showMessageDialog(response.error)
-                is NetworkState.NetworkException -> handleNetworkException(response.exception)
+                is NetworkResult.Failure -> when (response.type) {
+                    NetworkResultFailureType.EXPIRED_TOKEN -> startExpireTokenProcess()
+                    else -> handleNetworkException(response.message)
+                }
             }
 
         }
     }
 
     fun donateStep(postId: String?, isPrivate: Boolean) {
-        viewModelScope.launch(Dispatchers.IO) {
+
+        viewModelScope.launch {
 
             postId?.let {
 
@@ -126,20 +138,21 @@ class DetailedInfoViewModel(application: Application) : AndroidViewModel(applica
                 val token = sharedPreferences.getStringElement(TOKEN_KEY, "")
                 val lang = sharedPreferences.getIntegerElement(LANG_KEY, DEFAULT_LANG)
 
-                val response = transactionsRepository.donateStep(
-                    token = token,
-                    lang = lang,
-                    usersId = it,
+                val formatted = getDateAndTime()
+
+                val model = DonateStepModelPOJO(
+                    id = it,
                     isPrivate = isPrivate,
-                    count = (donatedStepInput.value ?: "0").toLong()
+                    count = (donatedStepInput.value ?: "0").toLong(),
+                    createdDate = formatted,
                 )
 
-                when (response) {
-                    is NetworkState.Success<*> -> _eventShowCongratsDialog.onOff()
-                    is NetworkState.ExpiredToken -> startExpireTokenProcess()
-                    is NetworkState.HandledHttpError -> showMessageDialog(response.error)
-                    is NetworkState.UnhandledHttpError -> showMessageDialog(response.error)
-                    is NetworkState.NetworkException -> handleNetworkException(response.exception)
+                when (val response = transactionsRepository.donateStep(token, lang, model)) {
+                    is NetworkResult.Success<*> -> _eventShowCongratsDialog.onOff()
+                    is NetworkResult.Failure -> when (response.type) {
+                        NetworkResultFailureType.EXPIRED_TOKEN -> startExpireTokenProcess()
+                        else -> handleNetworkException(response.message)
+                    }
                 }
 
                 uiState.value = UiState.LoadingFinished
@@ -147,12 +160,13 @@ class DetailedInfoViewModel(application: Application) : AndroidViewModel(applica
             } ?: showMessageDialog("Null argument")
 
         }
+
     }
 
     private suspend fun handleNetworkException(exception: String?) {
-            if (context.isInternetConnectionAvailable()) showMessageDialog(exception)
-            else showMessageDialog(context.getString(R.string.no_internet_connection))
-        }
+        if (context.isInternetConnectionAvailable()) showMessageDialog(exception)
+        else showMessageDialog(context.getString(R.string.no_internet_connection))
+    }
 
     private suspend fun showMessageDialog(message: String?): Unit = withContext(Dispatchers.Main) {
         _errorMessage.value = message

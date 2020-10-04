@@ -3,6 +3,8 @@ package az.rabita.lifestep.utils
 import com.google.android.gms.fitness.FitnessOptions
 import com.google.android.gms.fitness.data.DataType
 
+const val LOCAL_NOTIFICATION_CODE = 1000
+
 //TAGS
 const val ERROR_TAG = "error"
 const val LOADING_TAG = "loading"

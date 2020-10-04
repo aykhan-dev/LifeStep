@@ -5,7 +5,8 @@ import androidx.lifecycle.*
 import az.rabita.lifestep.R
 import az.rabita.lifestep.local.getDatabase
 import az.rabita.lifestep.manager.PreferenceManager
-import az.rabita.lifestep.network.NetworkState
+import az.rabita.lifestep.network.NetworkResult
+import az.rabita.lifestep.network.NetworkResultFailureType
 import az.rabita.lifestep.pojo.apiPOJO.content.PersonalInfoContentPOJO
 import az.rabita.lifestep.pojo.apiPOJO.model.FriendRequestModelPOJO
 import az.rabita.lifestep.pojo.dataHolder.AllInOneOtherUserInfoHolder
@@ -26,7 +27,7 @@ class OtherUserProfileViewModel(app: Application) : AndroidViewModel(app) {
     private val usersRepository = UsersRepository.getInstance(getDatabase(context))
     private val friendshipRepository = FriendshipRepository
 
-    private val _eventExpiredToken = MutableLiveData<Boolean>(false)
+    private val _eventExpiredToken = MutableLiveData(false)
     val eventExpiredToken: LiveData<Boolean> get() = _eventExpiredToken
 
     private var _errorMessage = MutableLiveData<String?>()
@@ -48,13 +49,14 @@ class OtherUserProfileViewModel(app: Application) : AndroidViewModel(app) {
     val friendshipStatus: LiveData<FriendshipStatus> = MutableLiveData()
 
     fun fetchAllInOneProfileInfo(userId: String) {
-        viewModelScope.launch(Dispatchers.IO) {
+
+        viewModelScope.launch {
 
             val token = sharedPreferences.getStringElement(TOKEN_KEY, "")
             val lang = sharedPreferences.getIntegerElement(LANG_KEY, DEFAULT_LANG)
 
             when (val response = usersRepository.getUserInfoAllInOneById(token, lang, userId)) {
-                is NetworkState.Success<*> -> run {
+                is NetworkResult.Success<*> -> run {
                     val data = response.data as AllInOneOtherUserInfoHolder
                     _profileInfo.postValue(data.info.also {
                         (friendshipStatus as MutableLiveData).postValue(
@@ -62,7 +64,6 @@ class OtherUserProfileViewModel(app: Application) : AndroidViewModel(app) {
                                 0 -> FriendshipStatus.NOT_FRIEND
                                 10 -> FriendshipStatus.PENDING
                                 20 -> FriendshipStatus.IS_FRIEND
-                                //30 -> FriendshipStatus.REJECTED
                                 else -> FriendshipStatus.NOT_FRIEND
                             }
                         )
@@ -70,47 +71,53 @@ class OtherUserProfileViewModel(app: Application) : AndroidViewModel(app) {
                     _dailyStats.postValue(extractDiagramData(data.dailyStats))
                     _monthlyStats.postValue(extractDiagramData(data.monthlyStats))
                 }
-                is NetworkState.ExpiredToken -> startExpireTokenProcess()
-                is NetworkState.UnhandledHttpError -> showMessageDialog(response.error)
-                is NetworkState.HandledHttpError -> showMessageDialog(response.error)
-                is NetworkState.NetworkException -> handleNetworkException(response.exception)
+                is NetworkResult.Failure -> when (response.type) {
+                    NetworkResultFailureType.EXPIRED_TOKEN -> startExpireTokenProcess()
+                    else -> handleNetworkException(response.message)
+                }
             }
 
         }
+
     }
 
     fun updateOwnProfileData() {
-        viewModelScope.launch(Dispatchers.IO) {
+
+        viewModelScope.launch {
 
             val token = sharedPreferences.getStringElement(TOKEN_KEY, "")
             val lang = sharedPreferences.getIntegerElement(LANG_KEY, DEFAULT_LANG)
 
             when (val response = usersRepository.getPersonalInfo(token, lang)) {
-                is NetworkState.ExpiredToken -> startExpireTokenProcess()
-                is NetworkState.HandledHttpError -> showMessageDialog(response.error)
-                is NetworkState.UnhandledHttpError -> showMessageDialog(response.error)
-                is NetworkState.NetworkException -> handleNetworkException(response.exception)
+                is NetworkResult.Failure -> when (response.type) {
+                    NetworkResultFailureType.EXPIRED_TOKEN -> startExpireTokenProcess()
+                    else -> handleNetworkException(response.message)
+                }
             }
 
         }
+
     }
 
     fun sendFriendRequest() {
-        viewModelScope.launch(Dispatchers.IO) {
+
+        viewModelScope.launch {
 
             val token = sharedPreferences.getStringElement(TOKEN_KEY, "")
             val lang = sharedPreferences.getIntegerElement(LANG_KEY, DEFAULT_LANG)
+
             val model = FriendRequestModelPOJO(friendId = profileInfo.value?.id ?: "")
 
             when (val response = friendshipRepository.sendFriendRequest(token, lang, model)) {
-                is NetworkState.Success<*> -> fetchAllInOneProfileInfo(profileInfo.value?.id ?: "")
-                is NetworkState.ExpiredToken -> startExpireTokenProcess()
-                is NetworkState.HandledHttpError -> showMessageDialog(response.error)
-                is NetworkState.UnhandledHttpError -> showMessageDialog(response.error)
-                is NetworkState.NetworkException -> handleNetworkException(response.exception)
+                is NetworkResult.Success<*> -> fetchAllInOneProfileInfo(profileInfo.value?.id ?: "")
+                is NetworkResult.Failure -> when (response.type) {
+                    NetworkResultFailureType.EXPIRED_TOKEN -> startExpireTokenProcess()
+                    else -> handleNetworkException(response.message)
+                }
             }
 
         }
+
     }
 
     fun onDailyTextClick() {

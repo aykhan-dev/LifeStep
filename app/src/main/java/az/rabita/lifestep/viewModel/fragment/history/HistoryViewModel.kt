@@ -23,7 +23,7 @@ class HistoryViewModel(application: Application) : AndroidViewModel(application)
     private val transactionsRepository = TransactionsRepository
     private val sharedPreferences = PreferenceManager.getInstance(context)
 
-    private val _eventExpiredToken = MutableLiveData<Boolean>().apply { value = false }
+    private val _eventExpiredToken = MutableLiveData(false)
     val eventExpiredToken: LiveData<Boolean> get() = _eventExpiredToken
 
     private var _errorMessage = MutableLiveData<String?>()

@@ -107,6 +107,23 @@ fun List<OwnProfileInfoContentPOJO>.asOwnProfileInfoEntityObject() = map {
     )
 }
 
+fun OwnProfileInfoContentPOJO.asOwnProfileInfoEntityObject() =
+    PersonalInfo(
+        saveId = 1,
+        id = this.id,
+        name = this.name,
+        phone = this.phone,
+        invitationCode = this.invitationCode,
+        fullName = this.fullName,
+        email = this.email,
+        url = this.url,
+        originalImageUrl = this.originalUrl,
+        surname = this.surname,
+        createdDate = this.createdDate,
+        balance = this.balance,
+        friendsCount = this.friendsCount
+    )
+
 fun List<DailyContentPOJO>.asDailyStatsEntityObject() = map {
     DailyStat(
         createdDate = it.createdDate,

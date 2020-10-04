@@ -9,7 +9,8 @@ import az.rabita.lifestep.R
 import az.rabita.lifestep.local.getDatabase
 import az.rabita.lifestep.manager.PreferenceManager
 import az.rabita.lifestep.network.ApiInitHelper
-import az.rabita.lifestep.network.NetworkState
+import az.rabita.lifestep.network.NetworkResult
+import az.rabita.lifestep.network.NetworkResultFailureType
 import az.rabita.lifestep.pagingSource.FriendRequestsPagingSource
 import az.rabita.lifestep.pagingSource.FriendsPagingSource
 import az.rabita.lifestep.pojo.apiPOJO.model.FriendshipActionModelPOJO
@@ -28,7 +29,7 @@ class FriendsViewModel(application: Application) : AndroidViewModel(application)
     private val reportRepository = ReportRepository.getInstance(getDatabase(context))
     private val friendshipRepository = FriendshipRepository
 
-    private val _eventExpiredToken = MutableLiveData<Boolean>().apply { value = false }
+    private val _eventExpiredToken = MutableLiveData(false)
     val eventExpiredToken: LiveData<Boolean> get() = _eventExpiredToken
 
     private var _errorMessage = MutableLiveData<String?>()
@@ -44,7 +45,7 @@ class FriendsViewModel(application: Application) : AndroidViewModel(application)
     val friendsListFlow = Pager(config = pagingConfig) {
         FriendsPagingSource(
             token = sharedPreferences.getStringElement(TOKEN_KEY, ""),
-            lang = sharedPreferences.getIntegerElement(LANG_KEY, 10),
+            lang = sharedPreferences.getIntegerElement(LANG_KEY, LANG_AZ),
             service = ApiInitHelper.friendshipService,
             onErrorListener = { handleNetworkExceptionSync(it) },
             onExpireTokenListener = { startExpireTokenProcessSync() }
@@ -54,7 +55,7 @@ class FriendsViewModel(application: Application) : AndroidViewModel(application)
     val friendsRequestListFlow = Pager(config = pagingConfig) {
         FriendRequestsPagingSource(
             token = sharedPreferences.getStringElement(TOKEN_KEY, ""),
-            lang = sharedPreferences.getIntegerElement(LANG_KEY, 10),
+            lang = sharedPreferences.getIntegerElement(LANG_KEY, LANG_AZ),
             service = ApiInitHelper.friendshipService,
             onErrorListener = { handleNetworkExceptionSync(it) },
             onExpireTokenListener = { startExpireTokenProcessSync() }
@@ -62,40 +63,47 @@ class FriendsViewModel(application: Application) : AndroidViewModel(application)
     }.flow.cachedIn(viewModelScope)
 
     fun processFriendshipRequest(userId: String, isAccepted: Boolean) {
-        viewModelScope.launch(Dispatchers.IO) {
 
-            uiState.postValue(UiState.Loading)
+        viewModelScope.launch {
+
+            uiState.value = UiState.Loading
 
             val token = sharedPreferences.getStringElement(TOKEN_KEY, "")
             val lang = sharedPreferences.getIntegerElement(LANG_KEY, DEFAULT_LANG)
+
             val model = FriendshipActionModelPOJO(userId)
 
             when (val response =
                 friendshipRepository.processFriendRequest(token, lang, model, isAccepted)) {
-                is NetworkState.Success<*> -> fetchFriendshipStats()
-                is NetworkState.ExpiredToken -> startExpireTokenProcess()
-                is NetworkState.HandledHttpError -> showMessageDialog(response.error)
-                is NetworkState.UnhandledHttpError -> showMessageDialog(response.error)
-                is NetworkState.NetworkException -> handleNetworkException(response.exception)
+                is NetworkResult.Success<*> -> fetchFriendshipStats()
+                is NetworkResult.Failure -> when (response.type) {
+                    NetworkResultFailureType.EXPIRED_TOKEN -> startExpireTokenProcess()
+                    else -> handleNetworkException(response.message)
+                }
             }
 
-            uiState.postValue(UiState.LoadingFinished)
+            uiState.value = UiState.LoadingFinished
 
         }
+
     }
 
     fun fetchFriendshipStats() {
-        viewModelScope.launch(Dispatchers.IO) {
+
+        viewModelScope.launch {
+
             val token = sharedPreferences.getStringElement(TOKEN_KEY, "")
             val lang = sharedPreferences.getIntegerElement(LANG_KEY, DEFAULT_LANG)
 
             when (val response = reportRepository.getFriendshipStats(token, lang)) {
-                is NetworkState.ExpiredToken -> startExpireTokenProcess()
-                is NetworkState.HandledHttpError -> showMessageDialog(response.error)
-                is NetworkState.UnhandledHttpError -> showMessageDialog(response.error)
-                is NetworkState.NetworkException -> handleNetworkException(response.exception)
+                is NetworkResult.Failure -> when (response.type) {
+                    NetworkResultFailureType.EXPIRED_TOKEN -> startExpireTokenProcess()
+                    else -> handleNetworkException(response.message)
+                }
             }
+
         }
+
     }
 
     private fun handleNetworkExceptionSync(exception: String?) {

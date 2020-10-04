@@ -1,12 +1,14 @@
+@file:Suppress("UNCHECKED_CAST")
+
 package az.rabita.lifestep.repository
 
 import az.rabita.lifestep.local.AppDatabase
 import az.rabita.lifestep.manager.SingletonHolder
 import az.rabita.lifestep.network.ApiInitHelper
-import az.rabita.lifestep.network.NetworkState
+import az.rabita.lifestep.network.NetworkResult
+import az.rabita.lifestep.pojo.apiPOJO.content.CategoriesContentPOJO
 import az.rabita.lifestep.utils.asCategoryEntityObject
-import az.rabita.lifestep.utils.checkNetworkRequestResponse
-import okio.IOException
+import az.rabita.lifestep.utils.networkRequest
 
 class CategoriesRepository private constructor(database: AppDatabase) {
 
@@ -17,16 +19,13 @@ class CategoriesRepository private constructor(database: AppDatabase) {
 
     val listOfCategories get() = categoriesDao.getCategoriesList()
 
-    suspend fun getCategories(token: String, lang: Int): NetworkState = try {
-        val response = categoriesService.getAllCategories(token, lang)
-        checkNetworkRequestResponse(response).also {
-            if (it is NetworkState.Success<*>) {
-                val data = response.body()!!.content ?: listOf()
-                categoriesDao.cacheCategories(data.asCategoryEntityObject())
-            }
+    suspend fun getCategories(token: String, lang: Int): NetworkResult = networkRequest {
+        categoriesService.getAllCategories(token, lang)
+    }.also {
+        if (it is NetworkResult.Success<*>) {
+            val data = it.data as List<CategoriesContentPOJO>
+            categoriesDao.cacheCategories(data.asCategoryEntityObject())
         }
-    } catch (e: IOException) {
-        NetworkState.NetworkException(e.message)
     }
 
 }

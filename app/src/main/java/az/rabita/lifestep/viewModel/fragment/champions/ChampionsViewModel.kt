@@ -7,7 +7,8 @@ import androidx.lifecycle.*
 import az.rabita.lifestep.R
 import az.rabita.lifestep.local.getDatabase
 import az.rabita.lifestep.manager.PreferenceManager
-import az.rabita.lifestep.network.NetworkState
+import az.rabita.lifestep.network.NetworkResult
+import az.rabita.lifestep.network.NetworkResultFailureType
 import az.rabita.lifestep.pojo.apiPOJO.content.RankerContentPOJO
 import az.rabita.lifestep.repository.ReportRepository
 import az.rabita.lifestep.repository.UsersRepository
@@ -28,7 +29,7 @@ class ChampionsViewModel(app: Application) : AndroidViewModel(app) {
 
     private val sharedPreferences = PreferenceManager.getInstance(context)
 
-    private val _eventExpiredToken = MutableLiveData<Boolean>().apply { value = false }
+    private val _eventExpiredToken = MutableLiveData(false)
     val eventExpiredToken: LiveData<Boolean> get() = _eventExpiredToken
 
     private var _errorMessage = MutableLiveData<String?>()
@@ -40,63 +41,74 @@ class ChampionsViewModel(app: Application) : AndroidViewModel(app) {
     val cachedOwnProfileInfo = usersRepository.personalInfo.asLiveData()
 
     fun fetchDailyChampions() {
-        viewModelScope.launch(Dispatchers.IO) {
+
+        viewModelScope.launch {
+
             val token = sharedPreferences.getStringElement(TOKEN_KEY, "")
             val lang = sharedPreferences.getIntegerElement(LANG_KEY, DEFAULT_LANG)
 
             when (val response = reportRepository.getChampionsOfDay(token, lang)) {
-                is NetworkState.Success<*> -> run {
+                is NetworkResult.Success<*> -> run {
                     val data = response.data as List<RankerContentPOJO>
                     _listOfChampions.postValue(data)
                 }
-                is NetworkState.ExpiredToken -> startExpireTokenProcess()
-                is NetworkState.HandledHttpError -> showMessageDialog(response.error)
-                is NetworkState.UnhandledHttpError -> showMessageDialog(response.error)
-                is NetworkState.NetworkException -> handleNetworkException(response.exception)
+                is NetworkResult.Failure -> when (response.type) {
+                    NetworkResultFailureType.EXPIRED_TOKEN -> startExpireTokenProcess()
+                    else -> handleNetworkException(response.message)
+                }
             }
+
         }
+
     }
 
     fun fetchWeeklyChampions() {
-        viewModelScope.launch(Dispatchers.IO) {
+
+        viewModelScope.launch {
+
             val token = sharedPreferences.getStringElement(TOKEN_KEY, "")
             val lang = sharedPreferences.getIntegerElement(LANG_KEY, DEFAULT_LANG)
 
             when (val response = reportRepository.getChampionsOfWeek(token, lang)) {
-                is NetworkState.Success<*> -> run {
+                is NetworkResult.Success<*> -> run {
                     val data = response.data as List<RankerContentPOJO>
                     _listOfChampions.postValue(data)
                 }
-                is NetworkState.ExpiredToken -> startExpireTokenProcess()
-                is NetworkState.HandledHttpError -> showMessageDialog(response.error)
-                is NetworkState.UnhandledHttpError -> showMessageDialog(response.error)
-                is NetworkState.NetworkException -> handleNetworkException(response.exception)
+                is NetworkResult.Failure -> when (response.type) {
+                    NetworkResultFailureType.EXPIRED_TOKEN -> startExpireTokenProcess()
+                    else -> handleNetworkException(response.message)
+                }
             }
         }
+
     }
 
     fun fetchMonthlyChampions() {
-        viewModelScope.launch(Dispatchers.IO) {
+
+        viewModelScope.launch {
+
             val token = sharedPreferences.getStringElement(TOKEN_KEY, "")
             val lang = sharedPreferences.getIntegerElement(LANG_KEY, DEFAULT_LANG)
 
             when (val response = reportRepository.getChampionsOfMonth(token, lang)) {
-                is NetworkState.Success<*> -> run {
+                is NetworkResult.Success<*> -> run {
                     val data = response.data as List<RankerContentPOJO>
                     _listOfChampions.postValue(data)
                 }
-                is NetworkState.ExpiredToken -> startExpireTokenProcess()
-                is NetworkState.HandledHttpError -> showMessageDialog(response.error)
-                is NetworkState.UnhandledHttpError -> showMessageDialog(response.error)
-                is NetworkState.NetworkException -> handleNetworkException(response.exception)
+                is NetworkResult.Failure -> when (response.type) {
+                    NetworkResultFailureType.EXPIRED_TOKEN -> startExpireTokenProcess()
+                    else -> handleNetworkException(response.message)
+                }
             }
+
         }
+
     }
 
     private suspend fun handleNetworkException(exception: String?) {
-            if (context.isInternetConnectionAvailable()) showMessageDialog(exception)
-            else showMessageDialog(context.getString(R.string.no_internet_connection))
-        }
+        if (context.isInternetConnectionAvailable()) showMessageDialog(exception)
+        else showMessageDialog(context.getString(R.string.no_internet_connection))
+    }
 
     private suspend fun showMessageDialog(message: String?): Unit = withContext(Dispatchers.Main) {
         _errorMessage.value = message

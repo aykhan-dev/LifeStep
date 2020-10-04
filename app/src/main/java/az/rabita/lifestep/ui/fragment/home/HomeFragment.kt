@@ -14,6 +14,7 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.whenResumed
 import androidx.navigation.fragment.findNavController
 import az.rabita.lifestep.NavGraphMainDirections
 import az.rabita.lifestep.R
@@ -27,7 +28,6 @@ import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayout.OnTabSelectedListener
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import timber.log.Timber
 
 class HomeFragment : Fragment() {
@@ -43,8 +43,8 @@ class HomeFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        lifecycleScope.launchWhenResumed {
-            withContext(Dispatchers.IO) {
+        lifecycleScope.launch(Dispatchers.IO) {
+            whenResumed {
                 permissions()
             }
         }
@@ -94,6 +94,10 @@ class HomeFragment : Fragment() {
                     this@HomeFragment.viewModel.searchInput.value ?: ""
                 )
             )
+        }
+
+        textViewCount.setOnClickListener {
+            this@HomeFragment.viewModel.accessGoogleFit()
         }
 
         buttonConvertSteps.setOnClickListener {

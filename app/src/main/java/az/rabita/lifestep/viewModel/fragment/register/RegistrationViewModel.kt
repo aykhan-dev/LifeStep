@@ -10,7 +10,6 @@ import az.rabita.lifestep.local.getDatabase
 import az.rabita.lifestep.manager.PreferenceManager
 import az.rabita.lifestep.network.NetworkResult
 import az.rabita.lifestep.network.NetworkResultFailureType
-import az.rabita.lifestep.network.NetworkState
 import az.rabita.lifestep.pojo.apiPOJO.content.TokenContentPOJO
 import az.rabita.lifestep.pojo.apiPOJO.model.CheckEmailModelPOJO
 import az.rabita.lifestep.pojo.apiPOJO.model.RegisterModelPOJO
@@ -30,7 +29,8 @@ class RegistrationViewModel(application: Application) : AndroidViewModel(applica
     private val usersRepository = UsersRepository.getInstance(getDatabase(context))
 
     private var _eventNavigateToNextRegisterFragment = MutableLiveData<Boolean>()
-    val eventNavigateToNextRegisterFragment: LiveData<Boolean> = _eventNavigateToNextRegisterFragment
+    val eventNavigateToNextRegisterFragment: LiveData<Boolean> =
+        _eventNavigateToNextRegisterFragment
 
     private var _eventNavigateToMainActivity = MutableLiveData<Boolean>()
     val eventNavigateToMainActivity: LiveData<Boolean> = _eventNavigateToMainActivity
@@ -65,21 +65,19 @@ class RegistrationViewModel(application: Application) : AndroidViewModel(applica
 
             viewModelScope.launch {
 
-                uiState.postValue(UiState.Loading)
+                uiState.value = UiState.Loading
 
                 val lang = sharedPreferences.getIntegerElement(LANG_KEY, DEFAULT_LANG)
 
                 when (val response = usersRepository.checkEmail(lang, model)) {
-                    is NetworkState.Success<*> -> withContext(Dispatchers.Main) {
-                        _eventNavigateToNextRegisterFragment.onOff()
-                    }
+                    is NetworkResult.Success<*> -> _eventNavigateToNextRegisterFragment.onOff()
                     is NetworkResult.Failure -> when (response.type) {
                         NetworkResultFailureType.EXPIRED_TOKEN -> startExpireTokenProcess()
                         else -> handleNetworkException(response.message)
                     }
                 }
 
-                uiState.postValue(UiState.LoadingFinished)
+                uiState.value = UiState.LoadingFinished
 
             }
         }
@@ -105,19 +103,17 @@ class RegistrationViewModel(application: Application) : AndroidViewModel(applica
                     repeatPassword = passwordConfirmInput.value ?: ""
                 )
 
-                viewModelScope.launch(Dispatchers.IO) {
+                viewModelScope.launch {
 
-                    uiState.postValue(UiState.Loading)
+                    uiState.value = UiState.Loading
 
                     val lang = sharedPreferences.getIntegerElement(LANG_KEY, DEFAULT_LANG)
 
                     when (val response = usersRepository.registerUser(lang, model)) {
-                        is NetworkState.Success<*> -> {
+                        is NetworkResult.Success<*> -> {
                             val data = response.data as List<TokenContentPOJO>
                             sharedPreferences.setStringElement(TOKEN_KEY, data[0].token)
-                            withContext(Dispatchers.Main) {
-                                _eventNavigateToMainActivity.onOff()
-                            }
+                            _eventNavigateToMainActivity.onOff()
                         }
                         is NetworkResult.Failure -> when (response.type) {
                             NetworkResultFailureType.EXPIRED_TOKEN -> startExpireTokenProcess()
@@ -125,7 +121,7 @@ class RegistrationViewModel(application: Application) : AndroidViewModel(applica
                         }
                     }
 
-                    uiState.postValue(UiState.LoadingFinished)
+                    uiState.value = UiState.LoadingFinished
 
                 }
             }

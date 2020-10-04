@@ -21,7 +21,6 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.MutableLiveData
 import az.rabita.lifestep.network.NetworkResult
 import az.rabita.lifestep.network.NetworkResultFailureType
-import az.rabita.lifestep.network.NetworkState
 import az.rabita.lifestep.pojo.apiPOJO.ServerResponsePOJO
 import az.rabita.lifestep.pojo.apiPOJO.content.AdsTransactionContentPOJO
 import az.rabita.lifestep.pojo.apiPOJO.content.DailyContentPOJO
@@ -170,32 +169,6 @@ fun MutableLiveData<*>.notifyObservers() {
     value = value
 }
 
-fun <T> checkNetworkRequestResponse(response: Response<ServerResponsePOJO<T>>): NetworkState {
-    return if (response.isSuccessful && response.code() == 200) {
-        response.body()?.let { data ->
-            when (data.status.code) {
-                200, 201 -> NetworkState.Success(data.content)
-                300 -> NetworkState.ExpiredToken
-                else -> NetworkState.HandledHttpError(data.status.text)
-            }
-        } ?: NetworkState.InvalidData
-    } else NetworkState.UnhandledHttpError(response.message() + response.code())
-}
-
-fun <T> checkNetworkRequestResponseRefactored(response: Response<ServerResponsePOJO<T>>): NetworkResult {
-    return if (response.isSuccessful && response.code() == 200) {
-        response.body()?.let { body ->
-            when (val code = body.status.code) {
-                200, 201 -> NetworkResult.Success(body.content)
-                else -> NetworkResult.Failure(
-                    if (code == 300) NetworkResultFailureType.EXPIRED_TOKEN else NetworkResultFailureType.ERROR,
-                    body.status.text
-                )
-            }
-        } ?: NetworkResult.Failure(NetworkResultFailureType.ERROR, "")
-    } else NetworkResult.Failure(NetworkResultFailureType.ERROR, response.message())
-}
-
 suspend fun extractDiagramData(data: List<*>): BarDiagram.DiagramDataModel =
     withContext(Dispatchers.Default) {
         var maxValue = 0L
@@ -259,4 +232,28 @@ fun Activity.makeEdgeToEdge() {
         window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LAYOUT_STABLE or
                 View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
     }
+}
+
+suspend fun <T> networkRequest(request: suspend () -> Response<ServerResponsePOJO<T>>): NetworkResult =
+    withContext(Dispatchers.IO) {
+        try {
+            val response = request()
+            checkNetworkRequestResponse(response)
+        } catch (exp: Exception) {
+            NetworkResult.Failure(NetworkResultFailureType.ERROR, exp.message ?: "")
+        }
+    }
+
+fun <T> checkNetworkRequestResponse(response: Response<ServerResponsePOJO<T>>): NetworkResult {
+    return if (response.isSuccessful && response.code() == 200) {
+        response.body()?.let { body ->
+            when (val code = body.status.code) {
+                200, 201 -> NetworkResult.Success(body.content)
+                else -> NetworkResult.Failure(
+                    if (code == 300) NetworkResultFailureType.EXPIRED_TOKEN else NetworkResultFailureType.ERROR,
+                    body.status.text
+                )
+            }
+        } ?: NetworkResult.Failure(NetworkResultFailureType.ERROR, "")
+    } else NetworkResult.Failure(NetworkResultFailureType.ERROR, response.message())
 }

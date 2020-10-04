@@ -1,8 +1,6 @@
 package az.rabita.lifestep.viewModel.fragment.sendStep
 
 import android.app.Application
-import kotlinx.coroutines.Dispatchers
-
 import android.text.format.DateFormat
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
@@ -10,12 +8,13 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import az.rabita.lifestep.R
 import az.rabita.lifestep.manager.PreferenceManager
-import az.rabita.lifestep.network.NetworkState
-import az.rabita.lifestep.pojo.apiPOJO.content.PersonalInfoContentPOJO
+import az.rabita.lifestep.network.NetworkResult
+import az.rabita.lifestep.network.NetworkResultFailureType
 import az.rabita.lifestep.pojo.apiPOJO.model.SendStepModelPOJO
 import az.rabita.lifestep.pojo.dataHolder.UserProfileInfoHolder
 import az.rabita.lifestep.repository.TransactionsRepository
 import az.rabita.lifestep.utils.*
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.util.*
@@ -32,7 +31,7 @@ class SendStepViewModel(app: Application) : AndroidViewModel(app) {
     private var _errorMessage = MutableLiveData<String?>()
     val errorMessage: LiveData<String?> get() = _errorMessage
 
-    private val _eventExpiredToken = MutableLiveData<Boolean>().apply { value = false }
+    private val _eventExpiredToken = MutableLiveData(false)
     val eventExpiredToken: LiveData<Boolean> get() = _eventExpiredToken
 
     private val _eventDismissDialog = MutableLiveData<Boolean>()
@@ -48,7 +47,8 @@ class SendStepViewModel(app: Application) : AndroidViewModel(app) {
     }
 
     fun sendStep(userId: String) {
-        viewModelScope.launch(Dispatchers.IO) {
+
+        viewModelScope.launch {
 
             val token = sharedPreferences.getStringElement(TOKEN_KEY, "")
             val lang = sharedPreferences.getIntegerElement(LANG_KEY, DEFAULT_LANG)
@@ -63,20 +63,21 @@ class SendStepViewModel(app: Application) : AndroidViewModel(app) {
             )
 
             when (val response = transactionsRepository.transferSteps(token, lang, model)) {
-                is NetworkState.Success<*> -> _eventDismissDialog.onOff()
-                is NetworkState.ExpiredToken -> startExpireTokenProcess()
-                is NetworkState.HandledHttpError -> showMessageDialog(response.error)
-                is NetworkState.UnhandledHttpError -> showMessageDialog(response.error)
-                is NetworkState.NetworkException -> handleNetworkException(response.exception)
+                is NetworkResult.Success<*> -> _eventDismissDialog.onOff()
+                is NetworkResult.Failure -> when (response.type) {
+                    NetworkResultFailureType.EXPIRED_TOKEN -> startExpireTokenProcess()
+                    else -> handleNetworkException(response.message)
+                }
             }
 
         }
+
     }
 
     private suspend fun handleNetworkException(exception: String?) {
-            if (context.isInternetConnectionAvailable()) showMessageDialog(exception)
-            else showMessageDialog(context.getString(R.string.no_internet_connection))
-        }
+        if (context.isInternetConnectionAvailable()) showMessageDialog(exception)
+        else showMessageDialog(context.getString(R.string.no_internet_connection))
+    }
 
     private suspend fun showMessageDialog(message: String?): Unit = withContext(Dispatchers.Main) {
         _errorMessage.value = message

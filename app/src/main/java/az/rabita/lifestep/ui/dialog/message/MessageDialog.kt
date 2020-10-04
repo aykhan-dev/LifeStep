@@ -13,6 +13,7 @@ import androidx.fragment.app.DialogFragment
 import az.rabita.lifestep.R
 import az.rabita.lifestep.databinding.FragmentMessageDialogBinding
 import az.rabita.lifestep.manager.PreferenceManager
+import az.rabita.lifestep.utils.LANG_AZ
 import az.rabita.lifestep.utils.LANG_KEY
 
 class MessageDialog(
@@ -55,7 +56,7 @@ class MessageDialog(
                 getString(R.string.no_internet_connection) -> R.drawable.img_no_internet
                 getString(R.string.google_auth_fail_message) -> R.drawable.ic_google_fit
                 else -> {
-                    when (sharedPreferences.getIntegerElement(LANG_KEY, 10)) {
+                    when (sharedPreferences.getIntegerElement(LANG_KEY, LANG_AZ)) {
                         10 -> R.drawable.img_error_az
                         20 -> R.drawable.img_error_az
                         30 -> R.drawable.img_error_az

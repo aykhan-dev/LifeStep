@@ -1,14 +1,18 @@
+@file:Suppress("UNCHECKED_CAST")
+
 package az.rabita.lifestep.repository
 
 import az.rabita.lifestep.local.AppDatabase
 import az.rabita.lifestep.manager.SingletonHolder
 import az.rabita.lifestep.network.ApiInitHelper
-import az.rabita.lifestep.network.NetworkState
+import az.rabita.lifestep.network.NetworkResult
+import az.rabita.lifestep.pojo.apiPOJO.content.FriendshipContentPOJO
+import az.rabita.lifestep.pojo.apiPOJO.content.WalletContentPOJO
+import az.rabita.lifestep.pojo.apiPOJO.content.WeeklyContentPOJO
 import az.rabita.lifestep.utils.asFriendshipStatsEntityObject
 import az.rabita.lifestep.utils.asWalletEntityObject
 import az.rabita.lifestep.utils.asWeeklyStatsEntityObject
-import az.rabita.lifestep.utils.checkNetworkRequestResponse
-import java.io.IOException
+import az.rabita.lifestep.utils.networkRequest
 
 class ReportRepository private constructor(database: AppDatabase) {
 
@@ -22,73 +26,44 @@ class ReportRepository private constructor(database: AppDatabase) {
 
     val weeklyStats get() = reportDao.getWeeklyStats()
 
-    suspend fun getTotalTransactionInfo(token: String, lang: Int): NetworkState = try {
-        val response = reportService.getTotalTransactionInfo(token, lang)
-        checkNetworkRequestResponse(response).also {
-            if (it is NetworkState.Success<*>) {
-                val data = response.body()?.content ?: listOf()
-                if (data.isNotEmpty()) reportDao.cacheWalletInfo(data.asWalletEntityObject()[0])
+    suspend fun getTotalTransactionInfo(token: String, lang: Int): NetworkResult = networkRequest {
+        reportService.getTotalTransactionInfo(token, lang)
+    }.also {
+        if (it is NetworkResult.Success<*>) {
+            val data = it.data as List<WalletContentPOJO>
+            if (data.isNotEmpty()) reportDao.cacheWalletInfo(data.asWalletEntityObject()[0])
+        }
+    }
+
+    suspend fun getFriendshipStats(token: String, lang: Int): NetworkResult = networkRequest {
+        reportService.getFriendshipStats(token, lang)
+    }.also {
+        if (it is NetworkResult.Success<*>) {
+            val data = it.data as List<FriendshipContentPOJO>
+            if (data.isNotEmpty()) reportDao.cacheFriendshipStats(data.asFriendshipStatsEntityObject()[0])
+        }
+    }
+
+    suspend fun getWeeklyStats(token: String, lang: Int, dateOfToday: String): NetworkResult =
+        networkRequest {
+            reportService.getWeeklyStats(token, lang, dateOfToday)
+        }.also {
+            if (it is NetworkResult.Success<*>) {
+                val data = it.data as List<WeeklyContentPOJO>
+                if (data.isNotEmpty()) reportDao.cacheWeeklyStats(data.asWeeklyStatsEntityObject())
             }
         }
-    } catch (e: IOException) {
-        NetworkState.NetworkException(e.message)
+
+    suspend fun getChampionsOfDay(token: String, lang: Int): NetworkResult = networkRequest {
+        reportService.getChampionsOfDay(token, lang)
     }
 
-    suspend fun getFriendshipStats(token: String, lang: Int): NetworkState = try {
-        val response = reportService.getFriendshipStats(token, lang)
-        checkNetworkRequestResponse(response).also {
-            if (it is NetworkState.Success<*>) {
-                val data = response.body()?.content ?: listOf()
-                if (data.isNotEmpty()) reportDao.cacheFriendshipStats(data.asFriendshipStatsEntityObject()[0])
-            }
-        }
-    } catch (e: IOException) {
-        NetworkState.NetworkException(e.message)
+    suspend fun getChampionsOfWeek(token: String, lang: Int): NetworkResult = networkRequest {
+        reportService.getChampionsOfWeek(token, lang)
     }
 
-    suspend fun getDailyStats(token: String, lang: Int, userId: String): NetworkState = try {
-        val response = reportService.getDailyStats(token, lang, userId)
-        checkNetworkRequestResponse(response)
-    } catch (e: Exception) {
-        NetworkState.NetworkException(e.message)
-    }
-
-    suspend fun getMonthlyStats(token: String, lang: Int, userId: String): NetworkState = try {
-        val response = reportService.getMonthlyStats(token, lang, userId)
-        checkNetworkRequestResponse(response)
-    } catch (e: Exception) {
-        NetworkState.NetworkException(e.message)
-    }
-
-    suspend fun getWeeklyStats(token: String, lang: Int, dateOfToday: String): NetworkState = try {
-        val response = reportService.getWeeklyStats(token, lang, dateOfToday)
-        checkNetworkRequestResponse(response).also {
-            val data = response.body()?.content ?: listOf()
-            if (data.isNotEmpty()) reportDao.cacheWeeklyStats(data.asWeeklyStatsEntityObject())
-        }
-    } catch (e: Exception) {
-        NetworkState.NetworkException(e.message)
-    }
-
-    suspend fun getChampionsOfDay(token: String, lang: Int): NetworkState = try {
-        val response = reportService.getChampionsOfDay(token, lang)
-        checkNetworkRequestResponse(response)
-    } catch (e: Exception) {
-        NetworkState.NetworkException(e.message)
-    }
-
-    suspend fun getChampionsOfWeek(token: String, lang: Int): NetworkState = try {
-        val response = reportService.getChampionsOfWeek(token, lang)
-        checkNetworkRequestResponse(response)
-    } catch (e: Exception) {
-        NetworkState.NetworkException(e.message)
-    }
-
-    suspend fun getChampionsOfMonth(token: String, lang: Int): NetworkState = try {
-        val response = reportService.getChampionsOfMonth(token, lang)
-        checkNetworkRequestResponse(response)
-    } catch (e: Exception) {
-        NetworkState.NetworkException(e.message)
+    suspend fun getChampionsOfMonth(token: String, lang: Int): NetworkResult = networkRequest {
+        reportService.getChampionsOfMonth(token, lang)
     }
 
 }

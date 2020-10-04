@@ -1,12 +1,14 @@
+@file:Suppress("UNCHECKED_CAST")
+
 package az.rabita.lifestep.repository
 
 import az.rabita.lifestep.local.AppDatabase
 import az.rabita.lifestep.manager.SingletonHolder
 import az.rabita.lifestep.network.ApiInitHelper
-import az.rabita.lifestep.network.NetworkState
+import az.rabita.lifestep.network.NetworkResult
+import az.rabita.lifestep.pojo.apiPOJO.content.AssocationContentPOJO
 import az.rabita.lifestep.utils.asAssocationEntityObject
-import az.rabita.lifestep.utils.checkNetworkRequestResponse
-import java.io.IOException
+import az.rabita.lifestep.utils.networkRequest
 
 class AssocationsRepository private constructor(database: AppDatabase) {
 
@@ -17,27 +19,22 @@ class AssocationsRepository private constructor(database: AppDatabase) {
 
     val listOfAssocations get() = assocationsDao.getAssocationsList()
 
-    suspend fun getAllAssocations(token: String, lang: Int, categoryId: Int): NetworkState = try {
-        val response = assocationsService.getAllAssocations(token, lang, categoryId)
-        checkNetworkRequestResponse(response).also {
-            if (it is NetworkState.Success<*>) {
-                val data = response.body()?.content ?: listOf()
+    suspend fun getAllAssocations(token: String, lang: Int, categoryId: Int): NetworkResult =
+        networkRequest {
+            assocationsService.getAllAssocations(token, lang, categoryId)
+        }.also {
+            if (it is NetworkResult.Success<*>) {
+                val data = it.data as List<AssocationContentPOJO>
                 if (data.isNotEmpty()) assocationsDao.cacheAssocations(data.asAssocationEntityObject())
             }
         }
-    } catch (e: IOException) {
-        NetworkState.NetworkException(e.message)
-    }
 
     suspend fun getAssocationDetails(
         token: String,
         lang: Int,
         assocationId: String
-    ): NetworkState = try {
-        val response = assocationsService.getDetailsOfAssocation(token, lang, assocationId)
-        checkNetworkRequestResponse(response)
-    } catch (e: IOException) {
-        NetworkState.NetworkException(e.message)
+    ): NetworkResult = networkRequest {
+        assocationsService.getDetailsOfAssocation(token, lang, assocationId)
     }
 
 }

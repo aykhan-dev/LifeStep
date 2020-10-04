@@ -34,7 +34,7 @@ class LoginViewModel(application: Application) : AndroidViewModel(application) {
     private var _eventNavigateToMainActivity = MutableLiveData<Boolean>()
     val eventNavigateToMainActivity: LiveData<Boolean> = _eventNavigateToMainActivity
 
-    private val _eventExpiredToken = MutableLiveData<Boolean>().apply { value = false }
+    private val _eventExpiredToken = MutableLiveData(false)
     val eventExpiredToken: LiveData<Boolean> = _eventExpiredToken
 
     private var _errorMessage = MutableLiveData<String>()
@@ -63,9 +63,9 @@ class LoginViewModel(application: Application) : AndroidViewModel(application) {
                     playerId = playerId
                 )
 
-                viewModelScope.launch(Dispatchers.IO) {
+                viewModelScope.launch {
 
-                    uiState.postValue(UiState.Loading)
+                    uiState.value = UiState.Loading
 
                     val lang = sharedPreferences.getIntegerElement(LANG_KEY, DEFAULT_LANG)
 
@@ -73,9 +73,7 @@ class LoginViewModel(application: Application) : AndroidViewModel(application) {
                         is NetworkResult.Success<*> -> {
                             val data = response.data as List<TokenContentPOJO>
                             sharedPreferences.setStringElement(TOKEN_KEY, data[0].token)
-                            withContext(Dispatchers.Main) {
-                                _eventNavigateToMainActivity.onOff()
-                            }
+                            _eventNavigateToMainActivity.onOff()
                         }
                         is NetworkResult.Failure -> when (response.type) {
                             NetworkResultFailureType.EXPIRED_TOKEN -> startExpireTokenProcess()
@@ -83,7 +81,7 @@ class LoginViewModel(application: Application) : AndroidViewModel(application) {
                         }
                     }
 
-                    uiState.postValue(UiState.LoadingFinished)
+                    uiState.value = UiState.LoadingFinished
 
                 }
 

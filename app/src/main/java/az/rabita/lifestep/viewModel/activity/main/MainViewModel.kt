@@ -1,8 +1,6 @@
 package az.rabita.lifestep.viewModel.activity.main
 
 import android.app.Application
-import kotlinx.coroutines.Dispatchers
-
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -15,7 +13,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     val indexOfSelectedPage: LiveData<Int> get() = _indexOfSelectedPage
 
     fun changePage(index: Int) {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch {
             _indexOfSelectedPage.postValue(index)
         }
     }

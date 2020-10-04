@@ -8,7 +8,8 @@ import androidx.lifecycle.viewModelScope
 import az.rabita.lifestep.R
 import az.rabita.lifestep.local.getDatabase
 import az.rabita.lifestep.manager.PreferenceManager
-import az.rabita.lifestep.network.NetworkState
+import az.rabita.lifestep.network.NetworkResult
+import az.rabita.lifestep.network.NetworkResultFailureType
 import az.rabita.lifestep.pojo.apiPOJO.content.AdsTransactionContentPOJO
 import az.rabita.lifestep.pojo.apiPOJO.model.DateModelPOJO
 import az.rabita.lifestep.repository.AdsRepository
@@ -32,7 +33,7 @@ class AdsViewModel(application: Application) : AndroidViewModel(application) {
     private val _adsTransaction = MutableLiveData<AdsTransactionContentPOJO>()
     val adsTransaction: LiveData<AdsTransactionContentPOJO> get() = _adsTransaction
 
-    private val _eventExpiredToken = MutableLiveData<Boolean>().apply { value = false }
+    private val _eventExpiredToken = MutableLiveData(false)
     val eventExpiredToken: LiveData<Boolean> get() = _eventExpiredToken
 
     private var _errorMessage = MutableLiveData<String?>()
@@ -44,23 +45,24 @@ class AdsViewModel(application: Application) : AndroidViewModel(application) {
     val uiState = MutableLiveData<UiState>()
 
     fun fetchAdsPageContent() {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch {
 
             val token = sharedPreferences.getStringElement(TOKEN_KEY, "")
             val lang = sharedPreferences.getIntegerElement(LANG_KEY, DEFAULT_LANG)
 
             when (val response = contentsRepository.getContent(token, lang, ADS_GROUP_ID)) {
-                is NetworkState.ExpiredToken -> startExpireTokenProcess()
-                is NetworkState.HandledHttpError -> showMessageDialog(response.error)
-                is NetworkState.UnhandledHttpError -> showMessageDialog(response.error)
-                is NetworkState.NetworkException -> handleNetworkException(response.exception)
+                is NetworkResult.Failure -> when (response.type) {
+                    NetworkResultFailureType.EXPIRED_TOKEN -> startExpireTokenProcess()
+                    else -> handleNetworkException(response.message)
+                }
             }
 
         }
     }
 
     fun getBonusSteps() {
-        viewModelScope.launch(Dispatchers.IO) {
+
+        viewModelScope.launch {
 
             val token = sharedPreferences.getStringElement(TOKEN_KEY, "")
             val lang = sharedPreferences.getIntegerElement(LANG_KEY, DEFAULT_LANG)
@@ -68,39 +70,42 @@ class AdsViewModel(application: Application) : AndroidViewModel(application) {
             val model = DateModelPOJO(date = getDateAndTime())
 
             when (val response = transactionsRepository.getBonusSteps(token, lang, model)) {
-                is NetworkState.ExpiredToken -> startExpireTokenProcess()
-                is NetworkState.HandledHttpError -> showMessageDialog(response.error)
-                is NetworkState.UnhandledHttpError -> showMessageDialog(response.error)
-                is NetworkState.NetworkException -> handleNetworkException(response.exception)
+                is NetworkResult.Failure -> when (response.type) {
+                    NetworkResultFailureType.EXPIRED_TOKEN -> startExpireTokenProcess()
+                    else -> handleNetworkException(response.message)
+                }
             }
 
         }
+
     }
 
     fun createAdsTransaction() {
-        viewModelScope.launch(Dispatchers.IO) {
 
-            uiState.postValue(UiState.Loading)
+        viewModelScope.launch {
+
+            uiState.value = UiState.Loading
 
             val token = sharedPreferences.getStringElement(TOKEN_KEY, "")
-            val lang = sharedPreferences.getIntegerElement(LANG_KEY, 10)
+            val lang = sharedPreferences.getIntegerElement(LANG_KEY, LANG_AZ)
 
             val model = DateModelPOJO(date = getDateAndTime())
 
             when (val response = adsRepository.createAdsTransaction(token, lang, model)) {
-                is NetworkState.Success<*> -> {
+                is NetworkResult.Success<*> -> {
                     val data = response.data as List<AdsTransactionContentPOJO>
                     if (data.isNotEmpty()) _adsTransaction.postValue(data[0])
                 }
-                is NetworkState.ExpiredToken -> startExpireTokenProcess()
-                is NetworkState.HandledHttpError -> showMessageDialog(response.error)
-                is NetworkState.UnhandledHttpError -> showMessageDialog(response.error)
-                is NetworkState.NetworkException -> handleNetworkException(response.exception)
+                is NetworkResult.Failure -> when (response.type) {
+                    NetworkResultFailureType.EXPIRED_TOKEN -> startExpireTokenProcess()
+                    else -> handleNetworkException(response.message)
+                }
             }
 
-            uiState.postValue(UiState.LoadingFinished)
+            uiState.value = UiState.LoadingFinished
 
         }
+
     }
 
     private suspend fun handleNetworkException(exception: String?) {

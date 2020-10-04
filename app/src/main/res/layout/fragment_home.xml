@@ -208,6 +208,7 @@
                     android:textAlignment="center"
                     android:textSize="@dimen/ultra_large"
                     android:textStyle="bold"
+                    android:textColor="@color/default_text_selector"
                     app:layout_constraintBottom_toBottomOf="@+id/seek_bar"
                     app:layout_constraintEnd_toEndOf="@id/seek_bar"
                     app:layout_constraintStart_toStartOf="@id/seek_bar"

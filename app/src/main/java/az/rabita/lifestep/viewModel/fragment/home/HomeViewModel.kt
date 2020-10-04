@@ -6,7 +6,8 @@ import androidx.lifecycle.*
 import az.rabita.lifestep.R
 import az.rabita.lifestep.local.getDatabase
 import az.rabita.lifestep.manager.PreferenceManager
-import az.rabita.lifestep.network.NetworkState
+import az.rabita.lifestep.network.NetworkResult
+import az.rabita.lifestep.network.NetworkResultFailureType
 import az.rabita.lifestep.pojo.apiPOJO.content.AdsTransactionContentPOJO
 import az.rabita.lifestep.pojo.apiPOJO.content.SearchResultContentPOJO
 import az.rabita.lifestep.pojo.apiPOJO.model.CurrentStepModelPOJO
@@ -43,7 +44,7 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
     private val _adsTransaction = MutableLiveData<AdsTransactionContentPOJO>()
     val adsTransaction: LiveData<AdsTransactionContentPOJO> get() = _adsTransaction
 
-    private val _eventExpiredToken = MutableLiveData<Boolean>().apply { value = false }
+    private val _eventExpiredToken = MutableLiveData(false)
     val eventExpiredToken: LiveData<Boolean> get() = _eventExpiredToken
 
     private var _errorMessage = MutableLiveData<String?>()
@@ -60,48 +61,53 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
     val cachedOwnProfileInfo = usersRepository.cachedProfileInfo
 
     fun fetchOwnProfileInfo() {
-        viewModelScope.launch(Dispatchers.IO) {
+
+        viewModelScope.launch {
 
             val token = sharedPreferences.getStringElement(TOKEN_KEY, "")
             val lang = sharedPreferences.getIntegerElement(LANG_KEY, LANG_AZ)
 
             when (val response = usersRepository.getPersonalInfo(token, lang)) {
-                is NetworkState.ExpiredToken -> startExpireTokenProcess()
-                is NetworkState.HandledHttpError -> showMessageDialog(response.error)
-                is NetworkState.UnhandledHttpError -> showMessageDialog(response.error)
-                is NetworkState.NetworkException -> handleNetworkException(response.exception)
+                is NetworkResult.Failure -> when (response.type) {
+                    NetworkResultFailureType.EXPIRED_TOKEN -> startExpireTokenProcess()
+                    else -> handleNetworkException(response.message)
+                }
             }
 
         }
+
     }
 
     fun fetchSearchResults() {
-        viewModelScope.launch(Dispatchers.IO) {
 
-            searchingState.postValue(UiState.Loading)
+        viewModelScope.launch {
+
+            searchingState.value = UiState.Loading
 
             val token = sharedPreferences.getStringElement(TOKEN_KEY, "")
             val lang = sharedPreferences.getIntegerElement(LANG_KEY, DEFAULT_LANG)
 
             when (val response =
                 usersRepository.searchUserByFullName(token, lang, searchInput.value ?: "")) {
-                is NetworkState.Success<*> -> {
+                is NetworkResult.Success<*> -> {
                     val data = response.data as List<SearchResultContentPOJO>
                     _listOfSearchResult.postValue(data)
                 }
-                is NetworkState.ExpiredToken -> startExpireTokenProcess()
-                is NetworkState.HandledHttpError -> showMessageDialog(response.error)
-                is NetworkState.UnhandledHttpError -> showMessageDialog(response.error)
-                is NetworkState.NetworkException -> handleNetworkException(response.exception)
+                is NetworkResult.Failure -> when (response.type) {
+                    NetworkResultFailureType.EXPIRED_TOKEN -> startExpireTokenProcess()
+                    else -> handleNetworkException(response.message)
+                }
             }
 
-            searchingState.postValue(UiState.LoadingFinished)
+            searchingState.value = UiState.LoadingFinished
 
         }
+
     }
 
     fun fetchWeeklyStats() {
-        viewModelScope.launch(Dispatchers.IO) {
+
+        viewModelScope.launch {
 
             val token = sharedPreferences.getStringElement(TOKEN_KEY, "")
             val lang = sharedPreferences.getIntegerElement(LANG_KEY, DEFAULT_LANG)
@@ -111,17 +117,19 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
 
             when (val response =
                 reportRepository.getWeeklyStats(token, lang, formatted.toString())) {
-                is NetworkState.ExpiredToken -> startExpireTokenProcess()
-                is NetworkState.HandledHttpError -> showMessageDialog(response.error)
-                is NetworkState.UnhandledHttpError -> showMessageDialog(response.error)
-                is NetworkState.NetworkException -> handleNetworkException(response.exception)
+                is NetworkResult.Failure -> when (response.type) {
+                    NetworkResultFailureType.EXPIRED_TOKEN -> startExpireTokenProcess()
+                    else -> handleNetworkException(response.message)
+                }
             }
 
         }
+
     }
 
     private fun sendCurrentStepData(steps: Long) {
-        viewModelScope.launch(Dispatchers.IO) {
+
+        viewModelScope.launch {
 
             val token = sharedPreferences.getStringElement(TOKEN_KEY, "")
             val lang = sharedPreferences.getIntegerElement(LANG_KEY, DEFAULT_LANG)
@@ -135,18 +143,20 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
             )
 
             when (val response = transactionsRepository.sendCurrentStepData(token, lang, model)) {
-                is NetworkState.Success<*> -> fetchWeeklyStats()
-                is NetworkState.ExpiredToken -> startExpireTokenProcess()
-                is NetworkState.HandledHttpError -> showMessageDialog(response.error)
-                is NetworkState.UnhandledHttpError -> showMessageDialog(response.error)
-                is NetworkState.NetworkException -> handleNetworkException(response.exception)
+                is NetworkResult.Success<*> -> fetchWeeklyStats()
+                is NetworkResult.Failure -> when (response.type) {
+                    NetworkResultFailureType.EXPIRED_TOKEN -> startExpireTokenProcess()
+                    else -> handleNetworkException(response.message)
+                }
             }
 
         }
+
     }
 
     fun convertSteps() {
-        viewModelScope.launch(Dispatchers.IO) {
+
+        viewModelScope.launch {
 
             val token = sharedPreferences.getStringElement(TOKEN_KEY, "")
             val lang = sharedPreferences.getIntegerElement(LANG_KEY, DEFAULT_LANG)
@@ -157,51 +167,56 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
             val model = DateModelPOJO(date = formatted.toString())
 
             when (val response = transactionsRepository.convertSteps(token, lang, model)) {
-                is NetworkState.Success<*> -> fetchWeeklyStats()
-                is NetworkState.ExpiredToken -> startExpireTokenProcess()
-                is NetworkState.HandledHttpError -> showMessageDialog(response.error)
-                is NetworkState.UnhandledHttpError -> showMessageDialog(response.error)
-                is NetworkState.NetworkException -> handleNetworkException(response.exception)
+                is NetworkResult.Success<*> -> fetchWeeklyStats()
+                is NetworkResult.Failure -> when (response.type) {
+                    NetworkResultFailureType.EXPIRED_TOKEN -> startExpireTokenProcess()
+                    else -> handleNetworkException(response.message)
+                }
             }
 
         }
+
     }
 
     fun createAdsTransaction() {
-        viewModelScope.launch(Dispatchers.IO) {
 
-            uiState.postValue(UiState.Loading)
+        viewModelScope.launch {
+
+            uiState.value = UiState.Loading
 
             val token = sharedPreferences.getStringElement(TOKEN_KEY, "")
-            val lang = sharedPreferences.getIntegerElement(LANG_KEY, 10)
+            val lang = sharedPreferences.getIntegerElement(LANG_KEY, LANG_AZ)
 
             val model = DateModelPOJO(date = getDateAndTime())
 
             when (val response = adsRepository.createAdsTransaction(token, lang, model)) {
-                is NetworkState.Success<*> -> {
+                is NetworkResult.Success<*> -> {
                     val data = response.data as List<AdsTransactionContentPOJO>
                     if (data.isNotEmpty()) {
-                        _adsTransaction.postValue(data[0])
-                        _adsTransaction.postValue(null)
+                        _adsTransaction.value = data[0]
+                        _adsTransaction.value = null
                     }
                 }
-                is NetworkState.ExpiredToken -> startExpireTokenProcess()
-                is NetworkState.HandledHttpError -> showMessageDialog(response.error)
-                is NetworkState.UnhandledHttpError -> showMessageDialog(response.error)
-                is NetworkState.NetworkException -> handleNetworkException(response.exception)
+                is NetworkResult.Failure -> when (response.type) {
+                    NetworkResultFailureType.EXPIRED_TOKEN -> startExpireTokenProcess()
+                    else -> handleNetworkException(response.message)
+                }
             }
 
-            uiState.postValue(UiState.LoadingFinished)
+            uiState.value = UiState.LoadingFinished
 
         }
+
     }
 
     fun accessGoogleFit() {
+
         viewModelScope.launch(Dispatchers.IO) {
             val account = GoogleSignIn.getAccountForExtension(context, FITNESS_OPTIONS)
             val historyClient = Fitness.getHistoryClient(context, account)
             fetchStepCountFromGoogleFit(historyClient)
         }
+
     }
 
     private fun fetchStepCountFromGoogleFit(historyClient: HistoryClient) {

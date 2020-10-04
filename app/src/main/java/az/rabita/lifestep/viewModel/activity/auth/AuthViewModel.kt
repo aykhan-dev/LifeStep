@@ -8,7 +8,7 @@ import az.rabita.lifestep.utils.onOff
 
 class AuthViewModel(application: Application) : AndroidViewModel(application) {
 
-    private var _stateFabClick = MutableLiveData<Boolean>().apply { value = false }
+    private var _stateFabClick = MutableLiveData(false)
     val stateFabClick: LiveData<Boolean> get() = _stateFabClick
 
     fun onFabClick() = _stateFabClick.onOff()

@@ -5,12 +5,11 @@ import androidx.lifecycle.*
 import az.rabita.lifestep.R
 import az.rabita.lifestep.local.getDatabase
 import az.rabita.lifestep.manager.PreferenceManager
-import az.rabita.lifestep.network.NetworkState
+import az.rabita.lifestep.network.NetworkResult
+import az.rabita.lifestep.network.NetworkResultFailureType
 import az.rabita.lifestep.repository.ReportRepository
 import az.rabita.lifestep.utils.*
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.*
 
 class SettingsViewModel(application: Application) : AndroidViewModel(application) {
 
@@ -21,51 +20,60 @@ class SettingsViewModel(application: Application) : AndroidViewModel(application
 
     val friendshipStats = reportRepository.friendshipStats.asLiveData()
 
-    private val _eventExpiredToken = MutableLiveData<Boolean>().apply { value = false }
+    private val _eventExpiredToken = MutableLiveData(false)
     val eventExpiredToken: LiveData<Boolean> get() = _eventExpiredToken
 
-    private val _eventLogOut = MutableLiveData<Boolean>().apply { value = false }
+    private val _eventLogOut = MutableLiveData(false)
     val eventLogOut: LiveData<Boolean> = _eventLogOut
 
     private var _errorMessage = MutableLiveData<String?>()
     val errorMessage: LiveData<String?> get() = _errorMessage
 
     fun fetchFriendshipStats() {
-        viewModelScope.launch(Dispatchers.IO) {
+
+        viewModelScope.launch {
 
             val token = sharedPreferences.getStringElement(TOKEN_KEY, "")
             val lang = sharedPreferences.getIntegerElement(LANG_KEY, DEFAULT_LANG)
 
             when (val response = reportRepository.getFriendshipStats(token, lang)) {
-                is NetworkState.ExpiredToken -> startExpireTokenProcess()
-                is NetworkState.HandledHttpError -> showMessageDialog(response.error)
-                is NetworkState.UnhandledHttpError -> showMessageDialog(response.error)
-                is NetworkState.NetworkException -> handleNetworkException(response.exception)
+                is NetworkResult.Failure -> when (response.type) {
+                    NetworkResultFailureType.EXPIRED_TOKEN -> startExpireTokenProcess()
+                    else -> handleNetworkException(response.message)
+                }
             }
 
         }
+
     }
 
     fun logOut() {
-        viewModelScope.launch(Dispatchers.IO) {
-            with(getDatabase(context)) {
-                usersDao.deletePersonalInfoSync()
-                with(reportDao) {
-                    deleteAllWeeklyStatsSync()
-                    deleteAllFriendshipStatsSync()
-                    deleteWalletInfoSync()
-                }
-                notificationsDao.deleteNotificationsSync()
-                allContentsDao.deleteContentSync(INVITE_FRIENDS_GROUP_ID, INVITE_TEXT_KEY)
-                _eventLogOut.postValue(true)
-            }
+
+        viewModelScope.launch {
+
+            val db = getDatabase(context)
+
+            val tasks = listOf(
+                async { db.usersDao.deletePersonalInfo() },
+                async { db.reportDao.deleteAllWeeklyStats() },
+                async { db.reportDao.deleteAllFriendshipStats() },
+                async { db.reportDao.deleteWalletInfo() },
+                async { db.notificationsDao.deleteNotifications() },
+                async { db.allContentsDao.deleteContent(INVITE_FRIENDS_GROUP_ID, INVITE_TEXT_KEY) }
+            )
+
+            tasks.awaitAll()
+
+            if (_eventLogOut.value == false) _eventLogOut.postValue(true)
+
         }
+
     }
 
     private suspend fun handleNetworkException(exception: String?) {
-            if (context.isInternetConnectionAvailable()) showMessageDialog(exception)
-            else showMessageDialog(context.getString(R.string.no_internet_connection))
-        }
+        if (context.isInternetConnectionAvailable()) showMessageDialog(exception)
+        else showMessageDialog(context.getString(R.string.no_internet_connection))
+    }
 
     private suspend fun showMessageDialog(message: String?): Unit = withContext(Dispatchers.Main) {
         _errorMessage.value = message

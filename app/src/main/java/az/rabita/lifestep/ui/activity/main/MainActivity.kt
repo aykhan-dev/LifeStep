@@ -28,7 +28,10 @@ class MainActivity : AppCompatActivity() {
 
     private val navController by lazy { findNavController(R.id.fragment_main_host) }
 
-    private val builder = NavOptions.Builder().setLaunchSingleTop(true)
+    private val builder = NavOptions.Builder()
+        .setLaunchSingleTop(true)
+        .setEnterAnim(R.anim.nav_default_enter_anim)
+        .setPopEnterAnim(R.anim.nav_default_pop_enter_anim)
 
     private val ids = listOf(
         R.id.nav_graph_main_events,

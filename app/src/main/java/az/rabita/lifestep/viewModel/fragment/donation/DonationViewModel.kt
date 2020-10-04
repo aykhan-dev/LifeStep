@@ -5,7 +5,8 @@ import androidx.lifecycle.*
 import az.rabita.lifestep.R
 import az.rabita.lifestep.local.getDatabase
 import az.rabita.lifestep.manager.PreferenceManager
-import az.rabita.lifestep.network.NetworkState
+import az.rabita.lifestep.network.NetworkResult
+import az.rabita.lifestep.network.NetworkResultFailureType
 import az.rabita.lifestep.repository.AssocationsRepository
 import az.rabita.lifestep.utils.DEFAULT_LANG
 import az.rabita.lifestep.utils.LANG_KEY
@@ -22,7 +23,7 @@ class DonationViewModel(application: Application) : AndroidViewModel(application
 
     private val assocationsRepository = AssocationsRepository.getInstance(getDatabase(context))
 
-    private val _eventExpiredToken = MutableLiveData<Boolean>().apply { value = false }
+    private val _eventExpiredToken = MutableLiveData(false)
     val eventExpiredToken: LiveData<Boolean> get() = _eventExpiredToken
 
     private var _errorMessage = MutableLiveData<String?>()
@@ -30,20 +31,22 @@ class DonationViewModel(application: Application) : AndroidViewModel(application
 
     val listOfAssocations = assocationsRepository.listOfAssocations.asLiveData()
 
-    fun fetchListOfDonations(categoryId: Int) {
-        viewModelScope.launch(Dispatchers.IO) {
+    fun fetchListOfAssocations(categoryId: Int) {
+
+        viewModelScope.launch {
 
             val token = sharedPreferences.getStringElement(TOKEN_KEY, "")
             val lang = sharedPreferences.getIntegerElement(LANG_KEY, DEFAULT_LANG)
 
             when (val response = assocationsRepository.getAllAssocations(token, lang, categoryId)) {
-                is NetworkState.ExpiredToken -> startExpireTokenProcess()
-                is NetworkState.HandledHttpError -> showMessageDialog(response.error)
-                is NetworkState.UnhandledHttpError -> showMessageDialog(response.error)
-                is NetworkState.NetworkException -> handleNetworkException(response.exception)
+                is NetworkResult.Failure -> when (response.type) {
+                    NetworkResultFailureType.EXPIRED_TOKEN -> startExpireTokenProcess()
+                    else -> handleNetworkException(response.message)
+                }
             }
 
         }
+
     }
 
     private suspend fun handleNetworkException(exception: String?) {
