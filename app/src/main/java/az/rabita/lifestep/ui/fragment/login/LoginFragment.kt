@@ -7,19 +7,16 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import az.rabita.lifestep.R
 import az.rabita.lifestep.databinding.FragmentLoginBinding
 import az.rabita.lifestep.ui.activity.forgotPassword.ForgotPasswordActivity
 import az.rabita.lifestep.ui.activity.main.MainActivity
 import az.rabita.lifestep.ui.dialog.loading.LoadingDialog
-import az.rabita.lifestep.ui.dialog.message.MessageDialog
 import az.rabita.lifestep.ui.dialog.message.SingleMessageDialog
 import az.rabita.lifestep.utils.*
 import az.rabita.lifestep.viewModel.activity.auth.AuthViewModel
 import az.rabita.lifestep.viewModel.fragment.login.LoginViewModel
-import timber.log.Timber
 
 class LoginFragment : Fragment() {
 
@@ -30,7 +27,7 @@ class LoginFragment : Fragment() {
 
     private val navController by lazy { findNavController() }
 
-    private val loadingDialog = LoadingDialog
+    private val loadingDialog = LoadingDialog()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,

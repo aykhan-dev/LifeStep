@@ -5,7 +5,6 @@ import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
-import androidx.lifecycle.Observer
 import androidx.navigation.findNavController
 import az.rabita.lifestep.R
 import az.rabita.lifestep.databinding.ActivityForgotPasswordBinding
@@ -23,7 +22,7 @@ class ForgotPasswordActivity : AppCompatActivity() {
 
     private val navController by lazy { findNavController(R.id.fragment_password_host) }
 
-    private val loadingDialog = LoadingDialog
+    private val loadingDialog = LoadingDialog()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

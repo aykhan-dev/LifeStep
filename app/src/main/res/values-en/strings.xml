@@ -111,7 +111,7 @@
     <string name="invalid_gender">Cinsiyyət uyğun deyil</string>
     <string name="name">Ad</string>
     <string name="surname">Soyad</string>
-    <string name="loading">Loading</string>
+    <string name="loading_txt">Loading</string>
     <string name="sorry">Təəssüf edirik</string>
     <string name="close">Bağla</string>
     <string name="person">nəfər</string>

@@ -1,4 +1,4 @@
-package az.rabita.lifestep.ui.dialog.loading
+package az.rabita.lifestep.ui.dialog.donateStep
 
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
@@ -7,13 +7,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import az.rabita.lifestep.R
-import az.rabita.lifestep.databinding.DialogLoadingBinding
+import az.rabita.lifestep.databinding.DialogDonateStepBinding
 import az.rabita.lifestep.ui.dialog.SingleInstanceDialog
 import com.bumptech.glide.Glide
 
-class LoadingDialog : SingleInstanceDialog() {
+class DonateStepDialogRefactored : SingleInstanceDialog() {
 
-    private lateinit var binding: DialogLoadingBinding
+    private lateinit var binding: DialogDonateStepBinding
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -21,13 +21,7 @@ class LoadingDialog : SingleInstanceDialog() {
         savedInstanceState: Bundle?
     ): View? {
         dialog?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-        isCancelable = false
-        return DialogLoadingBinding.inflate(inflater).also { binding = it }.root
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        Glide.with(requireContext()).load(R.raw.gif_loading).into(binding.imageView)
+        return DialogDonateStepBinding.inflate(inflater).also { binding = it }.root
     }
 
 }

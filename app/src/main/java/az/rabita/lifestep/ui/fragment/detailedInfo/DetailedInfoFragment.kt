@@ -10,6 +10,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import az.rabita.lifestep.NavGraphMainDirections
 import az.rabita.lifestep.databinding.FragmentDetailedInfoBinding
+import az.rabita.lifestep.ui.dialog.congrats.CongratsDialogRefactored
 import az.rabita.lifestep.ui.dialog.message.SingleMessageDialog
 import az.rabita.lifestep.ui.fragment.ranking.RankingRecyclerAdapter
 import az.rabita.lifestep.utils.ERROR_TAG
@@ -75,15 +76,18 @@ class DetailedInfoFragment : Fragment() {
     private fun navigateTo(direction: DetailedFragmentDirections) {
         when (direction) {
             DetailedFragmentDirections.DONATE_STEPS -> {
-                viewModel.assocationDetails.value?.let {
-                    uiInitialState()
-                    navController.navigate(
-                        DetailedInfoFragmentDirections.actionDetailedInfoFragmentToDonateStepDialog(
-                            it.id,
-                            args.assocationId
-                        )
-                    )
-                }
+
+                CongratsDialogRefactored().show(requireActivity().supportFragmentManager, "D")
+
+//                viewModel.assocationDetails.value?.let {
+//                    uiInitialState()
+//                    navController.navigate(
+//                        DetailedInfoFragmentDirections.actionDetailedInfoFragmentToDonateStepDialog(
+//                            it.id,
+//                            args.assocationId
+//                        )
+//                    )
+//                }
             }
             DetailedFragmentDirections.ALL_DONORS -> {
                 viewModel.assocationDetails.value?.let {

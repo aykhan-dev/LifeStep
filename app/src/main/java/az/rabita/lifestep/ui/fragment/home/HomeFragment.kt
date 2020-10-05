@@ -39,7 +39,8 @@ class HomeFragment : Fragment() {
     private val navController by lazy { findNavController() }
 
     private val adapter = SearchResultRecyclerAdapter { onSearchResultItemClick(it) }
-    private val loadingDialog = LoadingDialog
+
+    private val loadingDialog = LoadingDialog()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

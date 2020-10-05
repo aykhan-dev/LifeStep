@@ -11,11 +11,9 @@ import android.view.animation.Animation
 import android.view.animation.AnimationUtils
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Observer
 import androidx.lifecycle.SavedStateHandle
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
-import az.rabita.lifestep.NavGraphMainDirections
 import az.rabita.lifestep.R
 import az.rabita.lifestep.databinding.FragmentDonateStepDialogBinding
 import az.rabita.lifestep.ui.dialog.loading.LoadingDialog
@@ -37,7 +35,7 @@ class DonateStepDialog : DialogFragment() {
 
     private val navController by lazy { findNavController() }
 
-    private val loadingDialog = LoadingDialog
+    private val loadingDialog = LoadingDialog()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,

@@ -34,7 +34,7 @@ class PageFriendsFragment(
             onItemClick(id, isAccepted)
         }
 
-    private val loadingDialog = LoadingDialog
+    private val loadingDialog = LoadingDialog()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,

@@ -7,7 +7,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import az.rabita.lifestep.NavGraphMainDirections
@@ -47,7 +46,7 @@ class AdsDialogFragment() : DialogFragment() {
 
     private val navController by lazy { findNavController() }
 
-    private val loadingDialog = LoadingDialog
+    private val loadingDialog = LoadingDialog()
 
     override fun onCreateView(
         inflater: LayoutInflater,

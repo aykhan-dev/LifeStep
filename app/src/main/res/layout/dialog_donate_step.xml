@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/content"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_gravity="center"
+    android:background="@drawable/background_dialog"
+    android:clipToPadding="false"
+    android:focusable="true"
+    android:padding="@dimen/page_padding_normal">
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/text_view_wanted_steps"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/gilroy_bold"
+        android:text="@string/desired_steps_count_donate"
+        android:textAlignment="center"
+        android:textSize="@dimen/large"
+        app:layout_constraintBottom_toTopOf="@id/text_view_quote"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/text_view_quote"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:fontFamily="@font/gilroy_medium"
+        android:text="@string/text_view_last_step"
+        android:textAlignment="center"
+        android:textColor="@color/gray_text_color"
+        android:textSize="@dimen/smallest"
+        app:layout_constraintBottom_toTopOf="@id/input_layout_steps"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/text_view_wanted_steps" />
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/input_layout_steps"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        app:layout_constraintWidth_percent="0.8"
+        app:boxStrokeColor="@color/light_gray_text_color"
+        app:layout_constraintBottom_toTopOf="@id/text_view_show_image_name"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/text_view_quote">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/edit_text_amount"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:fontFamily="@font/gilroy_bold"
+            android:imeOptions="actionDone"
+            android:inputType="numberDecimal"
+            android:textAlignment="center"
+            android:textColor="@color/bottom_navigation_view_color"
+            android:textSize="@dimen/very_large" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/text_view_show_image_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="18dp"
+        android:fontFamily="@font/gilroy_medium"
+        android:text="@string/show_name_image"
+        android:textAlignment="center"
+        android:textColor="@color/gray_text_color"
+        android:textSize="@dimen/smaller"
+        app:layout_constraintEnd_toStartOf="@id/switcher"
+        app:layout_constraintBottom_toTopOf="@id/button_donate_steps"
+        app:layout_constraintHorizontal_bias="0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/input_layout_steps" />
+
+    <az.rabita.lifestep.ui.custom.CustomSwitch
+        android:id="@+id/switcher"
+        android:layout_width="50dp"
+        android:layout_height="25dp"
+        android:layout_marginStart="10dp"
+        android:background="@drawable/background_custom_switch"
+        android:padding="5dp"
+        app:layout_constraintBottom_toBottomOf="@id/text_view_show_image_name"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/text_view_show_image_name"
+        app:layout_constraintTop_toTopOf="@id/text_view_show_image_name" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/button_donate_steps"
+        android:layout_width="0dp"
+        android:layout_height="@dimen/button_height_48"
+        android:layout_marginTop="16dp"
+        android:fontFamily="@font/gilroy_bold"
+        android:insetLeft="0dp"
+        android:insetTop="0dp"
+        android:insetRight="0dp"
+        android:insetBottom="0dp"
+        android:letterSpacing="0"
+        android:text="@string/donate"
+        android:textAlignment="center"
+        android:textAllCaps="false"
+        android:textColor="@android:color/white"
+        android:textSize="@dimen/small"
+        app:backgroundTint="@color/bottom_navigation_view_color"
+        app:cornerRadius="15dp"
+        app:icon="@drawable/ic_heart_white"
+        app:iconGravity="textStart"
+        app:iconSize="20dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/input_layout_steps"
+        app:layout_constraintStart_toStartOf="@+id/input_layout_steps"
+        app:layout_constraintTop_toBottomOf="@id/text_view_show_image_name"
+        app:layout_constraintWidth_percent="0.5" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
