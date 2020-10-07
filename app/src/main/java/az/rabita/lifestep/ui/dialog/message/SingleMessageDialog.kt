@@ -76,6 +76,7 @@ object SingleMessageDialog : DialogFragment() {
 
         root.setOnClickListener { dismiss() }
         buttonClose.setOnClickListener { dismiss() }
+
     }
 
     override fun getTheme(): Int = R.style.DialogTheme

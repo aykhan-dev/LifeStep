@@ -163,6 +163,41 @@ class DetailedInfoViewModel(application: Application) : AndroidViewModel(applica
 
     }
 
+    fun donateStep(postId: String, amount: Long, isPrivate: Boolean) {
+
+        viewModelScope.launch {
+
+            uiState.value = UiState.Loading
+
+            val token = sharedPreferences.getStringElement(TOKEN_KEY, "")
+            val lang = sharedPreferences.getIntegerElement(LANG_KEY, DEFAULT_LANG)
+
+            val formatted = getDateAndTime()
+
+            val model = DonateStepModelPOJO(
+                id = postId,
+                isPrivate = isPrivate,
+                count = amount,
+                createdDate = formatted,
+            )
+
+            when (val response = transactionsRepository.donateStep(token, lang, model)) {
+                is NetworkResult.Success<*> -> {
+                    fetchDetailedInfo(postId)
+                    _eventShowCongratsDialog.onOff()
+                }
+                is NetworkResult.Failure -> when (response.type) {
+                    NetworkResultFailureType.EXPIRED_TOKEN -> startExpireTokenProcess()
+                    else -> handleNetworkException(response.message)
+                }
+            }
+
+            uiState.value = UiState.LoadingFinished
+
+        }
+
+    }
+
     private suspend fun handleNetworkException(exception: String?) {
         if (context.isInternetConnectionAvailable()) showMessageDialog(exception)
         else showMessageDialog(context.getString(R.string.no_internet_connection))

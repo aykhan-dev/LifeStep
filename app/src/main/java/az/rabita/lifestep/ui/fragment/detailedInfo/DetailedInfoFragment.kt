@@ -6,19 +6,19 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import az.rabita.lifestep.NavGraphMainDirections
 import az.rabita.lifestep.databinding.FragmentDetailedInfoBinding
-import az.rabita.lifestep.ui.dialog.congrats.CongratsDialogRefactored
+import az.rabita.lifestep.pojo.dataHolder.UserProfileInfoHolder
+import az.rabita.lifestep.ui.dialog.loading.LoadingDialog
 import az.rabita.lifestep.ui.dialog.message.SingleMessageDialog
 import az.rabita.lifestep.ui.fragment.ranking.RankingRecyclerAdapter
-import az.rabita.lifestep.utils.ERROR_TAG
-import az.rabita.lifestep.utils.STEP_DONATED_RESULT
-import az.rabita.lifestep.utils.logout
-import az.rabita.lifestep.utils.moreShortenString
+import az.rabita.lifestep.utils.*
 import az.rabita.lifestep.viewModel.fragment.detailedInfo.DetailedInfoViewModel
 import jp.wasabeef.recyclerview.animators.ScaleInAnimator
+import timber.log.Timber
 
 class DetailedInfoFragment : Fragment() {
 
@@ -36,6 +36,8 @@ class DetailedInfoFragment : Fragment() {
 
     private val navController by lazy { findNavController() }
 
+    private val loadingDialog = LoadingDialog()
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -48,6 +50,7 @@ class DetailedInfoFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         bindUI()
         configureRecyclerView()
+        retrieveStepDonationDetails()
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -73,21 +76,25 @@ class DetailedInfoFragment : Fragment() {
         textViewAll.setOnClickListener { navigateTo(DetailedFragmentDirections.ALL_DONORS) }
     }
 
+    private fun retrieveStepDonationDetails() {
+        navController.currentBackStackEntry!!.savedStateHandle.getLiveData<Map<String, Any>>("donation details")
+            .observe(viewLifecycleOwner, Observer {
+                val amount = it["amount"] as Long
+                val isPrivate = it["isPrivate"] as Boolean
+                viewModel.donateStep(args.assocationId, amount, isPrivate)
+            })
+    }
+
     private fun navigateTo(direction: DetailedFragmentDirections) {
         when (direction) {
             DetailedFragmentDirections.DONATE_STEPS -> {
-
-                CongratsDialogRefactored().show(requireActivity().supportFragmentManager, "D")
-
-//                viewModel.assocationDetails.value?.let {
-//                    uiInitialState()
-//                    navController.navigate(
-//                        DetailedInfoFragmentDirections.actionDetailedInfoFragmentToDonateStepDialog(
-//                            it.id,
-//                            args.assocationId
-//                        )
-//                    )
-//                }
+                viewModel.profileInfo.value?.let {
+                    navController.navigate(
+                        DetailedInfoFragmentDirections.actionDetailedInfoFragmentToDonateStepDialogRefactored(
+                            UserProfileInfoHolder(it.id, it.balance)
+                        )
+                    )
+                }
             }
             DetailedFragmentDirections.ALL_DONORS -> {
                 viewModel.assocationDetails.value?.let {
@@ -146,7 +153,26 @@ class DetailedInfoFragment : Fragment() {
 
     }
 
-    private fun observeStates(): Unit = with(viewModel) {}
+    private fun observeStates(): Unit = with(viewModel) {
+
+        uiState.observe(viewLifecycleOwner, {
+            it?.let {
+                when (it) {
+                    is UiState.Loading -> activity?.supportFragmentManager?.let { fm ->
+                        loadingDialog.show(
+                            fm,
+                            LOADING_TAG
+                        )
+                    }
+                    is UiState.LoadingFinished -> {
+                        loadingDialog.dismiss()
+                        uiState.value = null
+                    }
+                }
+            }
+        })
+
+    }
 
     private fun observeEvents(): Unit = with(viewModel) {
 
@@ -165,11 +191,6 @@ class DetailedInfoFragment : Fragment() {
             }
         })
 
-    }
-
-    private fun uiInitialState(): Unit = with(binding) {
-        binding.scrollContent.smoothScrollTo(0, 0)
-        binding.motionLayout.transitionToStart()
     }
 
     private fun checkDonationResult() {

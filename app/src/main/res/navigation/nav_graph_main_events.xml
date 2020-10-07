@@ -31,33 +31,15 @@
         android:label="DetailedInfoFragment"
         tools:layout="@layout/fragment_detailed_info">
         <action
-            android:id="@+id/action_detailedInfoFragment_to_donateStepDialog"
-            app:destination="@id/donateStepDialog" />
-        <action
             android:id="@+id/action_detailedInfoFragment_to_rankingFragment"
             app:destination="@id/rankingFragment" />
         <argument
             android:name="assocationId"
             app:argType="string" />
-    </fragment>
-
-    <dialog
-        android:id="@+id/donateStepDialog"
-        android:name="az.rabita.lifestep.ui.dialog.donateStep.DonateStepDialog"
-        android:label="DonateStepDialog"
-        tools:layout="@layout/fragment_donate_step_dialog">
         <action
-            android:id="@+id/action_donateStepDialog_to_detailedInfoFragment"
-            app:destination="@id/detailedInfoFragment"
-            app:popUpTo="@id/detailedInfoFragment"
-            app:popUpToInclusive="true" />
-        <argument
-            android:name="postId"
-            app:argType="string" />
-        <argument
-            android:name="assocationId"
-            app:argType="string" />
-    </dialog>
+            android:id="@+id/action_detailedInfoFragment_to_donateStepDialogRefactored"
+            app:destination="@id/donateStepDialogRefactored" />
+    </fragment>
 
     <fragment
         android:id="@+id/rankingFragment"
@@ -68,5 +50,15 @@
             android:name="postId"
             app:argType="string" />
     </fragment>
+
+    <dialog
+        android:id="@+id/donateStepDialogRefactored"
+        android:name="az.rabita.lifestep.ui.dialog.donateStep.DonateStepDialogRefactored"
+        android:label="DonateStepDialogRefactored"
+        tools:layout="@layout/dialog_donate_step">
+        <argument
+            android:name="ownProfileInfo"
+            app:argType="az.rabita.lifestep.pojo.dataHolder.UserProfileInfoHolder" />
+    </dialog>
 
 </navigation>

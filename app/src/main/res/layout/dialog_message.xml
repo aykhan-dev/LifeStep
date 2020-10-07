@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/content"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_gravity="center"
+    android:background="@drawable/background_dialog"
+    android:clickable="true"
+    android:clipChildren="false"
+    android:clipToPadding="false"
+    android:focusable="true"
+    android:orientation="vertical"
+    android:padding="@dimen/page_padding_large">
+
+    <ImageView
+        android:id="@+id/image_view_illustration"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        app:layout_constraintBottom_toTopOf="@+id/materialTextView2"
+        app:layout_constraintEnd_toEndOf="@+id/materialTextView2"
+        app:layout_constraintStart_toStartOf="@+id/materialTextView2"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/materialTextView2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:fontFamily="@font/gilroy_bold"
+        android:text="@string/sorry"
+        android:textAlignment="center"
+        android:textColor="@color/dark_text_color"
+        android:textSize="@dimen/normal"
+        app:layout_constraintBottom_toTopOf="@+id/materialTextView"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/image_view_illustration" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/materialTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:fontFamily="@font/gilroy_medium"
+        android:text="@{errorMessage}"
+        android:textAlignment="center"
+        android:textColor="@color/gray_text_color"
+        android:textSize="@dimen/small"
+        app:layout_constraintBottom_toTopOf="@+id/button_close"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/materialTextView2"
+        tools:text="Istifadəçi adı və ya şifrə yanlışdır" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/button_close"
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/button_height_48"
+        android:layout_gravity="center_horizontal"
+        android:fontFamily="@font/gilroy_bold"
+        android:insetLeft="0dp"
+        android:insetTop="0dp"
+        android:insetRight="0dp"
+        android:insetBottom="0dp"
+        android:letterSpacing="0"
+        android:text="@string/close"
+        android:textAllCaps="false"
+        android:textColor="@android:color/white"
+        android:textSize="@dimen/small"
+        app:backgroundTint="@color/bottom_navigation_view_color"
+        app:cornerRadius="15dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/materialTextView" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
