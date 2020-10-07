@@ -14,8 +14,10 @@ import az.rabita.lifestep.network.NetworkResultFailureType
 import az.rabita.lifestep.pagingSource.FriendRequestsPagingSource
 import az.rabita.lifestep.pagingSource.FriendsPagingSource
 import az.rabita.lifestep.pojo.apiPOJO.model.FriendshipActionModelPOJO
+import az.rabita.lifestep.pojo.holder.Message
 import az.rabita.lifestep.repository.FriendshipRepository
 import az.rabita.lifestep.repository.ReportRepository
+import az.rabita.lifestep.ui.dialog.message.MessageType
 import az.rabita.lifestep.utils.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -32,8 +34,8 @@ class FriendsViewModel(application: Application) : AndroidViewModel(application)
     private val _eventExpiredToken = MutableLiveData(false)
     val eventExpiredToken: LiveData<Boolean> get() = _eventExpiredToken
 
-    private var _errorMessage = MutableLiveData<String?>()
-    val errorMessage: LiveData<String?> get() = _errorMessage
+    private var _errorMessage = MutableLiveData<Message>()
+    val errorMessage: LiveData<Message> get() = _errorMessage
 
     val friendshipStats = reportRepository.friendshipStats.asLiveData()
 
@@ -106,23 +108,23 @@ class FriendsViewModel(application: Application) : AndroidViewModel(application)
 
     }
 
-    private fun handleNetworkExceptionSync(exception: String?) {
-        if (context.isInternetConnectionAvailable()) showMessageDialogSync(exception)
-        else showMessageDialogSync(context.getString(R.string.no_internet_connection))
+    private fun handleNetworkExceptionSync(exception: String) {
+        if (context.isInternetConnectionAvailable()) showMessageDialogSync(exception, MessageType.ERROR)
+        else showMessageDialogSync(context.getString(R.string.no_internet_connection), MessageType.NO_INTERNET)
     }
 
-    private suspend fun handleNetworkException(exception: String?) {
-        if (context.isInternetConnectionAvailable()) showMessageDialog(exception)
-        else showMessageDialog(context.getString(R.string.no_internet_connection))
+    private suspend fun handleNetworkException(exception: String) {
+        if (context.isInternetConnectionAvailable()) showMessageDialog(exception, MessageType.ERROR)
+        else showMessageDialog(context.getString(R.string.no_internet_connection), MessageType.NO_INTERNET)
     }
 
-    private fun showMessageDialogSync(message: String?) {
-        _errorMessage.value = message
+    private fun showMessageDialogSync(message: String, type: MessageType) {
+        _errorMessage.value = Message(message, type)
         _errorMessage.value = null
     }
 
-    private suspend fun showMessageDialog(message: String?): Unit = withContext(Dispatchers.Main) {
-        _errorMessage.value = message
+    private suspend fun showMessageDialog(message: String, type: MessageType): Unit = withContext(Dispatchers.Main) {
+        _errorMessage.value = Message(message, type)
         _errorMessage.value = null
     }
 

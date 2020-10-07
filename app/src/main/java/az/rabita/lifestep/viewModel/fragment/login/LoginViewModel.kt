@@ -12,7 +12,9 @@ import az.rabita.lifestep.network.NetworkResult
 import az.rabita.lifestep.network.NetworkResultFailureType
 import az.rabita.lifestep.pojo.apiPOJO.content.TokenContentPOJO
 import az.rabita.lifestep.pojo.apiPOJO.model.LoginModelPOJO
+import az.rabita.lifestep.pojo.holder.Message
 import az.rabita.lifestep.repository.UsersRepository
+import az.rabita.lifestep.ui.dialog.message.MessageType
 import az.rabita.lifestep.utils.*
 import com.onesignal.OneSignal
 import kotlinx.coroutines.Dispatchers
@@ -37,8 +39,8 @@ class LoginViewModel(application: Application) : AndroidViewModel(application) {
     private val _eventExpiredToken = MutableLiveData(false)
     val eventExpiredToken: LiveData<Boolean> = _eventExpiredToken
 
-    private var _errorMessage = MutableLiveData<String>()
-    val errorMessage: LiveData<String> = _errorMessage
+    private var _errorMessage = MutableLiveData<Message>()
+    val errorMessage: LiveData<Message> get() = _errorMessage
 
     val emailInput = MutableLiveData<String>()
     val passwordInput = MutableLiveData<String>()
@@ -87,35 +89,38 @@ class LoginViewModel(application: Application) : AndroidViewModel(application) {
 
             }
 
-        } else showMessageDialogSync(getString(R.string.device_id_error_message))
+        } else showMessageDialogSync(getString(R.string.device_id_error_message), MessageType.ERROR)
 
     }
 
     private fun validateLoginFields(): Boolean = when {
         (!isEmailValid(emailInput.value ?: "")) -> {
-            showMessageDialogSync(getString(R.string.invalid_email))
+            showMessageDialogSync(getString(R.string.invalid_email), MessageType.ERROR)
             false
         }
         (!isPasswordValid(passwordInput.value ?: "")) -> {
-            showMessageDialogSync(getString(R.string.invalid_password))
+            showMessageDialogSync(getString(R.string.invalid_password), MessageType.ERROR)
             false
         }
         else -> true
     }
 
-    private suspend fun handleNetworkException(exception: String?) {
-        if (context.isInternetConnectionAvailable()) showMessageDialog(exception)
-        else showMessageDialog(context.getString(R.string.no_internet_connection))
+    private suspend fun handleNetworkException(exception: String) {
+        if (context.isInternetConnectionAvailable()) showMessageDialog(exception, MessageType.ERROR)
+        else showMessageDialog(
+            context.getString(R.string.no_internet_connection),
+            MessageType.NO_INTERNET
+        )
     }
 
-    private fun showMessageDialogSync(message: String?) {
-        _errorMessage.value = message
+    private fun showMessageDialogSync(message: String, type: MessageType) {
+        _errorMessage.value = Message(message, type)
         _errorMessage.value = null
     }
 
-    private suspend fun showMessageDialog(message: String?): Unit =
+    private suspend fun showMessageDialog(message: String, type: MessageType): Unit =
         withContext(Dispatchers.Main) {
-            _errorMessage.value = message
+            _errorMessage.value = Message(message, type)
             _errorMessage.value = null
         }
 

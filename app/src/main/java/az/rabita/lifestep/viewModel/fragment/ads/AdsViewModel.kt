@@ -12,9 +12,11 @@ import az.rabita.lifestep.network.NetworkResult
 import az.rabita.lifestep.network.NetworkResultFailureType
 import az.rabita.lifestep.pojo.apiPOJO.content.AdsTransactionContentPOJO
 import az.rabita.lifestep.pojo.apiPOJO.model.DateModelPOJO
+import az.rabita.lifestep.pojo.holder.Message
 import az.rabita.lifestep.repository.AdsRepository
 import az.rabita.lifestep.repository.ContentsRepository
 import az.rabita.lifestep.repository.TransactionsRepository
+import az.rabita.lifestep.ui.dialog.message.MessageType
 import az.rabita.lifestep.utils.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -36,8 +38,8 @@ class AdsViewModel(application: Application) : AndroidViewModel(application) {
     private val _eventExpiredToken = MutableLiveData(false)
     val eventExpiredToken: LiveData<Boolean> get() = _eventExpiredToken
 
-    private var _errorMessage = MutableLiveData<String?>()
-    val errorMessage: LiveData<String?> get() = _errorMessage
+    private var _errorMessage = MutableLiveData<Message>()
+    val errorMessage: LiveData<Message> get() = _errorMessage
 
     val title = contentsRepository.adsContentTitle
     val body = contentsRepository.adsContentBody
@@ -108,13 +110,13 @@ class AdsViewModel(application: Application) : AndroidViewModel(application) {
 
     }
 
-    private suspend fun handleNetworkException(exception: String?) {
-        if (context.isInternetConnectionAvailable()) showMessageDialog(exception)
-        else showMessageDialog(context.getString(R.string.no_internet_connection))
+    private suspend fun handleNetworkException(exception: String) {
+        if (context.isInternetConnectionAvailable()) showMessageDialog(exception, MessageType.ERROR)
+        else showMessageDialog(context.getString(R.string.no_internet_connection), MessageType.NO_INTERNET)
     }
 
-    private suspend fun showMessageDialog(message: String?): Unit = withContext(Dispatchers.Main) {
-        _errorMessage.value = message
+    private suspend fun showMessageDialog(message: String, type: MessageType): Unit = withContext(Dispatchers.Main) {
+        _errorMessage.value = Message(message, type)
         _errorMessage.value = null
     }
 

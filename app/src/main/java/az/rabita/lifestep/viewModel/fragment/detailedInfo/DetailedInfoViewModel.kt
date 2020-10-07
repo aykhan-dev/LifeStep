@@ -11,9 +11,11 @@ import az.rabita.lifestep.pojo.apiPOJO.content.AssocationDetailsContentPOJO
 import az.rabita.lifestep.pojo.apiPOJO.content.RankerContentPOJO
 import az.rabita.lifestep.pojo.apiPOJO.model.DonateStepModelPOJO
 import az.rabita.lifestep.pojo.apiPOJO.model.DonorsModelPOJO
+import az.rabita.lifestep.pojo.holder.Message
 import az.rabita.lifestep.repository.AssocationsRepository
 import az.rabita.lifestep.repository.TransactionsRepository
 import az.rabita.lifestep.repository.UsersRepository
+import az.rabita.lifestep.ui.dialog.message.MessageType
 import az.rabita.lifestep.utils.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -44,8 +46,8 @@ class DetailedInfoViewModel(application: Application) : AndroidViewModel(applica
     private val _topDonorsList = MutableLiveData<List<RankerContentPOJO>>()
     val topDonorsList: LiveData<List<RankerContentPOJO>> get() = _topDonorsList
 
-    private var _errorMessage = MutableLiveData<String?>()
-    val errorMessage: LiveData<String?> get() = _errorMessage
+    private var _errorMessage = MutableLiveData<Message>()
+    val errorMessage: LiveData<Message> get() = _errorMessage
 
     val donatedStepInput = MutableLiveData<String>().apply {
         observeForever {
@@ -157,7 +159,7 @@ class DetailedInfoViewModel(application: Application) : AndroidViewModel(applica
 
                 uiState.value = UiState.LoadingFinished
 
-            } ?: showMessageDialog("Null argument")
+            }
 
         }
 
@@ -198,15 +200,19 @@ class DetailedInfoViewModel(application: Application) : AndroidViewModel(applica
 
     }
 
-    private suspend fun handleNetworkException(exception: String?) {
-        if (context.isInternetConnectionAvailable()) showMessageDialog(exception)
-        else showMessageDialog(context.getString(R.string.no_internet_connection))
+    private suspend fun handleNetworkException(exception: String) {
+        if (context.isInternetConnectionAvailable()) showMessageDialog(exception, MessageType.ERROR)
+        else showMessageDialog(
+            context.getString(R.string.no_internet_connection),
+            MessageType.NO_INTERNET
+        )
     }
 
-    private suspend fun showMessageDialog(message: String?): Unit = withContext(Dispatchers.Main) {
-        _errorMessage.value = message
-        _errorMessage.value = null
-    }
+    private suspend fun showMessageDialog(message: String, type: MessageType): Unit =
+        withContext(Dispatchers.Main) {
+            _errorMessage.value = Message(message, type)
+            _errorMessage.value = null
+        }
 
     private suspend fun startExpireTokenProcess(): Unit = withContext(Dispatchers.Main) {
         sharedPreferences.setStringElement(TOKEN_KEY, "")

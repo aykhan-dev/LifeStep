@@ -20,7 +20,8 @@ import az.rabita.lifestep.NavGraphMainDirections
 import az.rabita.lifestep.R
 import az.rabita.lifestep.databinding.FragmentHomeBinding
 import az.rabita.lifestep.ui.dialog.loading.LoadingDialog
-import az.rabita.lifestep.ui.dialog.message.SingleMessageDialog
+import az.rabita.lifestep.ui.dialog.message.MessageDialog
+import az.rabita.lifestep.ui.dialog.message.MessageType
 import az.rabita.lifestep.utils.*
 import az.rabita.lifestep.viewModel.fragment.home.HomeViewModel
 import com.google.android.gms.auth.api.signin.GoogleSignIn
@@ -227,13 +228,10 @@ class HomeFragment : Fragment() {
 
         errorMessage.observe(viewLifecycleOwner, {
             it?.let { errorMsg ->
-                activity?.let { activity ->
-                    SingleMessageDialog.popUp(
-                        activity.supportFragmentManager,
-                        ERROR_TAG,
-                        errorMsg
-                    )
-                }
+                MessageDialog.getInstance(errorMsg).show(
+                    requireActivity().supportFragmentManager,
+                    ERROR_TAG
+                )
             }
         })
 
@@ -320,7 +318,10 @@ class HomeFragment : Fragment() {
                         Timber.i("Google fit permission accepted")
                         viewModel.accessGoogleFit()
                     } else {
-                        viewModel.showMessageDialogSync(getString(R.string.google_auth_fail_message))
+                        viewModel.showMessageDialogSync(
+                            getString(R.string.google_auth_fail_message),
+                            MessageType.GOOGLE_FIT_NOT_CONNECTED
+                        )
                     }
                 }
             }

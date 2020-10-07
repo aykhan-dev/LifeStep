@@ -15,7 +15,9 @@ import az.rabita.lifestep.pojo.apiPOJO.model.EmailModelPOJO
 import az.rabita.lifestep.pojo.apiPOJO.model.ForgotPasswordModelPOJO
 import az.rabita.lifestep.pojo.apiPOJO.model.RefreshPasswordModelPOJO
 import az.rabita.lifestep.pojo.dataHolder.ForgotPasswordInfoHolder
+import az.rabita.lifestep.pojo.holder.Message
 import az.rabita.lifestep.repository.UsersRepository
+import az.rabita.lifestep.ui.dialog.message.MessageType
 import az.rabita.lifestep.utils.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -50,8 +52,8 @@ class ForgotPasswordViewModel(application: Application) : AndroidViewModel(appli
     private var _eventBack = MutableLiveData<Boolean>()
     val eventBack: LiveData<Boolean> = _eventBack
 
-    private var _errorMessage = MutableLiveData<String>()
-    val errorMessage: LiveData<String> get() = _errorMessage
+    private var _errorMessage = MutableLiveData<Message>()
+    val errorMessage: LiveData<Message> get() = _errorMessage
 
     val emailInput = MutableLiveData<String>().apply {
         observeForever { _stateEmailConfirmButtonEnable.value = isEmailValid(it) }
@@ -73,7 +75,7 @@ class ForgotPasswordViewModel(application: Application) : AndroidViewModel(appli
     fun onPinConfirmClick() {
         viewModelScope.launch {
             if (checkPinCode(pinInput.value ?: "")) _eventNavigateToPasswordFragment.onOff()
-            else showMessageDialog(getString(R.string.invalid_pin_code))
+            else showMessageDialog(getString(R.string.invalid_pin_code), MessageType.ERROR)
         }
     }
 
@@ -81,7 +83,7 @@ class ForgotPasswordViewModel(application: Application) : AndroidViewModel(appli
         viewModelScope.launch {
             if (checkPasswords()) {
                 if (fromEditProfilePage) sendUpdatePasswordRequest() else sendChangePasswordRequest()
-            } else showMessageDialog(getString(R.string.not_same_passwords))
+            } else showMessageDialog(getString(R.string.not_same_passwords), MessageType.ERROR)
         }
     }
 
@@ -180,13 +182,13 @@ class ForgotPasswordViewModel(application: Application) : AndroidViewModel(appli
 
     private fun checkPinCode(pin: String): Boolean = (pin == details?.otp)
 
-    private suspend fun handleNetworkException(exception: String?) {
-        if (context.isInternetConnectionAvailable()) showMessageDialog(exception)
-        else showMessageDialog(context.getString(R.string.no_internet_connection))
+    private suspend fun handleNetworkException(exception: String) {
+        if (context.isInternetConnectionAvailable()) showMessageDialog(exception, MessageType.ERROR)
+        else showMessageDialog(context.getString(R.string.no_internet_connection), MessageType.NO_INTERNET)
     }
 
-    private suspend fun showMessageDialog(message: String?): Unit = withContext(Dispatchers.Main) {
-        _errorMessage.value = message
+    private suspend fun showMessageDialog(message: String, type: MessageType): Unit = withContext(Dispatchers.Main) {
+        _errorMessage.value = Message(message, type)
         _errorMessage.value = null
     }
 

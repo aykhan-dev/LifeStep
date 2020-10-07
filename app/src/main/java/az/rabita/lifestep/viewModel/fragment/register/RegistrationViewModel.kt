@@ -13,7 +13,9 @@ import az.rabita.lifestep.network.NetworkResultFailureType
 import az.rabita.lifestep.pojo.apiPOJO.content.TokenContentPOJO
 import az.rabita.lifestep.pojo.apiPOJO.model.CheckEmailModelPOJO
 import az.rabita.lifestep.pojo.apiPOJO.model.RegisterModelPOJO
+import az.rabita.lifestep.pojo.holder.Message
 import az.rabita.lifestep.repository.UsersRepository
+import az.rabita.lifestep.ui.dialog.message.MessageType
 import az.rabita.lifestep.utils.*
 import com.onesignal.OneSignal
 import kotlinx.coroutines.Dispatchers
@@ -35,8 +37,8 @@ class RegistrationViewModel(application: Application) : AndroidViewModel(applica
     private var _eventNavigateToMainActivity = MutableLiveData<Boolean>()
     val eventNavigateToMainActivity: LiveData<Boolean> = _eventNavigateToMainActivity
 
-    private val _errorMessage = MutableLiveData<String>()
-    val errorMessage: LiveData<String> = _errorMessage
+    private val _errorMessage = MutableLiveData<Message>()
+    val errorMessage: LiveData<Message> = _errorMessage
 
     private val _eventExpiredToken = MutableLiveData<Boolean>()
     val eventExpiredToken: LiveData<Boolean> = _eventExpiredToken
@@ -125,24 +127,24 @@ class RegistrationViewModel(application: Application) : AndroidViewModel(applica
 
                 }
             }
-        } else showMessageDialogSync(getString(R.string.device_id_error_message))
+        } else showMessageDialogSync(getString(R.string.device_id_error_message), MessageType.ERROR)
     }
 
     private fun areValidFirstRegistrationFields(): Boolean = when {
         (!isEmailValid(emailInput.value ?: "")) -> {
-            showMessageDialogSync(getString(R.string.invalid_email))
+            showMessageDialogSync(getString(R.string.invalid_email), MessageType.ERROR)
             false
         }
         (!isPasswordValid(passwordInput.value ?: "")) -> {
-            showMessageDialogSync(getString(R.string.invalid_password))
+            showMessageDialogSync(getString(R.string.invalid_password), MessageType.ERROR)
             false
         }
         (!isPasswordValid(passwordConfirmInput.value ?: "")) -> {
-            showMessageDialogSync(getString(R.string.invalid_password_confirm))
+            showMessageDialogSync(getString(R.string.invalid_password_confirm), MessageType.ERROR)
             false
         }
         (passwordInput.value ?: "" != passwordConfirmInput.value ?: "") -> {
-            showMessageDialogSync(getString(R.string.not_same_passwords))
+            showMessageDialogSync(getString(R.string.not_same_passwords), MessageType.ERROR)
             false
         }
         else -> true
@@ -150,36 +152,36 @@ class RegistrationViewModel(application: Application) : AndroidViewModel(applica
 
     private fun areValidSecondRegistrationFields(): Boolean = when {
         (nameInput.value ?: "").isEmpty() -> {
-            showMessageDialogSync(getString(R.string.invalid_name))
+            showMessageDialogSync(getString(R.string.invalid_name), MessageType.ERROR)
             false
         }
         (surnameInput.value ?: "").isEmpty() -> {
-            showMessageDialogSync(getString(R.string.invalid_surname))
+            showMessageDialogSync(getString(R.string.invalid_surname), MessageType.ERROR)
             false
         }
         (genderInput.value == null) -> {
-            showMessageDialogSync(getString(R.string.invalid_gender))
+            showMessageDialogSync(getString(R.string.invalid_gender), MessageType.ERROR)
             false
         }
         (phoneInput.value ?: "").isEmpty() -> {
-            showMessageDialogSync(getString(R.string.invalid_phone))
+            showMessageDialogSync(getString(R.string.invalid_phone), MessageType.ERROR)
             false
         }
         else -> true
     }
 
-    private suspend fun handleNetworkException(exception: String?) {
-        if (context.isInternetConnectionAvailable()) showMessageDialog(exception)
-        else showMessageDialog(context.getString(R.string.no_internet_connection))
+    private suspend fun handleNetworkException(exception: String) {
+        if (context.isInternetConnectionAvailable()) showMessageDialog(exception, MessageType.ERROR)
+        else showMessageDialog(context.getString(R.string.no_internet_connection), MessageType.NO_INTERNET)
     }
 
-    private fun showMessageDialogSync(message: String?) {
-        _errorMessage.value = message
+    private fun showMessageDialogSync(message: String, type: MessageType) {
+        _errorMessage.value = Message(message, type)
         _errorMessage.value = null
     }
 
-    private suspend fun showMessageDialog(message: String?): Unit = withContext(Dispatchers.Main) {
-        _errorMessage.value = message
+    private suspend fun showMessageDialog(message: String, type: MessageType): Unit = withContext(Dispatchers.Main) {
+        _errorMessage.value = Message(message, type)
         _errorMessage.value = null
     }
 

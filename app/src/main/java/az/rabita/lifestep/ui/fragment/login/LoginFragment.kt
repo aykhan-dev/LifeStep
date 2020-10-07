@@ -13,7 +13,7 @@ import az.rabita.lifestep.databinding.FragmentLoginBinding
 import az.rabita.lifestep.ui.activity.forgotPassword.ForgotPasswordActivity
 import az.rabita.lifestep.ui.activity.main.MainActivity
 import az.rabita.lifestep.ui.dialog.loading.LoadingDialog
-import az.rabita.lifestep.ui.dialog.message.SingleMessageDialog
+import az.rabita.lifestep.ui.dialog.message.MessageDialog
 import az.rabita.lifestep.utils.*
 import az.rabita.lifestep.viewModel.activity.auth.AuthViewModel
 import az.rabita.lifestep.viewModel.fragment.login.LoginViewModel
@@ -104,13 +104,10 @@ class LoginFragment : Fragment() {
 
         errorMessage.observe(viewLifecycleOwner, {
             it?.let { errorMsg ->
-                activity?.let { activity ->
-                    SingleMessageDialog.popUp(
-                        activity.supportFragmentManager,
-                        ERROR_TAG,
-                        errorMsg
-                    )
-                }
+                MessageDialog.getInstance(errorMsg).show(
+                    requireActivity().supportFragmentManager,
+                    ERROR_TAG
+                )
             }
         })
 

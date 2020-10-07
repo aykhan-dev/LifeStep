@@ -8,7 +8,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import az.rabita.lifestep.databinding.FragmentDonationBinding
-import az.rabita.lifestep.ui.dialog.message.SingleMessageDialog
+import az.rabita.lifestep.ui.dialog.message.MessageDialog
 import az.rabita.lifestep.utils.ERROR_TAG
 import az.rabita.lifestep.utils.logout
 import az.rabita.lifestep.viewModel.fragment.donation.DonationViewModel
@@ -70,13 +70,10 @@ class DonationFragment : Fragment() {
 
         errorMessage.observe(viewLifecycleOwner, {
             it?.let { errorMsg ->
-                activity?.let { activity ->
-                    SingleMessageDialog.popUp(
-                        activity.supportFragmentManager,
-                        ERROR_TAG,
-                        errorMsg
-                    )
-                }
+                MessageDialog.getInstance(errorMsg).show(
+                    requireActivity().supportFragmentManager,
+                    ERROR_TAG
+                )
             }
         })
 

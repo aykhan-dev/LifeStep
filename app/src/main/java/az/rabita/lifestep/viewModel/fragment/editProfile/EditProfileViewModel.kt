@@ -8,7 +8,9 @@ import az.rabita.lifestep.manager.PreferenceManager
 import az.rabita.lifestep.network.NetworkResult
 import az.rabita.lifestep.network.NetworkResultFailureType
 import az.rabita.lifestep.pojo.apiPOJO.model.ChangedProfileDetailsModelPOJO
+import az.rabita.lifestep.pojo.holder.Message
 import az.rabita.lifestep.repository.UsersRepository
+import az.rabita.lifestep.ui.dialog.message.MessageType
 import az.rabita.lifestep.utils.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -32,8 +34,8 @@ class EditProfileViewModel(application: Application) : AndroidViewModel(applicat
     private val _eventCloseEditProfilePage = MutableLiveData<Boolean>()
     val eventCloseEditProfilePage: LiveData<Boolean> get() = _eventCloseEditProfilePage
 
-    private var _errorMessage = MutableLiveData<String?>()
-    val errorMessage: LiveData<String?> get() = _errorMessage
+    private var _errorMessage = MutableLiveData<Message>()
+    val errorMessage: LiveData<Message> get() = _errorMessage
 
     val nameInput = MutableLiveData<String>()
     val surnameInput = MutableLiveData<String>()
@@ -133,37 +135,37 @@ class EditProfileViewModel(application: Application) : AndroidViewModel(applicat
 
     private fun validateFields(): Boolean = when {
         (nameInput.value ?: "").isEmpty() -> {
-            showMessageDialogSync(getString(R.string.invalid_name))
+            showMessageDialogSync(getString(R.string.invalid_name), MessageType.ERROR)
             false
         }
         (surnameInput.value ?: "").isEmpty() -> {
-            showMessageDialogSync(getString(R.string.invalid_surname))
+            showMessageDialogSync(getString(R.string.invalid_surname), MessageType.ERROR)
             false
         }
         (phoneInput.value ?: "").isEmpty() -> {
-            showMessageDialogSync(getString(R.string.invalid_phone))
+            showMessageDialogSync(getString(R.string.invalid_phone), MessageType.ERROR)
             false
         }
         else -> true
     }
 
-    private fun handleNetworkExceptionSync(exception: String?) {
-        if (context.isInternetConnectionAvailable()) showMessageDialogSync(exception)
-        else showMessageDialogSync(context.getString(R.string.no_internet_connection))
+    private fun handleNetworkExceptionSync(exception: String) {
+        if (context.isInternetConnectionAvailable()) showMessageDialogSync(exception, MessageType.ERROR)
+        else showMessageDialogSync(context.getString(R.string.no_internet_connection), MessageType.NO_INTERNET)
     }
 
-    private suspend fun handleNetworkException(exception: String?) {
-        if (context.isInternetConnectionAvailable()) showMessageDialog(exception)
-        else showMessageDialog(context.getString(R.string.no_internet_connection))
+    private suspend fun handleNetworkException(exception: String) {
+        if (context.isInternetConnectionAvailable()) showMessageDialog(exception, MessageType.ERROR)
+        else showMessageDialog(context.getString(R.string.no_internet_connection), MessageType.NO_INTERNET)
     }
 
-    private fun showMessageDialogSync(message: String?) {
-        _errorMessage.value = message
+    private fun showMessageDialogSync(message: String, type: MessageType) {
+        _errorMessage.value = Message(message, type)
         _errorMessage.value = null
     }
 
-    private suspend fun showMessageDialog(message: String?): Unit = withContext(Dispatchers.Main) {
-        _errorMessage.value = message
+    private suspend fun showMessageDialog(message: String, type: MessageType): Unit = withContext(Dispatchers.Main) {
+        _errorMessage.value = Message(message, type)
         _errorMessage.value = null
     }
 

@@ -6,75 +6,66 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.Window
-import android.view.animation.Animation
-import android.view.animation.AnimationUtils
-import androidx.fragment.app.DialogFragment
 import az.rabita.lifestep.R
-import az.rabita.lifestep.databinding.FragmentMessageDialogBinding
+import az.rabita.lifestep.databinding.DialogMessageBinding
 import az.rabita.lifestep.manager.PreferenceManager
+import az.rabita.lifestep.pojo.holder.Message
+import az.rabita.lifestep.ui.dialog.SingleInstanceDialog
 import az.rabita.lifestep.utils.LANG_AZ
 import az.rabita.lifestep.utils.LANG_KEY
 
-class MessageDialog(
-    private val message: String
-) : DialogFragment() {
+object MessageDialog : SingleInstanceDialog() {
 
-    private lateinit var binding: FragmentMessageDialogBinding
+    private lateinit var message: Message
 
-    private lateinit var sharedPreferences: PreferenceManager
-
-    private val openAnimation: Animation by lazy {
-        AnimationUtils.loadAnimation(context, R.anim.fade_in)
+    fun getInstance(message: Message): MessageDialog {
+        this.message = message
+        return this
     }
 
+    private lateinit var binding: DialogMessageBinding
+    private lateinit var sharedPreferences: PreferenceManager
+
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
+        inflater: LayoutInflater,
+        container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        dialog?.let {
-            it.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-            it.window?.requestFeature(Window.FEATURE_NO_TITLE)
-        }
-
-        binding = FragmentMessageDialogBinding.inflate(inflater)
-
-        sharedPreferences = PreferenceManager.getInstance(requireContext())
-
-        return binding.root
+        dialog?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        return DialogMessageBinding.inflate(inflater).also { binding = it }.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        defaultConfigurations()
         bindUI()
+    }
+
+    private fun defaultConfigurations() {
+        sharedPreferences = PreferenceManager.getInstance(requireContext())
     }
 
     private fun bindUI(): Unit = with(binding) {
 
         imageViewIllustration.setImageResource(
-            when (message) {
-                getString(R.string.no_internet_connection) -> R.drawable.img_no_internet
-                getString(R.string.google_auth_fail_message) -> R.drawable.ic_google_fit
-                else -> {
-                    when (sharedPreferences.getIntegerElement(LANG_KEY, LANG_AZ)) {
-                        10 -> R.drawable.img_error_az
-                        20 -> R.drawable.img_error_az
-                        30 -> R.drawable.img_error_az
-                        else -> 0
-                    }
+            when (message.type) {
+                MessageType.NO_INTERNET -> R.drawable.img_no_internet
+                MessageType.ERROR -> when (sharedPreferences.getIntegerElement(LANG_KEY, LANG_AZ)) {
+                    10 -> R.drawable.img_error_az
+                    20 -> R.drawable.img_error_az
+                    30 -> R.drawable.img_error_az
+                    else -> 0
                 }
+                MessageType.GOOGLE_FIT_NOT_DOWNLOADED, MessageType.GOOGLE_FIT_NOT_CONNECTED -> R.drawable.ic_google_fit
             }
         )
 
-        content.startAnimation(openAnimation)
+        textViewMessage.text = message.content
 
-        lifecycleOwner = this@MessageDialog
-        errorMessage = message
+        buttonClose.setOnClickListener {
+            dismiss()
+        }
 
-        root.setOnClickListener { dismiss() }
-        buttonClose.setOnClickListener { dismiss() }
     }
-
-    override fun getTheme(): Int = R.style.DialogTheme
 
 }

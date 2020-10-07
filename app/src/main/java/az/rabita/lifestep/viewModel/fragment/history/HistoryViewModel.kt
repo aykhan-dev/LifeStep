@@ -10,7 +10,9 @@ import androidx.paging.cachedIn
 import az.rabita.lifestep.R
 import az.rabita.lifestep.manager.PreferenceManager
 import az.rabita.lifestep.pojo.apiPOJO.content.HistoryItemContentPOJO
+import az.rabita.lifestep.pojo.holder.Message
 import az.rabita.lifestep.repository.TransactionsRepository
+import az.rabita.lifestep.ui.dialog.message.MessageType
 import az.rabita.lifestep.ui.fragment.history.page.HistoryPageType
 import az.rabita.lifestep.utils.DEFAULT_LANG
 import az.rabita.lifestep.utils.LANG_KEY
@@ -26,8 +28,8 @@ class HistoryViewModel(application: Application) : AndroidViewModel(application)
     private val _eventExpiredToken = MutableLiveData(false)
     val eventExpiredToken: LiveData<Boolean> get() = _eventExpiredToken
 
-    private var _errorMessage = MutableLiveData<String?>()
-    val errorMessage: LiveData<String?> get() = _errorMessage
+    private var _errorMessage = MutableLiveData<Message>()
+    val errorMessage: LiveData<Message> get() = _errorMessage
 
     fun fetchListOfDonations(pageType: HistoryPageType): LiveData<PagingData<HistoryItemContentPOJO>> {
         val token = sharedPreferences.getStringElement(TOKEN_KEY, "")
@@ -41,13 +43,13 @@ class HistoryViewModel(application: Application) : AndroidViewModel(application)
         ).cachedIn(viewModelScope)
     }
 
-    private fun handleNetworkException(exception: String?) {
-        if (context.isInternetConnectionAvailable()) showMessageDialog(exception)
-        else showMessageDialog(context.getString(R.string.no_internet_connection))
+    private fun handleNetworkException(exception: String) {
+        if (context.isInternetConnectionAvailable()) showMessageDialog(exception, MessageType.ERROR)
+        else showMessageDialog(context.getString(R.string.no_internet_connection), MessageType.ERROR)
     }
 
-    private fun showMessageDialog(message: String?) {
-        _errorMessage.value = message
+    private fun showMessageDialog(message: String, type: MessageType) {
+        _errorMessage.value = Message(message, type)
         _errorMessage.value = null
     }
 

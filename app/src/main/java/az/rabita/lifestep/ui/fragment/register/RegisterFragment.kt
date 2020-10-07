@@ -103,7 +103,7 @@ class RegisterFragment : Fragment() {
 
         errorMessage.observe(viewLifecycleOwner, {
             it?.let {
-                MessageDialog(it).show(
+                MessageDialog.getInstance(it).show(
                     requireActivity().supportFragmentManager,
                     ERROR_TAG
                 )

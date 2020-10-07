@@ -73,7 +73,7 @@ class ForgotPasswordActivity : AppCompatActivity() {
 
         errorMessage.observe(this@ForgotPasswordActivity, {
             it?.let {
-                MessageDialog(it).show(supportFragmentManager, ERROR_TAG)
+                MessageDialog.getInstance(it).show(supportFragmentManager, ERROR_TAG)
             }
         })
 

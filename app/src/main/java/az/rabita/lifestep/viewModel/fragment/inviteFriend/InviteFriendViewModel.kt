@@ -7,8 +7,10 @@ import az.rabita.lifestep.local.getDatabase
 import az.rabita.lifestep.manager.PreferenceManager
 import az.rabita.lifestep.network.NetworkResult
 import az.rabita.lifestep.network.NetworkResultFailureType
+import az.rabita.lifestep.pojo.holder.Message
 import az.rabita.lifestep.repository.ContentsRepository
 import az.rabita.lifestep.repository.UsersRepository
+import az.rabita.lifestep.ui.dialog.message.MessageType
 import az.rabita.lifestep.utils.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -35,8 +37,8 @@ class InviteFriendViewModel(application: Application) : AndroidViewModel(applica
 
     val inviteFriendContentMessage = contentsRepository.inviteFriendsContentMessage
 
-    private var _errorMessage = MutableLiveData<String?>()
-    val errorMessage: LiveData<String?> get() = _errorMessage
+    private var _errorMessage = MutableLiveData<Message>()
+    val errorMessage: LiveData<Message> get() = _errorMessage
 
     fun fetchPersonalInfo() {
 
@@ -77,13 +79,13 @@ class InviteFriendViewModel(application: Application) : AndroidViewModel(applica
         if (!inviteFriendContentMessage.value?.content.isNullOrEmpty()) _eventSendSharingMessage.onOff()
     }
 
-    private suspend fun handleNetworkException(exception: String?) {
-        if (context.isInternetConnectionAvailable()) showMessageDialog(exception)
-        else showMessageDialog(context.getString(R.string.no_internet_connection))
+    private suspend fun handleNetworkException(exception: String) {
+        if (context.isInternetConnectionAvailable()) showMessageDialog(exception, MessageType.ERROR)
+        else showMessageDialog(context.getString(R.string.no_internet_connection), MessageType.NO_INTERNET)
     }
 
-    private suspend fun showMessageDialog(message: String?): Unit = withContext(Dispatchers.Main) {
-        _errorMessage.value = message
+    private suspend fun showMessageDialog(message: String, type: MessageType): Unit = withContext(Dispatchers.Main) {
+        _errorMessage.value = Message(message, type)
         _errorMessage.value = null
     }
 

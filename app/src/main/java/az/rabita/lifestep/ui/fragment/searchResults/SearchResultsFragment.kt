@@ -11,7 +11,7 @@ import androidx.navigation.fragment.navArgs
 import az.rabita.lifestep.NavGraphMainDirections
 import az.rabita.lifestep.databinding.FragmentSearchResultBinding
 import az.rabita.lifestep.ui.dialog.loading.LoadingDialog
-import az.rabita.lifestep.ui.dialog.message.SingleMessageDialog
+import az.rabita.lifestep.ui.dialog.message.MessageDialog
 import az.rabita.lifestep.utils.ERROR_TAG
 import az.rabita.lifestep.utils.LOADING_TAG
 import az.rabita.lifestep.utils.UiState
@@ -86,13 +86,10 @@ class SearchResultsFragment : Fragment() {
 
         errorMessage.observe(viewLifecycleOwner, {
             it?.let { errorMsg ->
-                activity?.let { activity ->
-                    SingleMessageDialog.popUp(
-                        activity.supportFragmentManager,
-                        ERROR_TAG,
-                        errorMsg
-                    )
-                }
+                MessageDialog.getInstance(errorMsg).show(
+                    requireActivity().supportFragmentManager,
+                    ERROR_TAG
+                )
             }
         })
     }

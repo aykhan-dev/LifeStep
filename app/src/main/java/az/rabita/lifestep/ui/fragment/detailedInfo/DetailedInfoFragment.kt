@@ -13,12 +13,11 @@ import az.rabita.lifestep.NavGraphMainDirections
 import az.rabita.lifestep.databinding.FragmentDetailedInfoBinding
 import az.rabita.lifestep.pojo.dataHolder.UserProfileInfoHolder
 import az.rabita.lifestep.ui.dialog.loading.LoadingDialog
-import az.rabita.lifestep.ui.dialog.message.SingleMessageDialog
+import az.rabita.lifestep.ui.dialog.message.MessageDialog
 import az.rabita.lifestep.ui.fragment.ranking.RankingRecyclerAdapter
 import az.rabita.lifestep.utils.*
 import az.rabita.lifestep.viewModel.fragment.detailedInfo.DetailedInfoViewModel
 import jp.wasabeef.recyclerview.animators.ScaleInAnimator
-import timber.log.Timber
 
 class DetailedInfoFragment : Fragment() {
 
@@ -79,9 +78,13 @@ class DetailedInfoFragment : Fragment() {
     private fun retrieveStepDonationDetails() {
         navController.currentBackStackEntry!!.savedStateHandle.getLiveData<Map<String, Any>>("donation details")
             .observe(viewLifecycleOwner, Observer {
-                val amount = it["amount"] as Long
-                val isPrivate = it["isPrivate"] as Boolean
-                viewModel.donateStep(args.assocationId, amount, isPrivate)
+                it?.let { data ->
+                    viewModel.profileInfo.value?.let { info ->
+                        val amount = data["amount"] as Long
+                        val isPrivate = data["isPrivate"] as Boolean
+                        viewModel.donateStep(info.id, amount, isPrivate)
+                    }
+                }
             })
     }
 
@@ -142,10 +145,9 @@ class DetailedInfoFragment : Fragment() {
         errorMessage.observe(viewLifecycleOwner, {
             it?.let { errorMsg ->
                 activity?.let { activity ->
-                    SingleMessageDialog.popUp(
+                    MessageDialog.getInstance(errorMsg).show(
                         activity.supportFragmentManager,
-                        ERROR_TAG,
-                        errorMsg
+                        ERROR_TAG
                     )
                 }
             }

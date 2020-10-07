@@ -11,12 +11,11 @@ import android.view.animation.Animation
 import android.view.animation.AnimationUtils
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import az.rabita.lifestep.R
 import az.rabita.lifestep.databinding.FragmentSendStepDialogBinding
-import az.rabita.lifestep.ui.dialog.message.SingleMessageDialog
+import az.rabita.lifestep.ui.dialog.message.MessageDialog
 import az.rabita.lifestep.utils.ERROR_TAG
 import az.rabita.lifestep.utils.hideKeyboard
 import az.rabita.lifestep.utils.logout
@@ -80,13 +79,10 @@ class SendStepDialogFragment : DialogFragment() {
 
         errorMessage.observe(viewLifecycleOwner, {
             it?.let { errorMsg ->
-                activity?.let { activity ->
-                    SingleMessageDialog.popUp(
-                        activity.supportFragmentManager,
-                        ERROR_TAG,
-                        errorMsg
-                    )
-                }
+                MessageDialog.getInstance(errorMsg).show(
+                    requireActivity().supportFragmentManager,
+                    ERROR_TAG
+                )
             }
         })
 
