@@ -72,8 +72,11 @@ class ForgotPasswordActivity : AppCompatActivity() {
     private fun observeData(): Unit = with(viewModel) {
 
         errorMessage.observe(this@ForgotPasswordActivity, {
-            it?.let {
-                MessageDialog.getInstance(it).show(supportFragmentManager, ERROR_TAG)
+            it?.let { errorMsg ->
+                MessageDialog.getInstance(errorMsg).show(
+                    supportFragmentManager,
+                    ERROR_TAG
+                )
             }
         })
 

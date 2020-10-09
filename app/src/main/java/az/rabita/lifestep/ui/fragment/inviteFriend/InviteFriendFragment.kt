@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import az.rabita.lifestep.NavGraphMainDirections
 import az.rabita.lifestep.R
 import az.rabita.lifestep.databinding.FragmentInviteFriendBinding
 import az.rabita.lifestep.ui.dialog.message.MessageDialog

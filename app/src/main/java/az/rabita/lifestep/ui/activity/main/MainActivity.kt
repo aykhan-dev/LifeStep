@@ -9,6 +9,7 @@ import androidx.core.view.updatePadding
 import androidx.databinding.DataBindingUtil
 import androidx.navigation.NavOptions
 import androidx.navigation.findNavController
+import androidx.navigation.ui.setupWithNavController
 import az.rabita.lifestep.R
 import az.rabita.lifestep.databinding.ActivityMainBinding
 import az.rabita.lifestep.manager.LocaleManager
@@ -18,7 +19,6 @@ import az.rabita.lifestep.utils.DEFAULT_LANG_KEY
 import az.rabita.lifestep.utils.NOTIFICATION_INFO_KEY
 import az.rabita.lifestep.utils.makeEdgeToEdge
 import az.rabita.lifestep.viewModel.activity.main.MainViewModel
-import timber.log.Timber
 
 class MainActivity : AppCompatActivity() {
 
@@ -82,8 +82,12 @@ class MainActivity : AppCompatActivity() {
 
     private fun configurations(): Unit = with(binding) {
 
-        navController.addOnDestinationChangedListener { _, destination, _ ->
-            if (destination.id == R.id.homeFragment) this@MainActivity.viewModel.changePage(2)
+        bottomNavigationView.setupWithNavController(navController)
+
+        //TODO refactor item selection
+
+        bottomNavigationView.setOnNavigationItemReselectedListener {
+
         }
 
     }
@@ -92,19 +96,15 @@ class MainActivity : AppCompatActivity() {
 
         indexOfSelectedPage.observe(this@MainActivity, {
             it?.let { index ->
-                if (navController.currentDestination?.id != destinations[index]) {
-                    if (index != 2) {
-                        builder.setPopUpTo(ids[2], false)
-
-                        val options = builder.build()
-
-                        try {
-                            navController.navigate(ids[index], null, options)
-                        } catch (e: IllegalArgumentException) {
-
-                        }
-                    } else navController.popBackStack(ids[2], false)
-                } else Timber.i("Reselection same page")
+                with(binding.bottomNavigationView) {
+                    selectedItemId = when (index) {
+                        0 -> R.id.nav_graph_main_events
+                        1 -> R.id.walletFragment
+                        3 -> R.id.adsFragment
+                        4 -> R.id.nav_graph_main_settings
+                        else -> R.id.homeFragment
+                    }
+                }
             }
         })
 

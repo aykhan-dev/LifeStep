@@ -7,6 +7,8 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
+import az.rabita.lifestep.NavGraphMainDirections
 import az.rabita.lifestep.databinding.FragmentPageBinding
 import az.rabita.lifestep.ui.dialog.message.MessageDialog
 import az.rabita.lifestep.utils.ERROR_TAG
@@ -22,6 +24,8 @@ class PageHistoryFragment(private val pageType: HistoryPageType) : Fragment() {
     private val viewModel by viewModels<HistoryViewModel>()
 
     private val adapter = PageHistoryRecyclerAdapter()
+
+    private val navController by lazy { findNavController() }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,

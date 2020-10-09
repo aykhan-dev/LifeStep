@@ -1,5 +1,6 @@
 package az.rabita.lifestep.ui.dialog
 
+import android.content.DialogInterface
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.FragmentManager
 
@@ -16,6 +17,11 @@ open class SingleInstanceDialog : DialogFragment() {
 
     override fun dismiss() {
         super.dismiss()
+        isOnScreen = false
+    }
+
+    override fun onCancel(dialog: DialogInterface) {
+        super.onCancel(dialog)
         isOnScreen = false
     }
 

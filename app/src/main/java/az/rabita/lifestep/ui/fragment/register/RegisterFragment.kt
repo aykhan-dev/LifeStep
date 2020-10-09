@@ -83,12 +83,10 @@ class RegisterFragment : Fragment() {
         uiState.observe(viewLifecycleOwner, {
             it?.let {
                 when (it) {
-                    is UiState.Loading -> activity?.supportFragmentManager?.let { fm ->
-                        loadingDialog.show(
-                            fm,
-                            LOADING_TAG
-                        )
-                    }
+                    is UiState.Loading -> loadingDialog.show(
+    requireActivity().supportFragmentManager,
+    ERROR_TAG
+)
                     is UiState.LoadingFinished -> {
                         loadingDialog.dismiss()
                         uiState.value = null
@@ -102,8 +100,8 @@ class RegisterFragment : Fragment() {
     private fun observeData(): Unit = with(viewModel) {
 
         errorMessage.observe(viewLifecycleOwner, {
-            it?.let {
-                MessageDialog.getInstance(it).show(
+            it?.let { errorMsg ->
+                MessageDialog.getInstance(errorMsg).show(
                     requireActivity().supportFragmentManager,
                     ERROR_TAG
                 )

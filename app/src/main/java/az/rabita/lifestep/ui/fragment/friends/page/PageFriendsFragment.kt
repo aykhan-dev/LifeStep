@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import az.rabita.lifestep.databinding.FragmentPageFriendsBinding
 import az.rabita.lifestep.ui.dialog.loading.LoadingDialog
 import az.rabita.lifestep.ui.dialog.message.MessageDialog
@@ -35,6 +36,8 @@ class PageFriendsFragment(
         }
 
     private val loadingDialog = LoadingDialog()
+
+    private val navController by lazy { findNavController() }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -104,12 +107,10 @@ class PageFriendsFragment(
         uiState.observe(viewLifecycleOwner, {
             it?.let {
                 when (it) {
-                    is UiState.Loading -> activity?.supportFragmentManager?.let { fm ->
-                        loadingDialog.show(
-                            fm,
-                            LOADING_TAG
-                        )
-                    }
+                    is UiState.Loading -> loadingDialog.show(
+    requireActivity().supportFragmentManager,
+    ERROR_TAG
+)
                     is UiState.LoadingFinished -> {
                         loadingDialog.dismiss()
                         uiState.value = null

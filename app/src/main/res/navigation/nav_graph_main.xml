@@ -6,10 +6,6 @@
     app:startDestination="@id/homeFragment">
 
     <action
-        android:id="@+id/action_to_message_dialog"
-        app:destination="@id/messageDialog" />
-
-    <action
         android:id="@+id/action_to_ads_dialog"
         app:destination="@id/adsDialog" />
 
@@ -40,12 +36,6 @@
     <action
         android:id="@+id/action_to_invite_a_friend_fragment"
         app:destination="@id/inviteFriendFragment" />
-
-    <dialog
-        android:id="@+id/messageDialog"
-        android:name="az.rabita.lifestep.ui.dialog.message.MessageDialog"
-        android:label="MessageDialog"
-        tools:layout="@layout/fragment_message_dialog" />
 
     <dialog
         android:id="@+id/adsDialog"

@@ -144,12 +144,10 @@ class DetailedInfoFragment : Fragment() {
 
         errorMessage.observe(viewLifecycleOwner, {
             it?.let { errorMsg ->
-                activity?.let { activity ->
-                    MessageDialog.getInstance(errorMsg).show(
-                        activity.supportFragmentManager,
-                        ERROR_TAG
-                    )
-                }
+                MessageDialog.getInstance(errorMsg).show(
+                    requireActivity().supportFragmentManager,
+                    ERROR_TAG
+                )
             }
         })
 
@@ -160,12 +158,10 @@ class DetailedInfoFragment : Fragment() {
         uiState.observe(viewLifecycleOwner, {
             it?.let {
                 when (it) {
-                    is UiState.Loading -> activity?.supportFragmentManager?.let { fm ->
-                        loadingDialog.show(
-                            fm,
-                            LOADING_TAG
-                        )
-                    }
+                    is UiState.Loading -> loadingDialog.show(
+                        requireActivity().supportFragmentManager,
+                        ERROR_TAG
+                    )
                     is UiState.LoadingFinished -> {
                         loadingDialog.dismiss()
                         uiState.value = null

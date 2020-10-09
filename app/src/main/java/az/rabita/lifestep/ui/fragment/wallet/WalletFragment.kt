@@ -6,6 +6,8 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
+import az.rabita.lifestep.NavGraphMainDirections
 import az.rabita.lifestep.databinding.FragmentWalletBinding
 import az.rabita.lifestep.ui.dialog.message.MessageDialog
 import az.rabita.lifestep.utils.ERROR_TAG
@@ -17,6 +19,8 @@ class WalletFragment : Fragment() {
     private lateinit var binding: FragmentWalletBinding
 
     private val viewModel by viewModels<WalletViewModel>()
+
+    private val navController by lazy { findNavController() }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
