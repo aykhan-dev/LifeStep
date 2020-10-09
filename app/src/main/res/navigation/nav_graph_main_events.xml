@@ -53,7 +53,7 @@
 
     <dialog
         android:id="@+id/donateStepDialogRefactored"
-        android:name="az.rabita.lifestep.ui.dialog.donateStep.DonateStepDialogRefactored"
+        android:name="az.rabita.lifestep.ui.dialog.donateStep.DonateStepDialog"
         android:label="DonateStepDialogRefactored"
         tools:layout="@layout/dialog_donate_step">
         <argument

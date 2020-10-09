@@ -15,7 +15,10 @@ import az.rabita.lifestep.pojo.dataHolder.UserProfileInfoHolder
 import az.rabita.lifestep.ui.dialog.loading.LoadingDialog
 import az.rabita.lifestep.ui.dialog.message.MessageDialog
 import az.rabita.lifestep.ui.fragment.ranking.RankingRecyclerAdapter
-import az.rabita.lifestep.utils.*
+import az.rabita.lifestep.utils.ERROR_TAG
+import az.rabita.lifestep.utils.UiState
+import az.rabita.lifestep.utils.logout
+import az.rabita.lifestep.utils.moreShortenString
 import az.rabita.lifestep.viewModel.fragment.detailedInfo.DetailedInfoViewModel
 import jp.wasabeef.recyclerview.animators.ScaleInAnimator
 
@@ -63,7 +66,6 @@ class DetailedInfoFragment : Fragment() {
         super.onStart()
         viewModel.fetchPersonalInfo()
         viewModel.fetchDetailedInfo(args.assocationId)
-        checkDonationResult()
     }
 
     private fun bindUI(): Unit = with(binding) {
@@ -79,10 +81,10 @@ class DetailedInfoFragment : Fragment() {
         navController.currentBackStackEntry!!.savedStateHandle.getLiveData<Map<String, Any>>("donation details")
             .observe(viewLifecycleOwner, Observer {
                 it?.let { data ->
-                    viewModel.profileInfo.value?.let { info ->
+                    viewModel.assocationDetails.value?.let { info ->
                         val amount = data["amount"] as Long
                         val isPrivate = data["isPrivate"] as Boolean
-                        viewModel.donateStep(info.id, amount, isPrivate)
+                        viewModel.donateStep(info.id, args.assocationId, amount, isPrivate)
                     }
                 }
             })
@@ -189,16 +191,6 @@ class DetailedInfoFragment : Fragment() {
             }
         })
 
-    }
-
-    private fun checkDonationResult() {
-        navController.currentBackStackEntry?.savedStateHandle?.getLiveData<Boolean>(
-            STEP_DONATED_RESULT
-        )?.observe(viewLifecycleOwner, { result ->
-            if (result) {
-                navController.navigate(NavGraphMainDirections.actionToCongratsDialog())
-            }
-        })
     }
 
 }

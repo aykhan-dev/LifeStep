@@ -1,4 +1,4 @@
-package az.rabita.lifestep.ui.dialog.donateStep
+package az.rabita.lifestep.ui.dialog.sendStep
 
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
@@ -10,16 +10,21 @@ import android.view.ViewGroup
 import androidx.core.widget.doAfterTextChanged
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
-import az.rabita.lifestep.databinding.DialogDonateStepBinding
+import az.rabita.lifestep.databinding.DialogSendStepBinding
 import az.rabita.lifestep.ui.dialog.SingleInstanceDialog
 
-class DonateStepDialogRefactored : SingleInstanceDialog() {
+class SendStepDialog : SingleInstanceDialog() {
 
-    private lateinit var binding: DialogDonateStepBinding
+    companion object {
+        const val RESULT_KEY = "step sending details"
+        const val AMOUNT_KEY = "amount"
+    }
+
+    private lateinit var binding: DialogSendStepBinding
+
+    private val args by navArgs<SendStepDialogArgs>()
 
     private val navController by lazy { findNavController() }
-
-    private val args by navArgs<DonateStepDialogRefactoredArgs>()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -27,7 +32,7 @@ class DonateStepDialogRefactored : SingleInstanceDialog() {
         savedInstanceState: Bundle?
     ): View? {
         dialog?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-        return DialogDonateStepBinding.inflate(inflater).also { binding = it }.root
+        return DialogSendStepBinding.inflate(inflater).also { binding = it }.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -37,15 +42,15 @@ class DonateStepDialogRefactored : SingleInstanceDialog() {
 
     private fun bindUI(): Unit = with(binding) {
 
-        editTextAmount.hint = args.ownProfileInfo.balance.toString()
+        editTextAmount.hint = args.profileInfo.balance.toString()
 
         editTextAmount.doAfterTextChanged {
             it?.let { amount ->
                 if (amount.isNotEmpty()) {
-                    if (amount.toString().toLong() > args.ownProfileInfo.balance ?: 0L) {
+                    if (amount.toString().toLong() > args.profileInfo.balance ?: 0L) {
                         with(editTextAmount) {
                             text = SpannableStringBuilder(
-                                args.ownProfileInfo.balance?.toString() ?: ""
+                                args.profileInfo.balance?.toString() ?: ""
                             )
                             setSelection(text.length)
                         }
@@ -54,24 +59,14 @@ class DonateStepDialogRefactored : SingleInstanceDialog() {
             }
         }
 
-        buttonDonateSteps.setOnClickListener {
+        buttonSendSteps.setOnClickListener {
             if (editTextAmount.text.toString().isNotEmpty()) {
                 navController.previousBackStackEntry!!.savedStateHandle.set(
-                    "donation details",
-                    mapOf(
-                        "amount" to editTextAmount.text.toString().toLong(),
-                        "isPrivate" to switcher.isSelected
-                    )
+                    RESULT_KEY,
+                    mapOf(AMOUNT_KEY to editTextAmount.text.toString().toLong())
                 )
             }
             navController.popBackStack()
-        }
-
-        switcher.setOnSwitchListener {
-            navController.previousBackStackEntry!!.savedStateHandle.set(
-                "isPrivate",
-                it
-            )
         }
 
     }

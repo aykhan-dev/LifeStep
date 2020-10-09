@@ -13,15 +13,19 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
-import az.rabita.lifestep.NavGraphMainDirections
 import az.rabita.lifestep.R
 import az.rabita.lifestep.databinding.FragmentUserProfileBinding
 import az.rabita.lifestep.pojo.dataHolder.UserProfileInfoHolder
 import az.rabita.lifestep.ui.activity.imageReview.ImageReviewActivity
+import az.rabita.lifestep.ui.dialog.loading.LoadingDialog
 import az.rabita.lifestep.ui.dialog.message.MessageDialog
+import az.rabita.lifestep.ui.dialog.sendStep.SendStepDialog
 import az.rabita.lifestep.utils.ERROR_TAG
+import az.rabita.lifestep.utils.LOADING_TAG
+import az.rabita.lifestep.utils.UiState
 import az.rabita.lifestep.utils.logout
 import az.rabita.lifestep.viewModel.fragment.profileDetails.OtherUserProfileViewModel
 
@@ -33,6 +37,8 @@ class OtherUserProfileFragment : Fragment() {
     private val args by navArgs<OtherUserProfileFragmentArgs>()
 
     private val navController by lazy { findNavController() }
+
+    private val loadingDialog = LoadingDialog()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -46,6 +52,7 @@ class OtherUserProfileFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         bindUI()
+        retrieveStepSendingResult()
     }
 
     override fun onStart() {
@@ -60,6 +67,7 @@ class OtherUserProfileFragment : Fragment() {
         super.onActivityCreated(savedInstanceState)
         observeData()
         observeEvents()
+        observeStates()
     }
 
     private fun bindUI(): Unit = with(binding) {
@@ -88,6 +96,22 @@ class OtherUserProfileFragment : Fragment() {
                 startActivity(intent)
             }
         }
+    }
+
+    private fun observeStates(): Unit = with(viewModel) {
+
+        uiState.observe(viewLifecycleOwner, Observer {
+            it?.let {
+                when (it) {
+                    is UiState.Loading -> loadingDialog.show(
+                        requireActivity().supportFragmentManager,
+                        LOADING_TAG
+                    )
+                    is UiState.LoadingFinished -> loadingDialog.dismiss()
+                }
+            }
+        })
+
     }
 
     private fun observeEvents(): Unit = with(viewModel) {
@@ -180,6 +204,17 @@ class OtherUserProfileFragment : Fragment() {
             }
         })
 
+    }
+
+    private fun retrieveStepSendingResult() {
+        navController.currentBackStackEntry!!.savedStateHandle.getLiveData<Map<String, Any>>(
+            SendStepDialog.RESULT_KEY
+        ).observe(viewLifecycleOwner, Observer {
+            it?.let { data ->
+                val amount = data[SendStepDialog.AMOUNT_KEY] as Long
+                viewModel.sendStep(amount)
+            }
+        })
     }
 
 }

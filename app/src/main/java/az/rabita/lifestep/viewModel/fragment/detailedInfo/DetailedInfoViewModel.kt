@@ -129,43 +129,7 @@ class DetailedInfoViewModel(application: Application) : AndroidViewModel(applica
         }
     }
 
-    fun donateStep(postId: String?, isPrivate: Boolean) {
-
-        viewModelScope.launch {
-
-            postId?.let {
-
-                uiState.value = UiState.Loading
-
-                val token = sharedPreferences.getStringElement(TOKEN_KEY, "")
-                val lang = sharedPreferences.getIntegerElement(LANG_KEY, DEFAULT_LANG)
-
-                val formatted = getDateAndTime()
-
-                val model = DonateStepModelPOJO(
-                    id = it,
-                    isPrivate = isPrivate,
-                    count = (donatedStepInput.value ?: "0").toLong(),
-                    createdDate = formatted,
-                )
-
-                when (val response = transactionsRepository.donateStep(token, lang, model)) {
-                    is NetworkResult.Success<*> -> _eventShowCongratsDialog.onOff()
-                    is NetworkResult.Failure -> when (response.type) {
-                        NetworkResultFailureType.EXPIRED_TOKEN -> startExpireTokenProcess()
-                        else -> handleNetworkException(response.message)
-                    }
-                }
-
-                uiState.value = UiState.LoadingFinished
-
-            }
-
-        }
-
-    }
-
-    fun donateStep(postId: String, amount: Long, isPrivate: Boolean) {
+    fun donateStep(postId: String, assocationId: String, amount: Long, isPrivate: Boolean) {
 
         viewModelScope.launch {
 
@@ -185,7 +149,7 @@ class DetailedInfoViewModel(application: Application) : AndroidViewModel(applica
 
             when (val response = transactionsRepository.donateStep(token, lang, model)) {
                 is NetworkResult.Success<*> -> {
-                    fetchDetailedInfo(postId)
+                    fetchDetailedInfo(assocationId)
                     _eventShowCongratsDialog.onOff()
                 }
                 is NetworkResult.Failure -> when (response.type) {

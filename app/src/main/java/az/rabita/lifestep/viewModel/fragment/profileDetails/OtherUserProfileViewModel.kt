@@ -1,6 +1,7 @@
 package az.rabita.lifestep.viewModel.fragment.profileDetails
 
 import android.app.Application
+import android.text.format.DateFormat
 import androidx.lifecycle.*
 import az.rabita.lifestep.R
 import az.rabita.lifestep.local.getDatabase
@@ -9,9 +10,11 @@ import az.rabita.lifestep.network.NetworkResult
 import az.rabita.lifestep.network.NetworkResultFailureType
 import az.rabita.lifestep.pojo.apiPOJO.content.PersonalInfoContentPOJO
 import az.rabita.lifestep.pojo.apiPOJO.model.FriendRequestModelPOJO
+import az.rabita.lifestep.pojo.apiPOJO.model.SendStepModelPOJO
 import az.rabita.lifestep.pojo.dataHolder.AllInOneOtherUserInfoHolder
 import az.rabita.lifestep.pojo.holder.Message
 import az.rabita.lifestep.repository.FriendshipRepository
+import az.rabita.lifestep.repository.TransactionsRepository
 import az.rabita.lifestep.repository.UsersRepository
 import az.rabita.lifestep.ui.custom.BarDiagram
 import az.rabita.lifestep.ui.dialog.message.MessageType
@@ -20,6 +23,7 @@ import az.rabita.lifestep.utils.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.util.*
 
 class OtherUserProfileViewModel(app: Application) : AndroidViewModel(app) {
 
@@ -27,6 +31,7 @@ class OtherUserProfileViewModel(app: Application) : AndroidViewModel(app) {
     private val sharedPreferences = PreferenceManager.getInstance(context)
 
     private val usersRepository = UsersRepository.getInstance(getDatabase(context))
+    private val transactionsRepository = TransactionsRepository
     private val friendshipRepository = FriendshipRepository
 
     private val _eventExpiredToken = MutableLiveData(false)
@@ -50,9 +55,13 @@ class OtherUserProfileViewModel(app: Application) : AndroidViewModel(app) {
 
     val friendshipStatus: LiveData<FriendshipStatus> = MutableLiveData()
 
+    val uiState = MutableLiveData<UiState>()
+
     fun fetchAllInOneProfileInfo(userId: String) {
 
         viewModelScope.launch {
+
+            uiState.value = UiState.Loading
 
             val token = sharedPreferences.getStringElement(TOKEN_KEY, "")
             val lang = sharedPreferences.getIntegerElement(LANG_KEY, DEFAULT_LANG)
@@ -78,6 +87,8 @@ class OtherUserProfileViewModel(app: Application) : AndroidViewModel(app) {
                     else -> handleNetworkException(response.message)
                 }
             }
+
+            uiState.value = UiState.LoadingFinished
 
         }
 
@@ -105,6 +116,8 @@ class OtherUserProfileViewModel(app: Application) : AndroidViewModel(app) {
 
         viewModelScope.launch {
 
+            uiState.value = UiState.Loading
+
             val token = sharedPreferences.getStringElement(TOKEN_KEY, "")
             val lang = sharedPreferences.getIntegerElement(LANG_KEY, DEFAULT_LANG)
 
@@ -117,6 +130,44 @@ class OtherUserProfileViewModel(app: Application) : AndroidViewModel(app) {
                     else -> handleNetworkException(response.message)
                 }
             }
+
+            uiState.value = UiState.LoadingFinished
+
+        }
+
+    }
+
+    fun sendStep(amount: Long) {
+
+        viewModelScope.launch {
+
+            uiState.value = UiState.Loading
+
+            val token = sharedPreferences.getStringElement(TOKEN_KEY, "")
+            val lang = sharedPreferences.getIntegerElement(LANG_KEY, DEFAULT_LANG)
+
+            val date = Calendar.getInstance().time
+            val formatted = DateFormat.format("yyyy-MM-dd hh:mm:ss", date)
+
+            val model = SendStepModelPOJO(
+                userId = profileInfo.value?.id ?: "",
+                count = amount,
+                date = formatted.toString()
+            )
+
+            when (val response = transactionsRepository.transferSteps(token, lang, model)) {
+                is NetworkResult.Success<*> -> {
+                    profileInfo.value?.let {
+                        fetchAllInOneProfileInfo(it.id)
+                    }
+                }
+                is NetworkResult.Failure -> when (response.type) {
+                    NetworkResultFailureType.EXPIRED_TOKEN -> startExpireTokenProcess()
+                    else -> handleNetworkException(response.message)
+                }
+            }
+
+            uiState.value = UiState.LoadingFinished
 
         }
 
@@ -134,13 +185,17 @@ class OtherUserProfileViewModel(app: Application) : AndroidViewModel(app) {
 
     private suspend fun handleNetworkException(exception: String) {
         if (context.isInternetConnectionAvailable()) showMessageDialog(exception, MessageType.ERROR)
-        else showMessageDialog(context.getString(R.string.no_internet_connection), MessageType.NO_INTERNET)
+        else showMessageDialog(
+            context.getString(R.string.no_internet_connection),
+            MessageType.NO_INTERNET
+        )
     }
 
-    private suspend fun showMessageDialog(message: String, type: MessageType): Unit = withContext(Dispatchers.Main) {
-        _errorMessage.value = Message(message, type)
-        _errorMessage.value = null
-    }
+    private suspend fun showMessageDialog(message: String, type: MessageType): Unit =
+        withContext(Dispatchers.Main) {
+            _errorMessage.value = Message(message, type)
+            _errorMessage.value = null
+        }
 
     private suspend fun startExpireTokenProcess(): Unit = withContext(Dispatchers.Main) {
         sharedPreferences.setStringElement(TOKEN_KEY, "")

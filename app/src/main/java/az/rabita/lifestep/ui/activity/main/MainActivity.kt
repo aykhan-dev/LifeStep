@@ -7,7 +7,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.updatePadding
 import androidx.databinding.DataBindingUtil
-import androidx.navigation.NavOptions
+import androidx.lifecycle.Observer
 import androidx.navigation.findNavController
 import androidx.navigation.ui.setupWithNavController
 import az.rabita.lifestep.R
@@ -28,27 +28,6 @@ class MainActivity : AppCompatActivity() {
 
     private val navController by lazy { findNavController(R.id.fragment_main_host) }
 
-    private val builder = NavOptions.Builder()
-        .setLaunchSingleTop(true)
-        .setEnterAnim(R.anim.nav_default_enter_anim)
-        .setPopEnterAnim(R.anim.nav_default_pop_enter_anim)
-
-    private val ids = listOf(
-        R.id.nav_graph_main_events,
-        R.id.walletFragment,
-        R.id.homeFragment,
-        R.id.adsFragment,
-        R.id.nav_graph_main_settings
-    )
-
-    private val destinations = listOf(
-        R.id.eventsFragment,
-        R.id.walletFragment,
-        R.id.homeFragment,
-        R.id.adsFragment,
-        R.id.settingsFragment
-    )
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
@@ -57,8 +36,8 @@ class MainActivity : AppCompatActivity() {
 
         bindUI()
         analyzeIntentComingFromNotificationEvent()
-        navigate()
         configurations()
+        observeData()
     }
 
     private fun bindUI(): Unit = with(binding) {
@@ -90,14 +69,18 @@ class MainActivity : AppCompatActivity() {
 
         }
 
+        navController.addOnDestinationChangedListener { controller, destination, arguments ->
+            if(destination.id == R.id.homeFragment) this@MainActivity.viewModel.changePage(2)
+        }
+
     }
 
-    private fun navigate(): Unit = with(viewModel) {
+    private fun observeData(): Unit = with(viewModel) {
 
-        indexOfSelectedPage.observe(this@MainActivity, {
-            it?.let { index ->
+        indexOfSelectedPage.observe(this@MainActivity, Observer {
+            it?.let {
                 with(binding.bottomNavigationView) {
-                    selectedItemId = when (index) {
+                    selectedItemId = when (it) {
                         0 -> R.id.nav_graph_main_events
                         1 -> R.id.walletFragment
                         3 -> R.id.adsFragment

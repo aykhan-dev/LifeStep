@@ -4,18 +4,14 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.launch
 
 class MainViewModel(application: Application) : AndroidViewModel(application) {
 
-    private val _indexOfSelectedPage = MutableLiveData<Int>()
-    val indexOfSelectedPage: LiveData<Int> get() = _indexOfSelectedPage
+    private val _indexOfSelectedPage = MutableLiveData(2)
+    val indexOfSelectedPage: LiveData<Int> = _indexOfSelectedPage
 
     fun changePage(index: Int) {
-        viewModelScope.launch {
-            _indexOfSelectedPage.postValue(index)
-        }
+        _indexOfSelectedPage.postValue(index)
     }
 
 }

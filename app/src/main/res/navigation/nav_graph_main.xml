@@ -10,6 +10,10 @@
         app:destination="@id/adsDialog" />
 
     <action
+        android:id="@+id/action_to_bonus_step_dialog"
+        app:destination="@id/bonusStepDialog" />
+
+    <action
         android:id="@+id/action_to_loading_dialog"
         app:destination="@id/loadingDialog" />
 
@@ -61,7 +65,7 @@
         android:id="@+id/congratsDialog"
         android:name="az.rabita.lifestep.ui.dialog.congrats.CongratsDialog"
         android:label="CongratsDialog"
-        tools:layout="@layout/fragment_congrats_dialog" />
+        tools:layout="@layout/dialog_congrats" />
 
     <fragment
         android:id="@+id/homeFragment"
@@ -123,5 +127,11 @@
         android:name="az.rabita.lifestep.ui.fragment.inviteFriend.InviteFriendFragment"
         android:label="InviteFriendFragment"
         tools:layout="@layout/fragment_invite_friend" />
+
+    <dialog
+        android:id="@+id/bonusStepDialog"
+        android:name="az.rabita.lifestep.ui.dialog.bonusStep.BonusStepDialog"
+        android:label="BonusStepDialog"
+        tools:layout="@layout/dialog_bonus_step" />
 
 </navigation>

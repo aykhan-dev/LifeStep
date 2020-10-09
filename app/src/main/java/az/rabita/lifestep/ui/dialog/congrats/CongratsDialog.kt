@@ -6,52 +6,20 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.Window
-import android.view.animation.Animation
-import android.view.animation.AnimationUtils
-import androidx.fragment.app.DialogFragment
-import androidx.navigation.fragment.findNavController
-import az.rabita.lifestep.R
-import az.rabita.lifestep.databinding.FragmentCongratsDialogBinding
+import az.rabita.lifestep.databinding.DialogCongratsBinding
+import az.rabita.lifestep.ui.dialog.SingleInstanceDialog
 
-class CongratsDialog : DialogFragment() {
+class CongratsDialog : SingleInstanceDialog() {
 
-    private lateinit var binding: FragmentCongratsDialogBinding
-
-    private val navController by lazy { findNavController() }
-
-    private val openAnimation: Animation by lazy {
-        AnimationUtils.loadAnimation(context, R.anim.fade_in)
-    }
+    private lateinit var binding: DialogCongratsBinding
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
+        inflater: LayoutInflater,
+        container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        dialog?.let {
-            it.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-            it.window?.requestFeature(Window.FEATURE_NO_TITLE)
-        }
-
-        binding = FragmentCongratsDialogBinding.inflate(inflater)
-        return binding.root
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        bindUI()
-    }
-
-    private fun bindUI(): Unit = with(binding) {
-        lifecycleOwner = this@CongratsDialog
-
-        binding.content.startAnimation(openAnimation)
-
-        root.setOnClickListener { dismiss() }
-    }
-
-    override fun getTheme(): Int {
-        return R.style.DialogTheme
+        dialog?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        return DialogCongratsBinding.inflate(inflater).also { binding = it }.root
     }
 
 }

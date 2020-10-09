@@ -95,18 +95,19 @@ class SearchResultsFragment : Fragment() {
     }
 
     private fun observeStates(): Unit = with(viewModel) {
+
         searchingState.observe(viewLifecycleOwner, {
             it?.let {
                 when (it) {
-                    is UiState.Loading -> {
-                        activity?.let { activity ->
-                            loadingDialog.show(activity.supportFragmentManager, LOADING_TAG)
-                        }
-                    }
+                    is UiState.Loading -> loadingDialog.show(
+                        requireActivity().supportFragmentManager,
+                        LOADING_TAG
+                    )
                     is UiState.LoadingFinished -> loadingDialog.dismiss()
                 }
             }
         })
+
     }
 
     private fun observeEvents(): Unit = with(viewModel) {

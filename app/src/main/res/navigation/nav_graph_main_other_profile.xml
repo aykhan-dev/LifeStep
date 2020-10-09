@@ -20,14 +20,9 @@
 
     <dialog
         android:id="@+id/sendStepDialog"
-        android:name="az.rabita.lifestep.ui.dialog.sendStep.SendStepDialogFragment"
+        android:name="az.rabita.lifestep.ui.dialog.sendStep.SendStepDialog"
         android:label="SendStepDialogFragment"
-        tools:layout="@layout/fragment_send_step_dialog">
-        <action
-            android:id="@+id/action_sendStepDialog_to_otherUserProfileFragment"
-            app:destination="@id/otherUserProfileFragment"
-            app:popUpTo="@id/otherUserProfileFragment"
-            app:popUpToInclusive="true" />
+        tools:layout="@layout/dialog_send_step">
         <argument
             android:name="profileInfo"
             app:argType="az.rabita.lifestep.pojo.dataHolder.UserProfileInfoHolder" />
