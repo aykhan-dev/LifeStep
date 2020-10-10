@@ -43,7 +43,7 @@
 
     <dialog
         android:id="@+id/adsDialog"
-        android:name="az.rabita.lifestep.ui.dialog.ads.AdsDialogFragment"
+        android:name="az.rabita.lifestep.ui.dialog.ads.AdsDialog"
         android:label="AdsDialogFragment"
         tools:layout="@layout/fragment_ads_dialog">
         <argument
@@ -59,7 +59,7 @@
         android:id="@+id/loadingDialog"
         android:name="az.rabita.lifestep.ui.dialog.ads.AdsDialogFragment"
         android:label="AdsDialogFragment"
-        tools:layout="@layout/fragment_loading_dialog" />
+        tools:layout="@layout/dialog_loading" />
 
     <dialog
         android:id="@+id/congratsDialog"

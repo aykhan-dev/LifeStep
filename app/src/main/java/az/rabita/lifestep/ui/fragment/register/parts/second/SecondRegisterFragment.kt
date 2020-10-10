@@ -47,7 +47,7 @@ class SecondRegisterFragment(private val buttonBackClickListener: () -> Unit) : 
         editTextGender.onFocusChangeListener =
             OnFocusChangeListener { _, hasFocus -> if (hasFocus) editTextGender.showDropDown() }
 
-        root.setOnClickListener { root.hideKeyboard(context) }
+        root.setOnClickListener { root.hideKeyboard() }
     }
 
     private fun configurations() {

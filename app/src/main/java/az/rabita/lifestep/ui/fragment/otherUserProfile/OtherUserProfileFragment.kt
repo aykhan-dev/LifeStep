@@ -52,7 +52,6 @@ class OtherUserProfileFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         bindUI()
-        retrieveStepSendingResult()
     }
 
     override fun onStart() {
@@ -68,6 +67,7 @@ class OtherUserProfileFragment : Fragment() {
         observeData()
         observeEvents()
         observeStates()
+        retrieveStepSendingResult()
     }
 
     private fun bindUI(): Unit = with(binding) {
@@ -207,14 +207,17 @@ class OtherUserProfileFragment : Fragment() {
     }
 
     private fun retrieveStepSendingResult() {
-        navController.currentBackStackEntry!!.savedStateHandle.getLiveData<Map<String, Any>>(
-            SendStepDialog.RESULT_KEY
-        ).observe(viewLifecycleOwner, Observer {
-            it?.let { data ->
-                val amount = data[SendStepDialog.AMOUNT_KEY] as Long
-                viewModel.sendStep(amount)
-            }
-        })
+
+        val stateHandle = navController.currentBackStackEntry!!.savedStateHandle
+
+        stateHandle.getLiveData<Map<String, Any>>(SendStepDialog.RESULT_KEY)
+            .observe(viewLifecycleOwner, Observer {
+                it?.let { data ->
+                    val amount = data[SendStepDialog.AMOUNT_KEY] as Long
+                    viewModel.sendStep(amount)
+                }
+            })
+
     }
 
 }

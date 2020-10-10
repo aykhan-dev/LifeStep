@@ -10,6 +10,7 @@ import az.rabita.lifestep.network.NetworkResult
 import az.rabita.lifestep.network.NetworkResultFailureType
 import az.rabita.lifestep.pojo.apiPOJO.content.AdsTransactionContentPOJO
 import az.rabita.lifestep.pojo.apiPOJO.content.SearchResultContentPOJO
+import az.rabita.lifestep.pojo.apiPOJO.model.ConvertStepsModelPOJO
 import az.rabita.lifestep.pojo.apiPOJO.model.CurrentStepModelPOJO
 import az.rabita.lifestep.pojo.apiPOJO.model.DateModelPOJO
 import az.rabita.lifestep.pojo.holder.Message
@@ -17,6 +18,7 @@ import az.rabita.lifestep.repository.AdsRepository
 import az.rabita.lifestep.repository.ReportRepository
 import az.rabita.lifestep.repository.TransactionsRepository
 import az.rabita.lifestep.repository.UsersRepository
+import az.rabita.lifestep.ui.dialog.ads.AdsDialog
 import az.rabita.lifestep.ui.dialog.message.MessageType
 import az.rabita.lifestep.utils.*
 import com.google.android.gms.auth.api.signin.GoogleSignIn
@@ -39,9 +41,7 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
     private val transactionsRepository = TransactionsRepository
     private val adsRepository = AdsRepository
 
-    val searchInput: MutableLiveData<String> = MutableLiveData<String>().apply {
-        observeForever { fetchSearchResults() }
-    }
+    val searchInput: MutableLiveData<String> = MutableLiveData<String>()
 
     private val _adsTransaction = MutableLiveData<AdsTransactionContentPOJO>()
     val adsTransaction: LiveData<AdsTransactionContentPOJO> get() = _adsTransaction
@@ -61,6 +61,8 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
     val uiState = MutableLiveData<UiState>()
 
     val cachedOwnProfileInfo = usersRepository.cachedProfileInfo
+
+    var adsGenerated = false
 
     fun fetchOwnProfileInfo() {
 
@@ -84,7 +86,7 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
 
         viewModelScope.launch {
 
-            searchingState.value = UiState.Loading
+            uiState.value = UiState.Loading
 
             val token = sharedPreferences.getStringElement(TOKEN_KEY, "")
             val lang = sharedPreferences.getIntegerElement(LANG_KEY, DEFAULT_LANG)
@@ -101,7 +103,7 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
                 }
             }
 
-            searchingState.value = UiState.LoadingFinished
+            uiState.value = UiState.LoadingFinished
 
         }
 
@@ -156,25 +158,37 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
 
     }
 
-    fun convertSteps() {
+    fun convertSteps(data: Map<String, Any>) {
+
+        val transactionId = data[AdsDialog.ID_KEY] as String
+        val watchedSeconds = data[AdsDialog.WATCHED_TIME_KEY] as Int
+        val isForBonusSteps = data[AdsDialog.IS_FOR_BONUS_STEPS_KEY] as Boolean
+        val watchTime = data[AdsDialog.TOTAL_WATCH_TIME_KEY] as Int
+
+        if (isForBonusSteps) return
 
         viewModelScope.launch {
+
+            uiState.value = UiState.Loading
 
             val token = sharedPreferences.getStringElement(TOKEN_KEY, "")
             val lang = sharedPreferences.getIntegerElement(LANG_KEY, DEFAULT_LANG)
 
-            val date = Calendar.getInstance().time
-            val formatted = DateFormat.format("yyyy-MM-dd hh:mm:ss", date)
+            val model = ConvertStepsModelPOJO(
+                transactionId = transactionId,
+                watchTime = watchTime,
+                createdDate = getDateAndTime()
+            )
 
-            val model = DateModelPOJO(date = formatted.toString())
-
-            when (val response = transactionsRepository.convertSteps(token, lang, model)) {
+            when (val response = adsRepository.sendAdsTransactionResult(token, lang, model)) {
                 is NetworkResult.Success<*> -> fetchWeeklyStats()
                 is NetworkResult.Failure -> when (response.type) {
                     NetworkResultFailureType.EXPIRED_TOKEN -> startExpireTokenProcess()
                     else -> handleNetworkException(response.message)
                 }
             }
+
+            uiState.value = UiState.LoadingFinished
 
         }
 
@@ -195,6 +209,7 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
                 is NetworkResult.Success<*> -> {
                     val data = response.data as List<AdsTransactionContentPOJO>
                     if (data.isNotEmpty()) {
+                        adsGenerated = true
                         _adsTransaction.value = data[0]
                         _adsTransaction.value = null
                     }
@@ -248,10 +263,11 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
         _errorMessage.value = null
     }
 
-    suspend fun showMessageDialog(message: String, type: MessageType): Unit = withContext(Dispatchers.Main) {
-        _errorMessage.value = Message(message, type)
-        _errorMessage.value = null
-    }
+    suspend fun showMessageDialog(message: String, type: MessageType): Unit =
+        withContext(Dispatchers.Main) {
+            _errorMessage.value = Message(message, type)
+            _errorMessage.value = null
+        }
 
     private suspend fun startExpireTokenProcess(): Unit = withContext(Dispatchers.Main) {
         sharedPreferences.setStringElement(TOKEN_KEY, "")

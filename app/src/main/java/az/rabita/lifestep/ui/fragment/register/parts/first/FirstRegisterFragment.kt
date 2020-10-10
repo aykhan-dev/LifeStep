@@ -33,7 +33,7 @@ class FirstRegisterFragment : Fragment() {
         viewModel = this@FirstRegisterFragment.viewModel
 
         buttonHaveAccount.setOnClickListener { activity?.onBackPressed() }
-        root.setOnClickListener { root.hideKeyboard(context) }
+        root.setOnClickListener { root.hideKeyboard() }
     }
 
 }

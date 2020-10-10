@@ -11,11 +11,13 @@ import az.rabita.lifestep.manager.PreferenceManager
 import az.rabita.lifestep.network.NetworkResult
 import az.rabita.lifestep.network.NetworkResultFailureType
 import az.rabita.lifestep.pojo.apiPOJO.content.AdsTransactionContentPOJO
+import az.rabita.lifestep.pojo.apiPOJO.model.ConvertStepsModelPOJO
 import az.rabita.lifestep.pojo.apiPOJO.model.DateModelPOJO
 import az.rabita.lifestep.pojo.holder.Message
 import az.rabita.lifestep.repository.AdsRepository
 import az.rabita.lifestep.repository.ContentsRepository
 import az.rabita.lifestep.repository.TransactionsRepository
+import az.rabita.lifestep.ui.dialog.ads.AdsDialog
 import az.rabita.lifestep.ui.dialog.message.MessageType
 import az.rabita.lifestep.utils.*
 import kotlinx.coroutines.Dispatchers
@@ -34,6 +36,9 @@ class AdsViewModel(application: Application) : AndroidViewModel(application) {
 
     private val _adsTransaction = MutableLiveData<AdsTransactionContentPOJO>()
     val adsTransaction: LiveData<AdsTransactionContentPOJO> get() = _adsTransaction
+
+    private val _eventShowCongratsDialog = MutableLiveData<Boolean>()
+    val eventShowCongratsDialog: LiveData<Boolean> = _eventShowCongratsDialog
 
     private val _eventExpiredToken = MutableLiveData(false)
     val eventExpiredToken: LiveData<Boolean> get() = _eventExpiredToken
@@ -62,21 +67,37 @@ class AdsViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-    fun getBonusSteps() {
+    fun getBonusSteps(data: Map<String, Any>) {
+
+        val transactionId = data[AdsDialog.ID_KEY] as String
+        val watchedSeconds = data[AdsDialog.WATCHED_TIME_KEY] as Int
+        val isForBonusSteps = data[AdsDialog.IS_FOR_BONUS_STEPS_KEY] as Boolean
+        val watchTime = data[AdsDialog.TOTAL_WATCH_TIME_KEY] as Int
+
+        if (!isForBonusSteps) return
 
         viewModelScope.launch {
+
+            uiState.value = UiState.Loading
 
             val token = sharedPreferences.getStringElement(TOKEN_KEY, "")
             val lang = sharedPreferences.getIntegerElement(LANG_KEY, DEFAULT_LANG)
 
-            val model = DateModelPOJO(date = getDateAndTime())
+            val model = ConvertStepsModelPOJO(
+                transactionId = transactionId,
+                watchTime = watchTime,
+                createdDate = getDateAndTime()
+            )
 
-            when (val response = transactionsRepository.getBonusSteps(token, lang, model)) {
+            when (val response = adsRepository.sendBonusAdsTransactionResult(token, lang, model)) {
+                is NetworkResult.Success<*> -> _eventShowCongratsDialog.onOff()
                 is NetworkResult.Failure -> when (response.type) {
                     NetworkResultFailureType.EXPIRED_TOKEN -> startExpireTokenProcess()
                     else -> handleNetworkException(response.message)
                 }
             }
+
+            uiState.value = UiState.LoadingFinished
 
         }
 
@@ -96,7 +117,9 @@ class AdsViewModel(application: Application) : AndroidViewModel(application) {
             when (val response = adsRepository.createAdsTransaction(token, lang, model)) {
                 is NetworkResult.Success<*> -> {
                     val data = response.data as List<AdsTransactionContentPOJO>
-                    if (data.isNotEmpty()) _adsTransaction.postValue(data[0])
+                    if (data.isNotEmpty()) {
+                        _adsTransaction.postValue(data[0])
+                    }
                 }
                 is NetworkResult.Failure -> when (response.type) {
                     NetworkResultFailureType.EXPIRED_TOKEN -> startExpireTokenProcess()
@@ -112,13 +135,17 @@ class AdsViewModel(application: Application) : AndroidViewModel(application) {
 
     private suspend fun handleNetworkException(exception: String) {
         if (context.isInternetConnectionAvailable()) showMessageDialog(exception, MessageType.ERROR)
-        else showMessageDialog(context.getString(R.string.no_internet_connection), MessageType.NO_INTERNET)
+        else showMessageDialog(
+            context.getString(R.string.no_internet_connection),
+            MessageType.NO_INTERNET
+        )
     }
 
-    private suspend fun showMessageDialog(message: String, type: MessageType): Unit = withContext(Dispatchers.Main) {
-        _errorMessage.value = Message(message, type)
-        _errorMessage.value = null
-    }
+    private suspend fun showMessageDialog(message: String, type: MessageType): Unit =
+        withContext(Dispatchers.Main) {
+            _errorMessage.value = Message(message, type)
+            _errorMessage.value = null
+        }
 
     private suspend fun startExpireTokenProcess(): Unit = withContext(Dispatchers.Main) {
         sharedPreferences.setStringElement(TOKEN_KEY, "")

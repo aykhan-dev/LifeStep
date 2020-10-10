@@ -52,7 +52,6 @@ class DetailedInfoFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         bindUI()
         configureRecyclerView()
-        retrieveStepDonationDetails()
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -60,6 +59,7 @@ class DetailedInfoFragment : Fragment() {
         observeData()
         observeStates()
         observeEvents()
+        retrieveStepDonationDetails()
     }
 
     override fun onStart() {
@@ -78,7 +78,10 @@ class DetailedInfoFragment : Fragment() {
     }
 
     private fun retrieveStepDonationDetails() {
-        navController.currentBackStackEntry!!.savedStateHandle.getLiveData<Map<String, Any>>("donation details")
+
+        val stateHandle = navController.currentBackStackEntry!!.savedStateHandle
+
+        stateHandle.getLiveData<Map<String, Any>>("donation details")
             .observe(viewLifecycleOwner, Observer {
                 it?.let { data ->
                     viewModel.assocationDetails.value?.let { info ->
@@ -176,9 +179,9 @@ class DetailedInfoFragment : Fragment() {
 
     private fun observeEvents(): Unit = with(viewModel) {
 
-        eventShowDonateStepsDialog.observe(viewLifecycleOwner, {
+        eventShowCongratsDialog.observe(viewLifecycleOwner, Observer {
             it?.let {
-                if (it) navigateTo(DetailedFragmentDirections.DONATE_STEPS)
+                if (it) navController.navigate(NavGraphMainDirections.actionToCongratsDialog())
             }
         })
 

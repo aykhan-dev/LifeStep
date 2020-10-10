@@ -95,7 +95,7 @@ fun isPasswordValid(password: String): Boolean {
     return password.length >= 6
 }
 
-fun View.hideKeyboard(context: Context?) {
+fun View.hideKeyboard() {
     val inputMethodManager =
         context?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
     inputMethodManager.hideSoftInputFromWindow(this.windowToken, 0)

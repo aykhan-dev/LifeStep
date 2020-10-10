@@ -50,7 +50,7 @@ class PasswordFragment : Fragment() {
         viewModelFragment = this@PasswordFragment.viewModel
 
         imageButtonBack.setOnClickListener { activity?.onBackPressed() }
-        root.setOnClickListener { it.hideKeyboard(context) }
+        root.setOnClickListener { it.hideKeyboard() }
     }
 
     private fun observeData(): Unit = with(viewModel) {

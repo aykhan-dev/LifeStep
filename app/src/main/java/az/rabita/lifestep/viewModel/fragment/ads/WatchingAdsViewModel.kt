@@ -96,36 +96,19 @@ class WatchingAdsViewModel(application: Application) : AndroidViewModel(applicat
 
     }
 
-    fun setupTimer(timeMillis: Long = 15000L, tickMillis: Long = 1000L) {
-        timer = ExtendedCountDownTimer(
-            timeMillis,
-            tickMillis,
-            { remainingTime.value = null; },
-            { remainingTime.value = it / 1000 }
+    private suspend fun handleNetworkException(exception: String) {
+        if (context.isInternetConnectionAvailable()) showMessageDialog(exception, MessageType.ERROR)
+        else showMessageDialog(
+            context.getString(R.string.no_internet_connection),
+            MessageType.NO_INTERNET
         )
     }
 
-    fun startTimer() {
-        timer.start()
-    }
-
-    fun pauseTimer() {
-        timer.cancel()
-    }
-
-    fun muteOrUnmute() {
-        isMuted.value = !(isMuted.value ?: false)
-    }
-
-    private suspend fun handleNetworkException(exception: String) {
-        if (context.isInternetConnectionAvailable()) showMessageDialog(exception, MessageType.ERROR)
-        else showMessageDialog(context.getString(R.string.no_internet_connection), MessageType.NO_INTERNET)
-    }
-
-    private suspend fun showMessageDialog(message: String, type: MessageType): Unit = withContext(Dispatchers.Main) {
-        _errorMessage.value = Message(message, type)
-        _errorMessage.value = null
-    }
+    private suspend fun showMessageDialog(message: String, type: MessageType): Unit =
+        withContext(Dispatchers.Main) {
+            _errorMessage.value = Message(message, type)
+            _errorMessage.value = null
+        }
 
     private fun startExpireTokenProcess() {
         sharedPreferences.setStringElement(TOKEN_KEY, "")

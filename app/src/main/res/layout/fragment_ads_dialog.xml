@@ -6,10 +6,6 @@
     <data>
 
         <variable
-            name="viewModel"
-            type="az.rabita.lifestep.viewModel.fragment.ads.WatchingAdsViewModel" />
-
-        <variable
             name="data"
             type="az.rabita.lifestep.pojo.dataHolder.AdsTransactionInfoHolder" />
 
@@ -127,8 +123,7 @@
             android:id="@+id/image_view_mute"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:onClick="@{()->viewModel.muteOrUnmute()}"
-            android:src="@{viewModel.isMuted() ? @drawable/ic_baseline_volume_off_24 : @drawable/ic_baseline_volume_up_24}"
+            android:src="@drawable/ic_baseline_volume_up_24"
             app:layout_constraintBottom_toTopOf="@id/text_view_description"
             app:layout_constraintEnd_toEndOf="@id/player_view"
             app:layout_constraintHorizontal_bias="0"

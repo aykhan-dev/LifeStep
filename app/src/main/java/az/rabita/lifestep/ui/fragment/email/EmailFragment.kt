@@ -46,7 +46,7 @@ class EmailFragment : Fragment() {
         viewModel = this@EmailFragment.viewModel
 
         imageButtonBack.setOnClickListener { activity?.finish() }
-        root.setOnClickListener { it.hideKeyboard(context) }
+        root.setOnClickListener { it.hideKeyboard() }
     }
 
     private fun observeData(): Unit = with(viewModel) {

@@ -47,7 +47,7 @@ class PinFragment : Fragment() {
         viewModel = this@PinFragment.viewModel
 
         imageButtonBack.setOnClickListener { navController.popBackStack() }
-        root.setOnClickListener { it.hideKeyboard(context) }
+        root.setOnClickListener { it.hideKeyboard() }
     }
 
     private fun configurations(): Unit = with(binding) {

@@ -34,9 +34,6 @@ class DetailedInfoViewModel(application: Application) : AndroidViewModel(applica
     private val _eventExpiredToken = MutableLiveData(false)
     val eventExpiredToken: LiveData<Boolean> get() = _eventExpiredToken
 
-    private val _eventShowDonateStepsDialog = MutableLiveData<Boolean>()
-    val eventShowDonateStepsDialog: LiveData<Boolean> get() = _eventShowDonateStepsDialog
-
     private val _eventShowCongratsDialog = MutableLiveData<Boolean>()
     val eventShowCongratsDialog: LiveData<Boolean> get() = _eventShowCongratsDialog
 

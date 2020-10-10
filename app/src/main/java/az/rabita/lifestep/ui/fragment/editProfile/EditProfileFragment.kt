@@ -9,7 +9,6 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
-import az.rabita.lifestep.NavGraphMainDirections
 import az.rabita.lifestep.databinding.FragmentEditProfileBinding
 import az.rabita.lifestep.ui.activity.forgotPassword.ForgotPasswordActivity
 import az.rabita.lifestep.ui.dialog.loading.LoadingDialog
@@ -79,8 +78,8 @@ class EditProfileFragment : Fragment() {
         editTextEmail.isEnabled = false
         editTextInvitationCode.isEnabled = false
 
-        root.setOnClickListener { root.hideKeyboard(context) }
-        constraintLayoutContent.setOnClickListener { root.hideKeyboard(context) }
+        root.setOnClickListener { root.hideKeyboard() }
+        constraintLayoutContent.setOnClickListener { root.hideKeyboard() }
     }
 
     private fun observeData(): Unit = with(viewModel) {
@@ -110,9 +109,9 @@ class EditProfileFragment : Fragment() {
             it?.let {
                 when (it) {
                     is UiState.Loading -> loadingDialog.show(
-    requireActivity().supportFragmentManager,
-    ERROR_TAG
-)
+                        requireActivity().supportFragmentManager,
+                        ERROR_TAG
+                    )
                     is UiState.LoadingFinished -> {
                         loadingDialog.dismiss()
                         uiState.value = null

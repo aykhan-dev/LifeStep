@@ -55,8 +55,6 @@ class LifeStepsApplication : Application() {
 
     private fun configureDailyNotifications() {
 
-        if (!sharedPreferenceManager.getBooleanElement("ft", true)) return
-
         createNotificationChannel()
 
         val intent = Intent(applicationContext, LocalNotification::class.java)
@@ -72,7 +70,7 @@ class LifeStepsApplication : Application() {
         val calendar = Calendar.getInstance()
 
         calendar.timeInMillis = System.currentTimeMillis()
-        calendar.set(Calendar.HOUR_OF_DAY, 18)
+        calendar.set(Calendar.HOUR_OF_DAY, 22)
         calendar.set(Calendar.MINUTE, 0)
         calendar.set(Calendar.SECOND, 0)
 
@@ -82,8 +80,6 @@ class LifeStepsApplication : Application() {
             AlarmManager.INTERVAL_DAY,
             pendingIntent
         )
-
-        sharedPreferenceManager.setBooleanElement("ft", false)
 
         Timber.i("✅ Daily notifications have been set")
 

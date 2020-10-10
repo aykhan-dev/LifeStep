@@ -5,20 +5,24 @@ import android.animation.ValueAnimator
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
+import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.view.ViewGroup
+import android.view.inputmethod.EditorInfo
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.whenResumed
 import androidx.navigation.fragment.findNavController
 import az.rabita.lifestep.NavGraphMainDirections
 import az.rabita.lifestep.R
 import az.rabita.lifestep.databinding.FragmentHomeBinding
+import az.rabita.lifestep.ui.dialog.ads.AdsDialog
 import az.rabita.lifestep.ui.dialog.loading.LoadingDialog
 import az.rabita.lifestep.ui.dialog.message.MessageDialog
 import az.rabita.lifestep.ui.dialog.message.MessageType
@@ -71,6 +75,7 @@ class HomeFragment : Fragment() {
         observeData()
         observeStates()
         observeEvents()
+        retrieveAdsResults()
     }
 
     override fun onStart() {
@@ -103,7 +108,6 @@ class HomeFragment : Fragment() {
         }
 
         buttonConvertSteps.setOnClickListener {
-            activity?.let { loadingDialog.show(it.supportFragmentManager, "Loading") }
             this@HomeFragment.viewModel.createAdsTransaction()
         }
 
@@ -114,6 +118,15 @@ class HomeFragment : Fragment() {
         })
 
         scrollableContent.setOnClickListener { hideSearchBar() }
+
+        editTextSearchBar.setOnKeyListener { view, actionId, event ->
+            if ((event != null && (event.keyCode == KeyEvent.KEYCODE_ENTER)) || (actionId == EditorInfo.IME_ACTION_SEARCH)) {
+                this@HomeFragment.viewModel.fetchSearchResults()
+                view.hideKeyboard()
+            }
+            false
+        }
+
     }
 
     private fun onWeekDaySelect(position: Int) {
@@ -162,12 +175,18 @@ class HomeFragment : Fragment() {
 
     private fun observeStates(): Unit = with(viewModel) {
 
-        searchingState.observe(viewLifecycleOwner, {
+        uiState.observe(viewLifecycleOwner, {
             it?.let {
-                val flag = it is UiState.Loading
-                binding.recyclerViewResults.isVisible = !flag
-                binding.progressBar.isVisible = flag
-                binding.textViewMore.isVisible = !flag
+                when (it) {
+                    is UiState.Loading -> loadingDialog.show(
+                        requireActivity().supportFragmentManager,
+                        ERROR_TAG
+                    )
+                    is UiState.LoadingFinished -> {
+                        loadingDialog.dismiss()
+                        uiState.value = null
+                    }
+                }
             }
         })
 
@@ -182,9 +201,7 @@ class HomeFragment : Fragment() {
             it?.let {
                 loadingDialog.dismiss()
                 val transactionInfo = it.asAdsTransactionInfoHolderObject()
-                navController.navigate(
-                    NavGraphMainDirections.actionToAdsDialog(transactionInfo)
-                )
+                navController.navigate(NavGraphMainDirections.actionToAdsDialog(transactionInfo))
             }
         })
 
@@ -262,16 +279,35 @@ class HomeFragment : Fragment() {
     }
 
     private fun showSearchBar(): Unit = with(binding) {
-        if (!this@HomeFragment.viewModel.searchInput.value.isNullOrEmpty()) this@HomeFragment.viewModel.fetchSearchResults()
-        editTextSearchBar.makeVisible()
-        textViewTitle.makeInvisible()
+        if (editTextSearchBar.isVisible) {
+            this@HomeFragment.viewModel.fetchSearchResults()
+        } else {
+            if (!this@HomeFragment.viewModel.searchInput.value.isNullOrEmpty()) this@HomeFragment.viewModel.fetchSearchResults()
+            editTextSearchBar.makeVisible()
+            textViewTitle.makeInvisible()
+        }
     }
 
     private fun hideSearchBar(): Unit = with(binding) {
         editTextSearchBar.makeInvisible()
         textViewTitle.makeVisible()
         if (frameLayoutSearchResults.isVisible) frameLayoutSearchResults.visibility = GONE
-        root.hideKeyboard(context)
+        root.hideKeyboard()
+    }
+
+    private fun retrieveAdsResults() {
+
+        val stateHandle = navController.currentBackStackEntry!!.savedStateHandle
+
+        stateHandle.getLiveData<Map<String, Any>?>(AdsDialog.RESULT_KEY)
+            .observe(viewLifecycleOwner, Observer {
+                if (viewModel.adsGenerated) {
+                    //IF IT IS REMOVED, LOADING DIALOG WILL APPEAR EACH TIME WHILE OPENING HOME PAGE AFTER WATCHING ADS
+                    viewModel.adsGenerated = false
+                    it?.let(viewModel::convertSteps)
+                }
+            })
+
     }
 
     private fun permissions() {
@@ -338,4 +374,5 @@ class HomeFragment : Fragment() {
             ACTIVITY_RECOGNITION_REQUEST_CODE -> googleAuthFlow()
         }
     }
+
 }

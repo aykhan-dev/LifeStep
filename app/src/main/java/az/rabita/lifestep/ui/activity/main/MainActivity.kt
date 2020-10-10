@@ -35,9 +35,9 @@ class MainActivity : AppCompatActivity() {
         makeEdgeToEdge()
 
         bindUI()
-        analyzeIntentComingFromNotificationEvent()
         configurations()
         observeData()
+        analyzeIntentComingFromNotificationEvent()
     }
 
     private fun bindUI(): Unit = with(binding) {
@@ -53,9 +53,7 @@ class MainActivity : AppCompatActivity() {
     private fun analyzeIntentComingFromNotificationEvent() {
         intent?.let {
             val data = it.getParcelableExtra<NotificationInfoHolder>(NOTIFICATION_INFO_KEY)
-            data?.let {
-                navController.navigate(HomeFragmentDirections.actionHomeFragmentToNotificationsFragment())
-            }
+            data?.let { navController.navigate(HomeFragmentDirections.actionHomeFragmentToNotificationsFragment()) }
         }
     }
 
@@ -63,14 +61,12 @@ class MainActivity : AppCompatActivity() {
 
         bottomNavigationView.setupWithNavController(navController)
 
-        //TODO refactor item selection
-
         bottomNavigationView.setOnNavigationItemReselectedListener {
 
         }
 
         navController.addOnDestinationChangedListener { controller, destination, arguments ->
-            if(destination.id == R.id.homeFragment) this@MainActivity.viewModel.changePage(2)
+            if (destination.id == R.id.homeFragment) this@MainActivity.viewModel.changePage(2)
         }
 
     }

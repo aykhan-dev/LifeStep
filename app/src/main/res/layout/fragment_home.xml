@@ -39,6 +39,7 @@
             android:layout_marginStart="@dimen/page_padding_large"
             android:fontFamily="@font/gilroy_regular"
             android:hint="@string/search"
+            android:imeOptions="actionSearch"
             android:inputType="textCapWords"
             android:text="@={viewModel.searchInput}"
             android:visibility="invisible"
@@ -53,10 +54,10 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
             android:background="@drawable/edit_text_background"
+            android:clipToPadding="false"
             android:elevation="20dp"
             android:padding="20dp"
             android:visibility="gone"
-            android:clipToPadding="false"
             app:layout_constraintEnd_toEndOf="@id/image_button_notification"
             app:layout_constraintStart_toStartOf="@id/edit_text_search_bar"
             app:layout_constraintTop_toBottomOf="@id/edit_text_search_bar">
@@ -72,16 +73,6 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 tools:listitem="@layout/item_search_result" />
-
-            <ProgressBar
-                android:id="@+id/progress_bar"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                app:layout_constraintBottom_toBottomOf="@id/recycler_view_results"
-                app:layout_constraintEnd_toEndOf="@id/recycler_view_results"
-                app:layout_constraintStart_toStartOf="@id/recycler_view_results"
-                app:layout_constraintTop_toTopOf="@id/recycler_view_results" />
 
             <TextView
                 android:id="@+id/text_view_more"
@@ -174,12 +165,12 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:background="@android:color/transparent"
+                        app:tabBackground="@drawable/tab_indicator"
                         app:tabIndicatorAnimationDuration="200"
                         app:tabIndicatorColor="@color/bottom_navigation_view_color"
                         app:tabIndicatorFullWidth="true"
                         app:tabIndicatorHeight="0dp"
                         app:tabMode="fixed"
-                        app:tabBackground="@drawable/tab_indicator"
                         app:tabRippleColor="@android:color/transparent"
                         app:tabSelectedTextColor="@android:color/white"
                         app:tabTextAppearance="@style/WeekTabsAppearance"
@@ -206,9 +197,9 @@
                     android:fontFamily="@font/gilroy_bold"
                     android:text="0"
                     android:textAlignment="center"
+                    android:textColor="@color/default_text_selector"
                     android:textSize="@dimen/ultra_large"
                     android:textStyle="bold"
-                    android:textColor="@color/default_text_selector"
                     app:layout_constraintBottom_toBottomOf="@+id/seek_bar"
                     app:layout_constraintEnd_toEndOf="@id/seek_bar"
                     app:layout_constraintStart_toStartOf="@id/seek_bar"

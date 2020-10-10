@@ -58,7 +58,7 @@ class RegisterFragment : Fragment() {
         viewModel = this@RegisterFragment.viewModel
         pagerAdapter = this@RegisterFragment.pagerAdapter
 
-        root.setOnClickListener { root.hideKeyboard(context) }
+        root.setOnClickListener { root.hideKeyboard() }
     }
 
     private fun swipeBackOnViewPager(): Unit = with(binding) {

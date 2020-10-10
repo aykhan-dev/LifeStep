@@ -6,9 +6,11 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import az.rabita.lifestep.NavGraphMainDirections
 import az.rabita.lifestep.databinding.FragmentAdsBinding
+import az.rabita.lifestep.ui.dialog.ads.AdsDialog
 import az.rabita.lifestep.ui.dialog.loading.LoadingDialog
 import az.rabita.lifestep.ui.dialog.message.MessageDialog
 import az.rabita.lifestep.utils.*
@@ -42,6 +44,7 @@ class AdsFragment : Fragment() {
         observeData()
         observeStates()
         observeEvents()
+        retrieveAdsResults()
     }
 
     override fun onStart() {
@@ -110,6 +113,21 @@ class AdsFragment : Fragment() {
                 }
             }
         })
+
+        eventShowCongratsDialog.observe(viewLifecycleOwner, Observer {
+            it?.let {
+                if (it) navController.navigate(NavGraphMainDirections.actionToBonusStepDialog())
+            }
+        })
+
+    }
+
+    private fun retrieveAdsResults() {
+
+        val stateHandle = navController.currentBackStackEntry!!.savedStateHandle
+
+        stateHandle.getLiveData<Map<String, Any>>(AdsDialog.RESULT_KEY)
+            .observe(viewLifecycleOwner, Observer { it?.let(viewModel::getBonusSteps) })
 
     }
 
