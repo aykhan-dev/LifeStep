@@ -3,6 +3,7 @@ package az.rabita.lifestep.utils
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import az.rabita.lifestep.R
 import az.rabita.lifestep.manager.PreferenceManager
 import az.rabita.lifestep.ui.activity.auth.AuthActivity
@@ -12,7 +13,7 @@ import java.text.DecimalFormat
 
 
 fun Activity.logout() {
-    if(this::class.java.name == "az.rabita.lifestep.ui.activity.main.MainActivity"){
+    if (this::class.java.name == "az.rabita.lifestep.ui.activity.main.MainActivity") {
         clearToken()
         signOutGoogleAccount()
 
@@ -43,4 +44,11 @@ fun Context.shortenString(number: Long, minimalLength: Int = 3): String {
             else -> number.toString()
         }
     } else number.toString()
+}
+
+fun Context.appIsExist(packageName: String): Boolean = try {
+    packageManager.getApplicationInfo(packageName, 0)
+    true
+} catch (exception: PackageManager.NameNotFoundException) {
+    false
 }

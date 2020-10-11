@@ -166,6 +166,7 @@
     <string name="remaining">saniyə qaldı</string>
     <string name="camera">Kamera</string>
     <string name="gallery">Qaleriyya</string>
+    <string name="choose_image">Şəkil seçin</string>
 
     <string-array name="calcalationSuffixes">
         <item>min</item>

@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import az.rabita.lifestep.R
 import az.rabita.lifestep.databinding.FragmentEditProfileBinding
 import az.rabita.lifestep.ui.activity.forgotPassword.ForgotPasswordActivity
 import az.rabita.lifestep.ui.dialog.loading.LoadingDialog
@@ -17,7 +18,6 @@ import az.rabita.lifestep.utils.*
 import az.rabita.lifestep.viewModel.fragment.editProfile.EditProfileViewModel
 import com.vansuita.pickimage.bundle.PickSetup
 import com.vansuita.pickimage.dialog.PickImageDialog
-import timber.log.Timber
 import java.util.*
 
 
@@ -143,21 +143,23 @@ class EditProfileFragment : Fragment() {
 
     private fun pickImage() {
 
-        PickImageDialog.build(PickSetup())
-            .setOnPickResult {
-                it?.let {
-                    Timber.e("✅ file uri has been received ${Calendar.getInstance().time}")
-                    val bitmap = it.bitmap
-                    val byteArray = bitmap.toByteArray(Bitmap.CompressFormat.JPEG, 50)
-                    val file = requireContext().convertByteArrayToFile(
-                        byteArray = byteArray,
-                        path = "${UUID.randomUUID()}.jpeg"
-                    )
-                    Timber.e("✅ file has been created ${Calendar.getInstance().time}")
-                    file?.let(viewModel::updateProfileImage)
-                }
+        PickImageDialog.build(
+            PickSetup().apply {
+                title = getString(R.string.choose_image)
+                cameraButtonText = getString(R.string.camera)
+                galleryButtonText = getString(R.string.gallery)
             }
-            .show(parentFragmentManager)
+        ).setOnPickResult {
+            it?.let {
+                val bitmap = it.bitmap
+                val byteArray = bitmap.toByteArray(Bitmap.CompressFormat.JPEG, 50)
+                val file = requireContext().convertByteArrayToFile(
+                    byteArray = byteArray,
+                    path = "${UUID.randomUUID()}.jpeg"
+                )
+                file?.let(viewModel::updateProfileImage)
+            }
+        }.show(parentFragmentManager)
 
     }
 
