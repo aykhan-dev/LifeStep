@@ -22,6 +22,7 @@ import androidx.navigation.fragment.findNavController
 import az.rabita.lifestep.NavGraphMainDirections
 import az.rabita.lifestep.R
 import az.rabita.lifestep.databinding.FragmentHomeBinding
+import az.rabita.lifestep.pojo.holder.Message
 import az.rabita.lifestep.ui.dialog.ads.AdsDialog
 import az.rabita.lifestep.ui.dialog.loading.LoadingDialog
 import az.rabita.lifestep.ui.dialog.message.MessageDialog
@@ -318,7 +319,17 @@ class HomeFragment : Fragment() {
                 ACTIVITY_RECOGNITION_REQUEST_CODE
             )
         } else {
-            googleAuthFlow()
+            if (!requireContext().appIsExist("com.google.android.apps.fitness")) {
+                MessageDialog.getInstance(
+                    Message(
+                        getString(R.string.google_auth_downlaod_message),
+                        MessageType.GOOGLE_FIT_NOT_DOWNLOADED
+                    )
+                ).show(
+                    requireActivity().supportFragmentManager,
+                    ERROR_TAG
+                )
+            } else googleAuthFlow()
         }
 
     }

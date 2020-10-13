@@ -47,8 +47,8 @@ fun Context.shortenString(number: Long, minimalLength: Int = 3): String {
 }
 
 fun Context.appIsExist(packageName: String): Boolean = try {
-    packageManager.getApplicationInfo(packageName, 0)
+    packageManager.getPackageInfo(packageName, PackageManager.GET_ACTIVITIES)
     true
-} catch (exception: PackageManager.NameNotFoundException) {
+} catch (exception: Exception) {
     false
 }

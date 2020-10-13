@@ -150,13 +150,22 @@ class EditProfileViewModel(application: Application) : AndroidViewModel(applicat
     }
 
     private fun handleNetworkExceptionSync(exception: String) {
-        if (context.isInternetConnectionAvailable()) showMessageDialogSync(exception, MessageType.ERROR)
-        else showMessageDialogSync(context.getString(R.string.no_internet_connection), MessageType.NO_INTERNET)
+        if (context.isInternetConnectionAvailable()) showMessageDialogSync(
+            exception,
+            MessageType.ERROR
+        )
+        else showMessageDialogSync(
+            context.getString(R.string.no_internet_connection),
+            MessageType.NO_INTERNET
+        )
     }
 
     private suspend fun handleNetworkException(exception: String) {
         if (context.isInternetConnectionAvailable()) showMessageDialog(exception, MessageType.ERROR)
-        else showMessageDialog(context.getString(R.string.no_internet_connection), MessageType.NO_INTERNET)
+        else showMessageDialog(
+            context.getString(R.string.no_internet_connection),
+            MessageType.NO_INTERNET
+        )
     }
 
     private fun showMessageDialogSync(message: String, type: MessageType) {
@@ -164,10 +173,11 @@ class EditProfileViewModel(application: Application) : AndroidViewModel(applicat
         _errorMessage.value = null
     }
 
-    private suspend fun showMessageDialog(message: String, type: MessageType): Unit = withContext(Dispatchers.Main) {
-        _errorMessage.value = Message(message, type)
-        _errorMessage.value = null
-    }
+    private suspend fun showMessageDialog(message: String, type: MessageType): Unit =
+        withContext(Dispatchers.Main) {
+            _errorMessage.value = Message(message, type)
+            _errorMessage.value = null
+        }
 
     private fun startExpireTokenProcessSync() {
         sharedPreferences.setStringElement(TOKEN_KEY, "")

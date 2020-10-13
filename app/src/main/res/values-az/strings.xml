@@ -162,6 +162,7 @@
     <string name="quote_congrats_bonus">200 Bonus addım qazandınız</string>
 
     <string name="google_auth_fail_message">Google Fit hesabınızı qoşmalısınız</string>
+    <string name="google_auth_downlaod_message">Google Fit aplikasiyasını telefonunuza quraşdırmalısınız</string>
 
     <string name="no_internet_connection">Internet əlaqəsi yoxdur</string>
     <string name="remaining">seconds remaining</string>
