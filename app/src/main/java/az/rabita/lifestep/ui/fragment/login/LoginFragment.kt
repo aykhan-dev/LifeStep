@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import az.rabita.lifestep.R
 import az.rabita.lifestep.databinding.FragmentLoginBinding
@@ -61,7 +62,7 @@ class LoginFragment : Fragment() {
 
     private fun observeStates(): Unit = with(viewModel) {
 
-        authViewModel.stateFabClick.observe(viewLifecycleOwner, {
+        authViewModel.stateFabClick.observe(viewLifecycleOwner, Observer {
             it?.let {
                 if (it) {
                     if (
@@ -73,7 +74,7 @@ class LoginFragment : Fragment() {
             }
         })
 
-        stateToRegisterButtonClick.observe(viewLifecycleOwner, {
+        stateToRegisterButtonClick.observe(viewLifecycleOwner, Observer {
             it?.let {
                 if (it) {
                     navController.navigate(LoginFragmentDirections.actionLoginFragmentToRegisterFragment())
@@ -81,7 +82,7 @@ class LoginFragment : Fragment() {
             }
         })
 
-        uiState.observe(viewLifecycleOwner, {
+        uiState.observe(viewLifecycleOwner, Observer {
             it?.let {
                 when (it) {
                     is UiState.Loading -> loadingDialog.show(
@@ -100,7 +101,7 @@ class LoginFragment : Fragment() {
 
     private fun observeData(): Unit = with(viewModel) {
 
-        errorMessage.observe(viewLifecycleOwner, {
+        errorMessage.observe(viewLifecycleOwner, Observer {
             it?.let { errorMsg ->
                 MessageDialog.getInstance(errorMsg).show(
                     requireActivity().supportFragmentManager,
@@ -113,7 +114,7 @@ class LoginFragment : Fragment() {
 
     private fun observeEvents(): Unit = with(viewModel) {
 
-        eventNavigateToMainActivity.observe(viewLifecycleOwner, {
+        eventNavigateToMainActivity.observe(viewLifecycleOwner, Observer {
             it?.let {
                 if (it) {
                     startActivity(Intent(requireActivity(), MainActivity::class.java))
@@ -121,7 +122,7 @@ class LoginFragment : Fragment() {
             }
         })
 
-        eventExpiredToken.observe(viewLifecycleOwner, {
+        eventExpiredToken.observe(viewLifecycleOwner, Observer {
             it?.let {
                 if (it) {
                     activity?.logout()

@@ -4,13 +4,6 @@
 
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="main">Əsas</string>
-    <string name="monday">B.e</string>
-    <string name="tuesday">Ç.a</string>
-    <string name="wednesday">Çər</string>
-    <string name="thursday">C.a</string>
-    <string name="friday">C</string>
-    <string name="saturday">Şən</string>
-    <string name="sunday">Baz</string>
     <string name="today">Bu gün cəmi</string>
     <string name="steps">addım atmısan</string>
     <string name="auth_title">Ümidə\natılan ilk\naddım</string>
@@ -43,8 +36,6 @@
     <string name="balance">Balans</string>
     <string name="earned_steps">Transfer ilə alınan</string>
     <string name="earn_steps">Addım qazan</string>
-    <string name="title_watch_ads">Reklam izlə 200 addım qazan!</string>
-    <string name="body_watch_ads">Bu bölmədə siz Google reklamlarını izləməklə hər izlədiyiniz reklama görə 200 addım qazanmış olacaqsınız. İstədiyiniz qədər reklam izləyib addım qazana bilərsiniz. Yardım etmək bax bu qədər asandır !</string>
     <string name="watch_ads">Reklam izlə</string>
     <string name="settings">Tənzimləmələr</string>
     <string name="text_profile">Profilim</string>
@@ -60,7 +51,6 @@
     <string name="text_phone_contact">+994 50 201 06 10</string>
     <string name="text_email_contact">info@lifestep.az</string>
     <string name="title_contact">Bizimlə əlaqə</string>
-    <string name="body_invite_friend">1. Dəvət kodunu dostuna göndər \n2. Dostun LifeStep-də qeydiyyatdan keçsin və sənin dəvət kodunu daxil etsin \n3. 50 000 LifeStep addım qazan</string>
     <string name="your_invitation_code">Sizin dəvət kodunuz</string>
     <string name="send_invitation">Dəvətnamə göndər</string>
     <string name="invite_friend_title">Dostunu dəvət et</string>
@@ -167,6 +157,8 @@
     <string name="camera">Kamera</string>
     <string name="gallery">Qaleriyya</string>
     <string name="choose_image">Şəkil seçin</string>
+
+    <string name="google_auth_downlaod_message">Google Fit aplikasiyasını telefonunuza quraşdırmalısınız</string>
 
     <string-array name="calcalationSuffixes">
         <item>min</item>

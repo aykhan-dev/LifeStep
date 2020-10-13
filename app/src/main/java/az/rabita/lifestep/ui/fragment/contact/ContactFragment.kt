@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import az.rabita.lifestep.NavGraphMainDirections
 import az.rabita.lifestep.databinding.FragmentContactBinding
@@ -66,11 +67,11 @@ class ContactFragment : Fragment() {
 
     private fun observeData(): Unit = with(viewModel) {
 
-        listOfContacts.observe(viewLifecycleOwner, {
+        listOfContacts.observe(viewLifecycleOwner, Observer {
             it?.let { contactsAdapter.submitList(it) }
         })
 
-        errorMessage.observe(viewLifecycleOwner, {
+        errorMessage.observe(viewLifecycleOwner, Observer {
             it?.let { errorMsg ->
                 MessageDialog.getInstance(errorMsg).show(
                     requireActivity().supportFragmentManager,
@@ -83,7 +84,7 @@ class ContactFragment : Fragment() {
 
     private fun observeEvents(): Unit = with(viewModel) {
 
-        eventExpiredToken.observe(viewLifecycleOwner, {
+        eventExpiredToken.observe(viewLifecycleOwner, Observer {
             it?.let {
                 if (it) {
                     activity?.logout()

@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import az.rabita.lifestep.NavGraphMainDirections
 import az.rabita.lifestep.databinding.FragmentPinBinding
@@ -60,7 +61,7 @@ class PinFragment : Fragment() {
 
     private fun observeData(): Unit = with(viewModel) {
 
-        errorMessage.observe(viewLifecycleOwner, {
+        errorMessage.observe(viewLifecycleOwner, Observer {
             it?.let { errorMsg ->
                 MessageDialog.getInstance(errorMsg).show(
                     requireActivity().supportFragmentManager,
@@ -73,7 +74,7 @@ class PinFragment : Fragment() {
 
     private fun observeEvents(): Unit = with(viewModel) {
 
-        eventNavigateToPasswordFragment.observe(viewLifecycleOwner, {
+        eventNavigateToPasswordFragment.observe(viewLifecycleOwner, Observer {
             it?.let {
                 if (it) navController.navigate(PinFragmentDirections.actionPinFragmentToPasswordFragment())
             }

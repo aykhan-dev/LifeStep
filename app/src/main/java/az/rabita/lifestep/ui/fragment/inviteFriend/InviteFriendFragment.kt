@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import az.rabita.lifestep.NavGraphMainDirections
 import az.rabita.lifestep.R
@@ -61,7 +62,7 @@ class InviteFriendFragment : Fragment() {
 
     private fun observeData(): Unit = with(viewModel) {
 
-        errorMessage.observe(viewLifecycleOwner, {
+        errorMessage.observe(viewLifecycleOwner, Observer {
             it?.let { errorMsg ->
                 MessageDialog.getInstance(errorMsg).show(
                     requireActivity().supportFragmentManager,
@@ -71,17 +72,17 @@ class InviteFriendFragment : Fragment() {
         })
 
         //It is needed, else inviteFriendContent's value will be null
-        inviteFriendContentMessage.observe(viewLifecycleOwner, { })
+        inviteFriendContentMessage.observe(viewLifecycleOwner, Observer { })
 
     }
 
     private fun observeEvents(): Unit = with(viewModel) {
 
-        eventSendSharingMessage.observe(viewLifecycleOwner, {
+        eventSendSharingMessage.observe(viewLifecycleOwner, Observer {
             it?.let { if (it) sendMessage() }
         })
 
-        eventExpiredToken.observe(viewLifecycleOwner, {
+        eventExpiredToken.observe(viewLifecycleOwner, Observer {
             it?.let {
                 if (it) {
                     activity?.logout()

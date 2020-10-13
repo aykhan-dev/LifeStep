@@ -63,7 +63,7 @@ class AdsFragment : Fragment() {
 
     private fun observeData(): Unit = with(viewModel) {
 
-        errorMessage.observe(viewLifecycleOwner, {
+        errorMessage.observe(viewLifecycleOwner, Observer {
             it?.let { errorMsg ->
                 MessageDialog.getInstance(errorMsg).show(
                     requireActivity().supportFragmentManager,
@@ -72,7 +72,7 @@ class AdsFragment : Fragment() {
             }
         })
 
-        adsTransaction.observe(viewLifecycleOwner, {
+        adsTransaction.observe(viewLifecycleOwner, Observer {
             it?.let {
                 val dataHolder = it.asAdsTransactionInfoHolderObject()
                 navController.navigate(
@@ -88,7 +88,7 @@ class AdsFragment : Fragment() {
 
     private fun observeStates(): Unit = with(viewModel) {
 
-        uiState.observe(viewLifecycleOwner, {
+        uiState.observe(viewLifecycleOwner, Observer {
             it?.let {
                 when (it) {
                     is UiState.Loading -> {
@@ -105,7 +105,7 @@ class AdsFragment : Fragment() {
 
     private fun observeEvents(): Unit = with(viewModel) {
 
-        eventExpiredToken.observe(viewLifecycleOwner, {
+        eventExpiredToken.observe(viewLifecycleOwner, Observer {
             it?.let {
                 if (it) {
                     activity?.logout()

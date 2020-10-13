@@ -60,10 +60,7 @@ class HomeFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        binding = FragmentHomeBinding.inflate(inflater)
-        return binding.root
-    }
+    ): View? = FragmentHomeBinding.inflate(inflater).also { binding = it }.root
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -76,7 +73,7 @@ class HomeFragment : Fragment() {
         observeData()
         observeStates()
         observeEvents()
-        retrieveAdsResults()
+        //retrieveAdsResults()
     }
 
     override fun onStart() {
@@ -176,7 +173,7 @@ class HomeFragment : Fragment() {
 
     private fun observeStates(): Unit = with(viewModel) {
 
-        uiState.observe(viewLifecycleOwner, {
+        uiState.observe(viewLifecycleOwner, Observer {
             it?.let {
                 when (it) {
                     is UiState.Loading -> loadingDialog.show(
@@ -196,9 +193,9 @@ class HomeFragment : Fragment() {
     private fun observeData(): Unit = with(viewModel) {
 
         //DON'T REMOVE THIS LINE, ELSE IT WILL BE NULL
-        cachedOwnProfileInfo.observe(viewLifecycleOwner, {})
+        cachedOwnProfileInfo.observe(viewLifecycleOwner, Observer {})
 
-        adsTransaction.observe(viewLifecycleOwner, {
+        adsTransaction.observe(viewLifecycleOwner, Observer {
             it?.let {
                 loadingDialog.dismiss()
                 val transactionInfo = it.asAdsTransactionInfoHolderObject()
@@ -206,7 +203,7 @@ class HomeFragment : Fragment() {
             }
         })
 
-        weeklyStats.observe(viewLifecycleOwner, {
+        weeklyStats.observe(viewLifecycleOwner, Observer {
             it?.let { list ->
                 lifecycleScope.launch {
                     if (list.isNotEmpty() && list.size == 7) {
@@ -225,7 +222,7 @@ class HomeFragment : Fragment() {
             }
         })
 
-        listOfSearchResult.observe(viewLifecycleOwner, {
+        listOfSearchResult.observe(viewLifecycleOwner, Observer {
             it?.let {
                 with(binding) {
                     with(frameLayoutSearchResults) {
@@ -244,7 +241,7 @@ class HomeFragment : Fragment() {
             }
         })
 
-        errorMessage.observe(viewLifecycleOwner, {
+        errorMessage.observe(viewLifecycleOwner, Observer {
             it?.let { errorMsg ->
                 MessageDialog.getInstance(errorMsg).show(
                     requireActivity().supportFragmentManager,
@@ -257,7 +254,7 @@ class HomeFragment : Fragment() {
 
     private fun observeEvents(): Unit = with(viewModel) {
 
-        eventExpiredToken.observe(viewLifecycleOwner, {
+        eventExpiredToken.observe(viewLifecycleOwner, Observer {
             it?.let {
                 if (it) {
                     activity?.logout()

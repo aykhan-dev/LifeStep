@@ -116,7 +116,7 @@ class OtherUserProfileFragment : Fragment() {
 
     private fun observeEvents(): Unit = with(viewModel) {
 
-        eventExpiredToken.observe(viewLifecycleOwner, {
+        eventExpiredToken.observe(viewLifecycleOwner, Observer {
             it?.let {
                 if (it) {
                     activity?.logout()
@@ -130,9 +130,9 @@ class OtherUserProfileFragment : Fragment() {
     private fun observeData(): Unit = with(viewModel) {
 
         //DON'T REMOVE THIS LINE ELSE IT WILL BE NULL
-        cachedOwnProfileInfo.observe(viewLifecycleOwner, { })
+        cachedOwnProfileInfo.observe(viewLifecycleOwner, Observer { })
 
-        friendshipStatus.observe(viewLifecycleOwner, {
+        friendshipStatus.observe(viewLifecycleOwner, Observer {
             it?.let {
                 with(binding) {
                     buttonSendFriendRequest.text = profileInfo.value?.friendShipStatusMessage
@@ -147,15 +147,15 @@ class OtherUserProfileFragment : Fragment() {
             }
         })
 
-        dailyStats.observe(viewLifecycleOwner, {
+        dailyStats.observe(viewLifecycleOwner, Observer {
             it?.let { if (isDailyStatsShown.value == true) binding.diagram.submitData(it) }
         })
 
-        monthlyStats.observe(viewLifecycleOwner, {
+        monthlyStats.observe(viewLifecycleOwner, Observer {
             it?.let { if (isDailyStatsShown.value == false) binding.diagram.submitData(it) }
         })
 
-        profileInfo.observe(viewLifecycleOwner, {
+        profileInfo.observe(viewLifecycleOwner, Observer {
             it?.let {
 
                 binding.textViewFullName.text =
@@ -195,7 +195,7 @@ class OtherUserProfileFragment : Fragment() {
             }
         })
 
-        errorMessage.observe(viewLifecycleOwner, {
+        errorMessage.observe(viewLifecycleOwner, Observer {
             it?.let { errorMsg ->
                 MessageDialog.getInstance(errorMsg).show(
                     requireActivity().supportFragmentManager,

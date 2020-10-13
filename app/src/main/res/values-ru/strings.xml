@@ -5,13 +5,6 @@
 
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="main">Əsas</string>
-    <string name="monday">B.e</string>
-    <string name="tuesday">Ç.a</string>
-    <string name="wednesday">Çər</string>
-    <string name="thursday">C.a</string>
-    <string name="friday">C</string>
-    <string name="saturday">Şən</string>
-    <string name="sunday">Baz</string>
     <string name="today">Bu gün cəmi</string>
     <string name="steps">addım atmısan</string>
     <string name="auth_title">Ümidə\natılan ilk\naddım</string>
@@ -178,6 +171,13 @@
         <item>Həftənin çempionları</item>
         <item>Ayın çempionları</item>
     </string-array>
+
+    <string name="google_auth_downlaod_message">Google Fit aplikasiyasını telefonunuza quraşdırmalısınız</string>
+
+    <string name="camera">Kamera</string>
+    <string name="gallery">Qaleriyya</string>
+    <string name="choose_image">Şəkil seçin</string>
+
 
     <!-- Strings used for fragments for navigation -->
 </resources>

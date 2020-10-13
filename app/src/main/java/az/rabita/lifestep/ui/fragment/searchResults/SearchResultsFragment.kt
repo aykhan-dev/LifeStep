@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import az.rabita.lifestep.NavGraphMainDirections
@@ -76,15 +77,15 @@ class SearchResultsFragment : Fragment() {
     private fun observeData(): Unit = with(viewModel) {
 
         //DON'T REMOVE THIS LINE, ELSE IT WILL BE NULL
-        cachedOwnProfileInfo.observe(viewLifecycleOwner, {})
+        cachedOwnProfileInfo.observe(viewLifecycleOwner, Observer {})
 
-        listOfSearchResult.observe(viewLifecycleOwner, {
+        listOfSearchResult.observe(viewLifecycleOwner, Observer {
             it?.let {
                 if (it.isNotEmpty()) adapter.submitList(it)
             }
         })
 
-        errorMessage.observe(viewLifecycleOwner, {
+        errorMessage.observe(viewLifecycleOwner, Observer {
             it?.let { errorMsg ->
                 MessageDialog.getInstance(errorMsg).show(
                     requireActivity().supportFragmentManager,
@@ -96,7 +97,7 @@ class SearchResultsFragment : Fragment() {
 
     private fun observeStates(): Unit = with(viewModel) {
 
-        searchingState.observe(viewLifecycleOwner, {
+        searchingState.observe(viewLifecycleOwner, Observer {
             it?.let {
                 when (it) {
                     is UiState.Loading -> loadingDialog.show(
@@ -111,7 +112,7 @@ class SearchResultsFragment : Fragment() {
     }
 
     private fun observeEvents(): Unit = with(viewModel) {
-        eventExpiredToken.observe(viewLifecycleOwner, {
+        eventExpiredToken.observe(viewLifecycleOwner, Observer {
             it?.let {
                 if (it) {
                     activity?.logout()

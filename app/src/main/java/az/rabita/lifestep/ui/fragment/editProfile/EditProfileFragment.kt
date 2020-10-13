@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import az.rabita.lifestep.R
 import az.rabita.lifestep.databinding.FragmentEditProfileBinding
@@ -19,7 +20,6 @@ import az.rabita.lifestep.viewModel.fragment.editProfile.EditProfileViewModel
 import com.vansuita.pickimage.bundle.PickSetup
 import com.vansuita.pickimage.dialog.PickImageDialog
 import java.util.*
-
 
 class EditProfileFragment : Fragment() {
 
@@ -84,7 +84,7 @@ class EditProfileFragment : Fragment() {
 
     private fun observeData(): Unit = with(viewModel) {
 
-        profileInfo.observe(viewLifecycleOwner, {
+        profileInfo.observe(viewLifecycleOwner, Observer {
             it?.let {
                 viewModel.nameInput.postValue(it.name)
                 viewModel.surnameInput.postValue(it.surname)
@@ -92,7 +92,7 @@ class EditProfileFragment : Fragment() {
             }
         })
 
-        errorMessage.observe(viewLifecycleOwner, {
+        errorMessage.observe(viewLifecycleOwner, Observer {
             it?.let { errorMsg ->
                 MessageDialog.getInstance(errorMsg).show(
                     requireActivity().supportFragmentManager,
@@ -105,7 +105,7 @@ class EditProfileFragment : Fragment() {
 
     private fun observeStates(): Unit = with(viewModel) {
 
-        uiState.observe(viewLifecycleOwner, {
+        uiState.observe(viewLifecycleOwner, Observer {
             it?.let {
                 when (it) {
                     is UiState.Loading -> loadingDialog.show(
@@ -124,13 +124,13 @@ class EditProfileFragment : Fragment() {
 
     private fun observeEvents(): Unit = with(viewModel) {
 
-        eventCloseEditProfilePage.observe(viewLifecycleOwner, {
+        eventCloseEditProfilePage.observe(viewLifecycleOwner, Observer {
             it?.let {
                 if (it) activity?.onBackPressed()
             }
         })
 
-        eventExpiredToken.observe(viewLifecycleOwner, {
+        eventExpiredToken.observe(viewLifecycleOwner, Observer {
             it?.let {
                 if (it) {
                     activity?.logout()

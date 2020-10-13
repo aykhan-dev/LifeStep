@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import az.rabita.lifestep.R
 import az.rabita.lifestep.databinding.FragmentRegisterBinding
@@ -67,7 +68,7 @@ class RegisterFragment : Fragment() {
 
     private fun observeStates(): Unit = with(viewModel) {
 
-        authViewModel.stateFabClick.observe(viewLifecycleOwner, {
+        authViewModel.stateFabClick.observe(viewLifecycleOwner, Observer {
             it?.let {
                 if (it) {
                     if (
@@ -80,7 +81,7 @@ class RegisterFragment : Fragment() {
             }
         })
 
-        uiState.observe(viewLifecycleOwner, {
+        uiState.observe(viewLifecycleOwner, Observer {
             it?.let {
                 when (it) {
                     is UiState.Loading -> loadingDialog.show(
@@ -99,7 +100,7 @@ class RegisterFragment : Fragment() {
 
     private fun observeData(): Unit = with(viewModel) {
 
-        errorMessage.observe(viewLifecycleOwner, {
+        errorMessage.observe(viewLifecycleOwner, Observer {
             it?.let { errorMsg ->
                 MessageDialog.getInstance(errorMsg).show(
                     requireActivity().supportFragmentManager,
@@ -112,7 +113,7 @@ class RegisterFragment : Fragment() {
 
     private fun observeEvents(): Unit = with(viewModel) {
 
-        eventNavigateToMainActivity.observe(viewLifecycleOwner, {
+        eventNavigateToMainActivity.observe(viewLifecycleOwner, Observer {
             it?.let {
                 if (it) {
                     val activity = requireActivity()
@@ -122,7 +123,7 @@ class RegisterFragment : Fragment() {
             }
         })
 
-        eventNavigateToNextRegisterFragment.observe(viewLifecycleOwner, {
+        eventNavigateToNextRegisterFragment.observe(viewLifecycleOwner, Observer {
             it?.let { if (it) binding.viewPager.currentItem = 1 }
         })
 

@@ -123,16 +123,16 @@ class DetailedInfoFragment : Fragment() {
 
     private fun observeData(): Unit = with(viewModel) {
 
-        profileInfo.observe(viewLifecycleOwner, {}) //DON'T REMOVE THIS LINE ELSE IT WILL BE NULL
+        profileInfo.observe(viewLifecycleOwner, Observer {}) //DON'T REMOVE THIS LINE ELSE IT WILL BE NULL
 
         navController.currentBackStackEntry
             ?.savedStateHandle
             ?.getLiveData<Boolean>("Donated")
-            ?.observe(viewLifecycleOwner, {
+            ?.observe(viewLifecycleOwner, Observer {
                 viewModel.fetchDetailedInfo(args.assocationId)
             })
 
-        assocationDetails.observe(viewLifecycleOwner, {
+        assocationDetails.observe(viewLifecycleOwner, Observer {
             it?.let {
                 with(binding) {
                     textViewDonatedCount.text = it.balance.moreShortenString()
@@ -141,13 +141,13 @@ class DetailedInfoFragment : Fragment() {
             }
         })
 
-        topDonorsList.observe(viewLifecycleOwner, {
+        topDonorsList.observe(viewLifecycleOwner, Observer {
             it?.let {
                 donorsAdapter.submitList(it)
             }
         })
 
-        errorMessage.observe(viewLifecycleOwner, {
+        errorMessage.observe(viewLifecycleOwner, Observer {
             it?.let { errorMsg ->
                 MessageDialog.getInstance(errorMsg).show(
                     requireActivity().supportFragmentManager,
@@ -160,7 +160,7 @@ class DetailedInfoFragment : Fragment() {
 
     private fun observeStates(): Unit = with(viewModel) {
 
-        uiState.observe(viewLifecycleOwner, {
+        uiState.observe(viewLifecycleOwner, Observer {
             it?.let {
                 when (it) {
                     is UiState.Loading -> loadingDialog.show(
@@ -185,7 +185,7 @@ class DetailedInfoFragment : Fragment() {
             }
         })
 
-        eventExpiredToken.observe(viewLifecycleOwner, {
+        eventExpiredToken.observe(viewLifecycleOwner, Observer {
             it?.let {
                 if (it) {
                     activity?.logout()

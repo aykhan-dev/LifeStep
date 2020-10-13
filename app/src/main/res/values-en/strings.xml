@@ -169,5 +169,12 @@
         <item>Ayın çempionları</item>
     </string-array>
 
+    <string name="google_auth_downlaod_message">Google Fit aplikasiyasını telefonunuza quraşdırmalısınız</string>
+
+    <string name="camera">Kamera</string>
+    <string name="gallery">Qaleriyya</string>
+    <string name="choose_image">Şəkil seçin</string>
+
+
     <!-- Strings used for fragments for navigation -->
 </resources>
