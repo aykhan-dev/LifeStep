@@ -43,19 +43,19 @@ class AdsViewModel(application: Application) : AndroidViewModel(application) {
     private val _eventExpiredToken = MutableLiveData(false)
     val eventExpiredToken: LiveData<Boolean> get() = _eventExpiredToken
 
-    private var _errorMessage = MutableLiveData<Message>()
-    val errorMessage: LiveData<Message> get() = _errorMessage
+    private var _errorMessage = MutableLiveData<Message?>()
+    val errorMessage: LiveData<Message?> get() = _errorMessage
 
     val title = contentsRepository.adsContentTitle
     val body = contentsRepository.adsContentBody
 
-    val uiState = MutableLiveData<UiState>()
+    val uiState = MutableLiveData<UiState?>()
 
     fun fetchAdsPageContent() {
         viewModelScope.launch {
 
-            val token = sharedPreferences.getStringElement(TOKEN_KEY, "")
-            val lang = sharedPreferences.getIntegerElement(LANG_KEY, DEFAULT_LANG)
+            val token = sharedPreferences.token
+            val lang = sharedPreferences.langCode
 
             when (val response = contentsRepository.getContent(token, lang, ADS_GROUP_ID)) {
                 is NetworkResult.Failure -> when (response.type) {
@@ -70,7 +70,6 @@ class AdsViewModel(application: Application) : AndroidViewModel(application) {
     fun getBonusSteps(data: Map<String, Any>) {
 
         val transactionId = data[AdsDialog.ID_KEY] as String
-        val watchedSeconds = data[AdsDialog.WATCHED_TIME_KEY] as Int
         val isForBonusSteps = data[AdsDialog.IS_FOR_BONUS_STEPS_KEY] as Boolean
         val watchTime = data[AdsDialog.TOTAL_WATCH_TIME_KEY] as Int
 
@@ -80,8 +79,8 @@ class AdsViewModel(application: Application) : AndroidViewModel(application) {
 
             uiState.value = UiState.Loading
 
-            val token = sharedPreferences.getStringElement(TOKEN_KEY, "")
-            val lang = sharedPreferences.getIntegerElement(LANG_KEY, DEFAULT_LANG)
+            val token = sharedPreferences.token
+            val lang = sharedPreferences.langCode
 
             val model = ConvertStepsModelPOJO(
                 transactionId = transactionId,
@@ -109,8 +108,8 @@ class AdsViewModel(application: Application) : AndroidViewModel(application) {
 
             uiState.value = UiState.Loading
 
-            val token = sharedPreferences.getStringElement(TOKEN_KEY, "")
-            val lang = sharedPreferences.getIntegerElement(LANG_KEY, LANG_AZ)
+            val token = sharedPreferences.token
+            val lang = sharedPreferences.langCode
 
             val model = DateModelPOJO(date = getDateAndTime())
 
@@ -148,7 +147,7 @@ class AdsViewModel(application: Application) : AndroidViewModel(application) {
         }
 
     private suspend fun startExpireTokenProcess(): Unit = withContext(Dispatchers.Main) {
-        sharedPreferences.setStringElement(TOKEN_KEY, "")
+        sharedPreferences.token = ""
         if (_eventExpiredToken.value == false) _eventExpiredToken.value = true
     }
 

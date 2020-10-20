@@ -63,8 +63,8 @@ class WatchingAdsViewModel(application: Application) : AndroidViewModel(applicat
 
             isSuccessfullyWatched = watchTime == totalWatchTime
 
-            val token = sharedPreferences.getStringElement(TOKEN_KEY, "")
-            val lang = sharedPreferences.getIntegerElement(LANG_KEY, LANG_AZ)
+            val token = sharedPreferences.token
+            val lang = sharedPreferences.langCode
 
             val model = ConvertStepsModelPOJO(
                 transactionId = transactionId,
@@ -111,7 +111,7 @@ class WatchingAdsViewModel(application: Application) : AndroidViewModel(applicat
         }
 
     private fun startExpireTokenProcess() {
-        sharedPreferences.setStringElement(TOKEN_KEY, "")
+        sharedPreferences.token = ""
         if (_eventExpireToken.value == false) _eventExpireToken.value = true
     }
 

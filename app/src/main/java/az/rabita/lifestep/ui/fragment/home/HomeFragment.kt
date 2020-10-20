@@ -41,7 +41,6 @@ class HomeFragment : Fragment() {
     private lateinit var binding: FragmentHomeBinding
 
     private val viewModel by viewModels<HomeViewModel>()
-
     private val navController by lazy { findNavController() }
 
     private val adapter = SearchResultRecyclerAdapter { onSearchResultItemClick(it) }
@@ -366,6 +365,7 @@ class HomeFragment : Fragment() {
                             getString(R.string.google_auth_fail_message),
                             MessageType.GOOGLE_FIT_NOT_CONNECTED
                         )
+                        Timber.e(result.exception)
                     }
                 }
             }

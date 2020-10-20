@@ -14,9 +14,8 @@ import az.rabita.lifestep.pojo.holder.Message
 import az.rabita.lifestep.repository.TransactionsRepository
 import az.rabita.lifestep.ui.dialog.message.MessageType
 import az.rabita.lifestep.ui.fragment.history.page.HistoryPageType
-import az.rabita.lifestep.utils.DEFAULT_LANG
-import az.rabita.lifestep.utils.LANG_KEY
-import az.rabita.lifestep.utils.TOKEN_KEY
+
+
 import az.rabita.lifestep.utils.isInternetConnectionAvailable
 
 class HistoryViewModel(application: Application) : AndroidViewModel(application) {
@@ -28,12 +27,12 @@ class HistoryViewModel(application: Application) : AndroidViewModel(application)
     private val _eventExpiredToken = MutableLiveData(false)
     val eventExpiredToken: LiveData<Boolean> get() = _eventExpiredToken
 
-    private var _errorMessage = MutableLiveData<Message>()
-    val errorMessage: LiveData<Message> get() = _errorMessage
+    private var _errorMessage = MutableLiveData<Message?>()
+    val errorMessage: LiveData<Message?> get() = _errorMessage
 
     fun fetchListOfDonations(pageType: HistoryPageType): LiveData<PagingData<HistoryItemContentPOJO>> {
-        val token = sharedPreferences.getStringElement(TOKEN_KEY, "")
-        val lang = sharedPreferences.getIntegerElement(LANG_KEY, DEFAULT_LANG)
+        val token = sharedPreferences.token
+        val lang = sharedPreferences.langCode
         return transactionsRepository.getHistoryDonationsListStream(
             token = token,
             lang = lang,
@@ -54,7 +53,7 @@ class HistoryViewModel(application: Application) : AndroidViewModel(application)
     }
 
     private fun startExpireTokenProcess() {
-        sharedPreferences.setStringElement(TOKEN_KEY, "")
+        sharedPreferences.token = ""
         if (_eventExpiredToken.value == false) _eventExpiredToken.postValue(true)
     }
 

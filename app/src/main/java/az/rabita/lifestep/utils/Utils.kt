@@ -37,30 +37,6 @@ import java.io.FileOutputStream
 import java.util.*
 import kotlin.math.pow
 
-fun Activity.restart() {
-    val i: Intent? = baseContext.packageManager.getLaunchIntentForPackage(baseContext.packageName)
-    i?.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
-    i?.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-    startActivity(i)
-    finish()
-}
-
-fun Fragment.openUrl(url: String) {
-    val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
-    startActivity(browserIntent)
-}
-
-fun Activity.openUrl(url: String) {
-    val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
-    startActivity(browserIntent)
-}
-
-fun Fragment.callNumber(number: String) {
-    val intent = Intent(Intent.ACTION_DIAL)
-    intent.data = Uri.parse("tel:$number")
-    startActivity(intent)
-}
-
 fun pxFromDp(context: Context, dp: Float): Int {
     return (dp * context.resources.displayMetrics.density).toInt()
 }

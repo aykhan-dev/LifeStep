@@ -11,7 +11,7 @@
 
     </data>
 
-    <FrameLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@android:color/black"
@@ -21,20 +21,26 @@
             android:id="@+id/image_view"
             imageUrl="@{imageUrl}"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
+            android:layout_height="0dp"
+            android:layout_marginTop="16dp"
             android:adjustViewBounds="true"
-            android:transitionName="profileImage" />
+            android:transitionName="profileImage"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/button_back" />
 
         <ImageView
             android:id="@+id/button_back"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="@dimen/normal"
-            android:padding="10dp"
+            android:layout_width="50dp"
+            android:layout_height="0dp"
+            android:layout_margin="15dp"
+            android:background="@drawable/bg_circle"
+            android:padding="15dp"
             android:src="@drawable/ic_back"
-            app:tint="@android:color/white" />
+            app:layout_constraintDimensionRatio="1:1"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:tint="@color/dark_text_color" />
 
-    </FrameLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </layout>

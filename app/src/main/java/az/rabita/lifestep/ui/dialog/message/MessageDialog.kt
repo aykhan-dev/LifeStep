@@ -11,8 +11,6 @@ import az.rabita.lifestep.databinding.DialogMessageBinding
 import az.rabita.lifestep.manager.PreferenceManager
 import az.rabita.lifestep.pojo.holder.Message
 import az.rabita.lifestep.ui.dialog.SingleInstanceDialog
-import az.rabita.lifestep.utils.LANG_AZ
-import az.rabita.lifestep.utils.LANG_KEY
 
 object MessageDialog : SingleInstanceDialog() {
 
@@ -50,9 +48,9 @@ object MessageDialog : SingleInstanceDialog() {
         imageViewIllustration.setImageResource(
             when (message.type) {
                 MessageType.NO_INTERNET -> R.drawable.img_no_internet
-                MessageType.ERROR -> when (sharedPreferences.getIntegerElement(LANG_KEY, LANG_AZ)) {
+                MessageType.ERROR -> when (sharedPreferences.langCode) {
                     10 -> R.drawable.img_error_az
-                    20 -> R.drawable.img_error_az
+                    20 -> R.drawable.img_error_az //TODO error images
                     30 -> R.drawable.img_error_az
                     else -> 0
                 }

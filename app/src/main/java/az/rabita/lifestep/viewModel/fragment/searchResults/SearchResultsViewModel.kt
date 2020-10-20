@@ -32,8 +32,8 @@ class SearchResultsViewModel(application: Application) : AndroidViewModel(applic
     private val _eventExpiredToken = MutableLiveData(false)
     val eventExpiredToken: LiveData<Boolean> get() = _eventExpiredToken
 
-    private var _errorMessage = MutableLiveData<Message>()
-    val errorMessage: LiveData<Message> get() = _errorMessage
+    private var _errorMessage = MutableLiveData<Message?>()
+    val errorMessage: LiveData<Message?> get() = _errorMessage
 
     val searchingState = MutableLiveData<UiState>()
 
@@ -45,8 +45,8 @@ class SearchResultsViewModel(application: Application) : AndroidViewModel(applic
 
             searchingState.value = UiState.Loading
 
-            val token = sharedPreferences.getStringElement(TOKEN_KEY, "")
-            val lang = sharedPreferences.getIntegerElement(LANG_KEY, DEFAULT_LANG)
+            val token = sharedPreferences.token
+            val lang = sharedPreferences.langCode
 
             when (val response =
                 usersRepository.searchUserByFullName(token, lang, searchInput)) {
@@ -77,7 +77,7 @@ class SearchResultsViewModel(application: Application) : AndroidViewModel(applic
     }
 
     private suspend fun startExpireTokenProcess(): Unit = withContext(Dispatchers.Main) {
-        sharedPreferences.setStringElement(TOKEN_KEY, "")
+        sharedPreferences.token = ""
         if (_eventExpiredToken.value == false) _eventExpiredToken.value = true
     }
 

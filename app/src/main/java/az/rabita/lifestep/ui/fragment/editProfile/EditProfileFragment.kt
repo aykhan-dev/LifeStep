@@ -1,7 +1,6 @@
 package az.rabita.lifestep.ui.fragment.editProfile
 
 import android.content.Intent
-import android.graphics.Bitmap
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -19,7 +18,6 @@ import az.rabita.lifestep.utils.*
 import az.rabita.lifestep.viewModel.fragment.editProfile.EditProfileViewModel
 import com.vansuita.pickimage.bundle.PickSetup
 import com.vansuita.pickimage.dialog.PickImageDialog
-import java.util.*
 
 class EditProfileFragment : Fragment() {
 
@@ -151,13 +149,11 @@ class EditProfileFragment : Fragment() {
             }
         ).setOnPickResult {
             it?.let {
-                val bitmap = it.bitmap
-                val byteArray = bitmap.toByteArray(Bitmap.CompressFormat.JPEG, 50)
-                val file = requireContext().convertByteArrayToFile(
-                    byteArray = byteArray,
-                    path = "${UUID.randomUUID()}.jpeg"
+                navController.navigate(
+                    EditProfileFragmentDirections.actionEditProfileFragmentToCroppingActivity(
+                        it.uri.toString()
+                    )
                 )
-                file?.let(viewModel::updateProfileImage)
             }
         }.show(parentFragmentManager)
 

@@ -23,7 +23,10 @@
         <action
             android:id="@+id/action_editProfileFragment_to_forgotPasswordActivity"
             app:destination="@id/forgotPasswordActivity"
-            app:launchSingleTop="true"/>
+            app:launchSingleTop="true" />
+        <action
+            android:id="@+id/action_editProfileFragment_to_croppingActivity"
+            app:destination="@id/croppingActivity" />
     </fragment>
 
     <activity
@@ -31,5 +34,15 @@
         android:name="az.rabita.lifestep.ui.activity.forgotPassword.ForgotPasswordActivity"
         android:label="ForgotPasswordActivity"
         tools:layout="@layout/activity_forgot_password" />
+
+    <activity
+        android:id="@+id/croppingActivity"
+        android:name="az.rabita.lifestep.ui.activity.cropping.CroppingActivity"
+        android:label="activity_cropping"
+        tools:layout="@layout/activity_cropping" >
+        <argument
+            android:name="imageUri"
+            app:argType="string" />
+    </activity>
 
 </navigation>

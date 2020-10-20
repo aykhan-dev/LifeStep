@@ -52,8 +52,8 @@ class ForgotPasswordViewModel(application: Application) : AndroidViewModel(appli
     private var _eventBack = MutableLiveData<Boolean>()
     val eventBack: LiveData<Boolean> = _eventBack
 
-    private var _errorMessage = MutableLiveData<Message>()
-    val errorMessage: LiveData<Message> get() = _errorMessage
+    private var _errorMessage = MutableLiveData<Message?>()
+    val errorMessage: LiveData<Message?> get() = _errorMessage
 
     val emailInput = MutableLiveData<String>().apply {
         observeForever { _stateEmailConfirmButtonEnable.value = isEmailValid(it) }
@@ -95,7 +95,7 @@ class ForgotPasswordViewModel(application: Application) : AndroidViewModel(appli
 
             val model = EmailModelPOJO(email)
 
-            val lang = sharedPreferences.getIntegerElement(LANG_KEY, DEFAULT_LANG)
+            val lang = sharedPreferences.langCode
 
             when (val response = usersRepository.sendOtp(lang, model)) {
                 is NetworkResult.Success<*> -> {
@@ -128,7 +128,7 @@ class ForgotPasswordViewModel(application: Application) : AndroidViewModel(appli
                 confirmPassword = passwordConfirmInput.value ?: ""
             )
 
-            val lang = sharedPreferences.getIntegerElement(LANG_KEY, DEFAULT_LANG)
+            val lang = sharedPreferences.langCode
 
             when (val response = usersRepository.changePassword(lang, model)) {
                 is NetworkResult.Success<*> -> {
@@ -152,8 +152,8 @@ class ForgotPasswordViewModel(application: Application) : AndroidViewModel(appli
 
             uiState.value = UiState.Loading
 
-            val token = sharedPreferences.getStringElement(TOKEN_KEY, "")
-            val lang = sharedPreferences.getIntegerElement(LANG_KEY, DEFAULT_LANG)
+            val token = sharedPreferences.token
+            val lang = sharedPreferences.langCode
 
             val model = RefreshPasswordModelPOJO(
                 password = passwordInput.value ?: "",
@@ -193,7 +193,7 @@ class ForgotPasswordViewModel(application: Application) : AndroidViewModel(appli
     }
 
     private suspend fun startExpireTokenProcess(): Unit = withContext(Dispatchers.Main) {
-        sharedPreferences.setStringElement(TOKEN_KEY, "")
+        sharedPreferences.token = ""
         if (_eventExpiredToken.value == false) _eventExpiredToken.value = true
     }
 

@@ -37,8 +37,8 @@ class OtherUserProfileViewModel(app: Application) : AndroidViewModel(app) {
     private val _eventExpiredToken = MutableLiveData(false)
     val eventExpiredToken: LiveData<Boolean> get() = _eventExpiredToken
 
-    private var _errorMessage = MutableLiveData<Message>()
-    val errorMessage: LiveData<Message> get() = _errorMessage
+    private var _errorMessage = MutableLiveData<Message?>()
+    val errorMessage: LiveData<Message?> get() = _errorMessage
 
     private val _dailyStats = MutableLiveData<BarDiagram.DiagramDataModel>()
     val dailyStats: LiveData<BarDiagram.DiagramDataModel> = _dailyStats
@@ -63,8 +63,8 @@ class OtherUserProfileViewModel(app: Application) : AndroidViewModel(app) {
 
             uiState.value = UiState.Loading
 
-            val token = sharedPreferences.getStringElement(TOKEN_KEY, "")
-            val lang = sharedPreferences.getIntegerElement(LANG_KEY, DEFAULT_LANG)
+            val token = sharedPreferences.token
+            val lang = sharedPreferences.langCode
 
             when (val response = usersRepository.getUserInfoAllInOneById(token, lang, userId)) {
                 is NetworkResult.Success<*> -> run {
@@ -98,8 +98,8 @@ class OtherUserProfileViewModel(app: Application) : AndroidViewModel(app) {
 
         viewModelScope.launch {
 
-            val token = sharedPreferences.getStringElement(TOKEN_KEY, "")
-            val lang = sharedPreferences.getIntegerElement(LANG_KEY, DEFAULT_LANG)
+            val token = sharedPreferences.token
+            val lang = sharedPreferences.langCode
 
             when (val response = usersRepository.getPersonalInfo(token, lang)) {
                 is NetworkResult.Failure -> when (response.type) {
@@ -118,8 +118,8 @@ class OtherUserProfileViewModel(app: Application) : AndroidViewModel(app) {
 
             uiState.value = UiState.Loading
 
-            val token = sharedPreferences.getStringElement(TOKEN_KEY, "")
-            val lang = sharedPreferences.getIntegerElement(LANG_KEY, DEFAULT_LANG)
+            val token = sharedPreferences.token
+            val lang = sharedPreferences.langCode
 
             val model = FriendRequestModelPOJO(friendId = profileInfo.value?.id ?: "")
 
@@ -143,8 +143,8 @@ class OtherUserProfileViewModel(app: Application) : AndroidViewModel(app) {
 
             uiState.value = UiState.Loading
 
-            val token = sharedPreferences.getStringElement(TOKEN_KEY, "")
-            val lang = sharedPreferences.getIntegerElement(LANG_KEY, DEFAULT_LANG)
+            val token = sharedPreferences.token
+            val lang = sharedPreferences.langCode
 
             val date = Calendar.getInstance().time
             val formatted = DateFormat.format("yyyy-MM-dd hh:mm:ss", date)
@@ -198,7 +198,7 @@ class OtherUserProfileViewModel(app: Application) : AndroidViewModel(app) {
         }
 
     private suspend fun startExpireTokenProcess(): Unit = withContext(Dispatchers.Main) {
-        sharedPreferences.setStringElement(TOKEN_KEY, "")
+        sharedPreferences.token = ""
         if (_eventExpiredToken.value == false) _eventExpiredToken.value = true
     }
 

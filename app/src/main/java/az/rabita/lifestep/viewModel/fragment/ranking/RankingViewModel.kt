@@ -14,9 +14,6 @@ import az.rabita.lifestep.pojo.apiPOJO.content.RankerContentPOJO
 import az.rabita.lifestep.pojo.holder.Message
 import az.rabita.lifestep.repository.UsersRepository
 import az.rabita.lifestep.ui.dialog.message.MessageType
-import az.rabita.lifestep.utils.DEFAULT_LANG
-import az.rabita.lifestep.utils.LANG_KEY
-import az.rabita.lifestep.utils.TOKEN_KEY
 import az.rabita.lifestep.utils.isInternetConnectionAvailable
 
 @Suppress("UNCHECKED_CAST")
@@ -30,14 +27,14 @@ class RankingViewModel(application: Application) : AndroidViewModel(application)
     private val _eventExpiredToken = MutableLiveData(false)
     val eventExpiredToken: LiveData<Boolean> get() = _eventExpiredToken
 
-    private var _errorMessage = MutableLiveData<Message>()
-    val errorMessage: LiveData<Message> get() = _errorMessage
+    private var _errorMessage = MutableLiveData<Message?>()
+    val errorMessage: LiveData<Message?> get() = _errorMessage
 
     val cachedOwnProfileInfo = usersRepository.cachedProfileInfo
 
     fun fetchAllDonors(id: String): LiveData<PagingData<RankerContentPOJO>> {
-        val token = sharedPreferences.getStringElement(TOKEN_KEY, "")
-        val lang = sharedPreferences.getIntegerElement(LANG_KEY, DEFAULT_LANG)
+        val token = sharedPreferences.token
+        val lang = sharedPreferences.langCode
         return usersRepository.getDonorsListStream(
             token,
             lang,
@@ -61,7 +58,7 @@ class RankingViewModel(application: Application) : AndroidViewModel(application)
     }
 
     private fun startExpireTokenProcess() {
-        sharedPreferences.setStringElement(TOKEN_KEY, "")
+        sharedPreferences.token = ""
         if (_eventExpiredToken.value == false) _eventExpiredToken.postValue(true)
     }
 

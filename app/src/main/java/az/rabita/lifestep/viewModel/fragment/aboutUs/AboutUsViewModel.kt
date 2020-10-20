@@ -28,16 +28,16 @@ class AboutUsViewModel(application: Application) : AndroidViewModel(application)
     private val _eventExpiredToken = MutableLiveData(false)
     val eventExpiredToken: LiveData<Boolean> get() = _eventExpiredToken
 
-    private var _errorMessage = MutableLiveData<Message>()
-    val errorMessage: LiveData<Message> get() = _errorMessage
+    private var _errorMessage = MutableLiveData<Message?>()
+    val errorMessage: LiveData<Message?> get() = _errorMessage
 
     val body = contentsRepository.aboutUsContentBody
 
     fun fetchAboutUsPageContent() {
         viewModelScope.launch {
 
-            val token = sharedPreferences.getStringElement(TOKEN_KEY, "")
-            val lang = sharedPreferences.getIntegerElement(LANG_KEY, DEFAULT_LANG)
+            val token = sharedPreferences.token
+            val lang = sharedPreferences.langCode
 
             when (val response = contentsRepository.getContent(token, lang, ABOUT_US_GROUP_ID)) {
                 is NetworkResult.Failure -> when (response.type) {
@@ -60,7 +60,7 @@ class AboutUsViewModel(application: Application) : AndroidViewModel(application)
     }
 
     private suspend fun startExpireTokenProcess(): Unit = withContext(Dispatchers.Main) {
-        sharedPreferences.setStringElement(TOKEN_KEY, "")
+        sharedPreferences.token = ""
         if (_eventExpiredToken.value == false) _eventExpiredToken.value = true
     }
 

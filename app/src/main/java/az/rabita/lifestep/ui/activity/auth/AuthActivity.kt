@@ -1,21 +1,19 @@
 package az.rabita.lifestep.ui.activity.auth
 
-import android.content.Context
 import android.os.Bundle
 import androidx.activity.viewModels
-import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.Observer
 import androidx.navigation.findNavController
 import az.rabita.lifestep.R
 import az.rabita.lifestep.databinding.ActivityAuthBinding
-import az.rabita.lifestep.manager.LocaleManager
-import az.rabita.lifestep.utils.DEFAULT_LANG_KEY
+import az.rabita.lifestep.ui.activity.BaseActivity
 import az.rabita.lifestep.utils.hideKeyboard
 import az.rabita.lifestep.viewModel.activity.auth.AuthViewModel
 import az.rabita.lifestep.viewModel.fragment.login.LoginViewModel
 
 
-class AuthActivity : AppCompatActivity() {
+class AuthActivity : BaseActivity() {
 
     private lateinit var binding: ActivityAuthBinding
 
@@ -41,14 +39,10 @@ class AuthActivity : AppCompatActivity() {
 
     private fun observeStates() = with(loginViewModel) {
 
-        stateToRegisterButtonClick.observe(this@AuthActivity, {
+        stateToRegisterButtonClick.observe(this@AuthActivity, Observer {
             it?.let { if (it) binding.motionLayout.transitionToEnd() }
         })
 
-    }
-
-    override fun attachBaseContext(newBase: Context?) {
-        super.attachBaseContext(LocaleManager.onAttach(newBase, DEFAULT_LANG_KEY))
     }
 
     override fun onBackPressed() {

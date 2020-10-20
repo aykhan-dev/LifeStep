@@ -28,15 +28,15 @@ class SettingsViewModel(application: Application) : AndroidViewModel(application
     private val _eventLogOut = MutableLiveData(false)
     val eventLogOut: LiveData<Boolean> = _eventLogOut
 
-    private var _errorMessage = MutableLiveData<Message>()
-    val errorMessage: LiveData<Message> get() = _errorMessage
+    private var _errorMessage = MutableLiveData<Message?>()
+    val errorMessage: LiveData<Message?> get() = _errorMessage
 
     fun fetchFriendshipStats() {
 
         viewModelScope.launch {
 
-            val token = sharedPreferences.getStringElement(TOKEN_KEY, "")
-            val lang = sharedPreferences.getIntegerElement(LANG_KEY, DEFAULT_LANG)
+            val token = sharedPreferences.token
+            val lang = sharedPreferences.langCode
 
             when (val response = reportRepository.getFriendshipStats(token, lang)) {
                 is NetworkResult.Failure -> when (response.type) {
@@ -83,7 +83,7 @@ class SettingsViewModel(application: Application) : AndroidViewModel(application
     }
 
     private suspend fun startExpireTokenProcess(): Unit = withContext(Dispatchers.Main) {
-        sharedPreferences.setStringElement(TOKEN_KEY, "")
+        sharedPreferences.token = ""
         if (_eventExpiredToken.value == false) _eventExpiredToken.value = true
     }
 

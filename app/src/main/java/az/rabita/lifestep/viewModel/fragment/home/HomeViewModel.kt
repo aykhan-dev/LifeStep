@@ -20,12 +20,16 @@ import az.rabita.lifestep.repository.TransactionsRepository
 import az.rabita.lifestep.repository.UsersRepository
 import az.rabita.lifestep.ui.dialog.ads.AdsDialog
 import az.rabita.lifestep.ui.dialog.message.MessageType
-import az.rabita.lifestep.utils.*
+import az.rabita.lifestep.utils.FITNESS_OPTIONS
+import az.rabita.lifestep.utils.UiState
+import az.rabita.lifestep.utils.getDateAndTime
+import az.rabita.lifestep.utils.isInternetConnectionAvailable
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.fitness.Fitness
 import com.google.android.gms.fitness.HistoryClient
 import com.google.android.gms.fitness.data.DataType
 import com.google.android.gms.fitness.data.Field
+import com.google.android.gms.tasks.Tasks
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -49,27 +53,31 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
     private val _eventExpiredToken = MutableLiveData(false)
     val eventExpiredToken: LiveData<Boolean> get() = _eventExpiredToken
 
-    private var _errorMessage = MutableLiveData<Message>()
-    val errorMessage: LiveData<Message> get() = _errorMessage
+    private var _errorMessage = MutableLiveData<Message?>()
+    val errorMessage: LiveData<Message?> get() = _errorMessage
 
     private var _listOfSearchResult = MutableLiveData<List<SearchResultContentPOJO>>()
     val listOfSearchResult: LiveData<List<SearchResultContentPOJO>> get() = _listOfSearchResult
 
     val weeklyStats = reportRepository.weeklyStats.asLiveData()
 
-    val searchingState = MutableLiveData<UiState>()
+    val searchingState = MutableLiveData<UiState?>()
     val uiState = MutableLiveData<UiState>()
 
     val cachedOwnProfileInfo = usersRepository.cachedProfileInfo
 
     var adsGenerated = false
 
+    private var steps = 0L
+    private var calories = 0f
+    private var distance = 0f
+
     fun fetchOwnProfileInfo() {
 
         viewModelScope.launch {
 
-            val token = sharedPreferences.getStringElement(TOKEN_KEY, "")
-            val lang = sharedPreferences.getIntegerElement(LANG_KEY, LANG_AZ)
+            val token = sharedPreferences.token
+            val lang = sharedPreferences.langCode
 
             when (val response = usersRepository.getPersonalInfo(token, lang)) {
                 is NetworkResult.Failure -> when (response.type) {
@@ -88,8 +96,8 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
 
             uiState.value = UiState.Loading
 
-            val token = sharedPreferences.getStringElement(TOKEN_KEY, "")
-            val lang = sharedPreferences.getIntegerElement(LANG_KEY, DEFAULT_LANG)
+            val token = sharedPreferences.token
+            val lang = sharedPreferences.langCode
 
             when (val response =
                 usersRepository.searchUserByFullName(token, lang, searchInput.value ?: "")) {
@@ -113,8 +121,8 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
 
         viewModelScope.launch {
 
-            val token = sharedPreferences.getStringElement(TOKEN_KEY, "")
-            val lang = sharedPreferences.getIntegerElement(LANG_KEY, DEFAULT_LANG)
+            val token = sharedPreferences.token
+            val lang = sharedPreferences.langCode
 
             val date = Calendar.getInstance().time
             val formatted = DateFormat.format("yyyy-MM-dd hh:mm:ss", date)
@@ -131,18 +139,20 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
 
     }
 
-    private fun sendCurrentStepData(steps: Long) {
+    private fun sendCurrentStepData() {
 
         viewModelScope.launch {
 
-            val token = sharedPreferences.getStringElement(TOKEN_KEY, "")
-            val lang = sharedPreferences.getIntegerElement(LANG_KEY, DEFAULT_LANG)
+            val token = sharedPreferences.token
+            val lang = sharedPreferences.langCode
 
             val date = Calendar.getInstance().time
             val formatted = DateFormat.format("yyyy-MM-dd hh:mm:ss", date)
 
             val model = CurrentStepModelPOJO(
                 count = steps,
+                calorie = calories,
+                kilometer = distance,
                 createdDate = formatted.toString()
             )
 
@@ -161,7 +171,6 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
     fun convertSteps(data: Map<String, Any>) {
 
         val transactionId = data[AdsDialog.ID_KEY] as String
-        val watchedSeconds = data[AdsDialog.WATCHED_TIME_KEY] as Int
         val isForBonusSteps = data[AdsDialog.IS_FOR_BONUS_STEPS_KEY] as Boolean
         val watchTime = data[AdsDialog.TOTAL_WATCH_TIME_KEY] as Int
 
@@ -171,8 +180,8 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
 
             uiState.value = UiState.Loading
 
-            val token = sharedPreferences.getStringElement(TOKEN_KEY, "")
-            val lang = sharedPreferences.getIntegerElement(LANG_KEY, DEFAULT_LANG)
+            val token = sharedPreferences.token
+            val lang = sharedPreferences.langCode
 
             val model = ConvertStepsModelPOJO(
                 transactionId = transactionId,
@@ -200,8 +209,8 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
 
             uiState.value = UiState.Loading
 
-            val token = sharedPreferences.getStringElement(TOKEN_KEY, "")
-            val lang = sharedPreferences.getIntegerElement(LANG_KEY, LANG_AZ)
+            val token = sharedPreferences.token
+            val lang = sharedPreferences.langCode
 
             val model = DateModelPOJO(date = getDateAndTime())
 
@@ -229,26 +238,48 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
     fun accessGoogleFit() {
 
         viewModelScope.launch(Dispatchers.IO) {
+
             val account = GoogleSignIn.getAccountForExtension(context, FITNESS_OPTIONS)
             val historyClient = Fitness.getHistoryClient(context, account)
-            fetchStepCountFromGoogleFit(historyClient)
+
+            Tasks.whenAll(
+                fetchStepCount(historyClient),
+                fetchCalories(historyClient),
+                fetchDistance(historyClient)
+            ).addOnSuccessListener {
+                sendCurrentStepData()
+            }
+
         }
 
     }
 
-    private fun fetchStepCountFromGoogleFit(historyClient: HistoryClient) {
-        historyClient
-            .readDailyTotalFromLocalDevice(DataType.TYPE_STEP_COUNT_DELTA)
-            .addOnSuccessListener {
-                val total =
-                    if (it.isEmpty) 0 else it.dataPoints[0].getValue(Field.FIELD_STEPS).asInt()
-                        .toLong()
-                sendCurrentStepData(total)
-            }
-            .addOnFailureListener { failure ->
-                context.toast(failure.message)
-            }
-    }
+    private fun fetchStepCount(historyClient: HistoryClient) = historyClient
+        .readDailyTotalFromLocalDevice(DataType.TYPE_STEP_COUNT_DELTA)
+        .addOnSuccessListener { data ->
+            val steps =
+                if (data.isEmpty) 0
+                else data.dataPoints[0].getValue(Field.FIELD_STEPS).asInt().toLong()
+            this.steps = steps
+        }
+
+    private fun fetchCalories(historyClient: HistoryClient) = historyClient
+        .readDailyTotalFromLocalDevice(DataType.TYPE_CALORIES_EXPENDED)
+        .addOnSuccessListener { data ->
+            val calories =
+                if (data.isEmpty) 0f
+                else data.dataPoints[0].getValue(Field.FIELD_CALORIES).asFloat()
+            this.calories = calories
+        }
+
+    private fun fetchDistance(historyClient: HistoryClient) = historyClient
+        .readDailyTotalFromLocalDevice(DataType.TYPE_DISTANCE_DELTA)
+        .addOnSuccessListener { data ->
+            val distance =
+                if (data.isEmpty) 0f
+                else data.dataPoints[0].getValue(Field.FIELD_DISTANCE).asFloat()
+            this.distance = distance / 1000f
+        }
 
     private suspend fun handleNetworkException(exception: String) {
         if (context.isInternetConnectionAvailable()) showMessageDialog(exception, MessageType.ERROR)
@@ -270,7 +301,7 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
         }
 
     private suspend fun startExpireTokenProcess(): Unit = withContext(Dispatchers.Main) {
-        sharedPreferences.setStringElement(TOKEN_KEY, "")
+        sharedPreferences.token = ""
         if (_eventExpiredToken.value == false) _eventExpiredToken.value = true
     }
 

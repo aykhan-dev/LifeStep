@@ -13,9 +13,8 @@ import az.rabita.lifestep.network.NetworkResultFailureType
 import az.rabita.lifestep.pojo.holder.Message
 import az.rabita.lifestep.repository.NotificationsRepository
 import az.rabita.lifestep.ui.dialog.message.MessageType
-import az.rabita.lifestep.utils.LANG_AZ
-import az.rabita.lifestep.utils.LANG_KEY
-import az.rabita.lifestep.utils.TOKEN_KEY
+
+
 import az.rabita.lifestep.utils.isInternetConnectionAvailable
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -31,8 +30,8 @@ class NotificationsViewModel(application: Application) : AndroidViewModel(applic
     private val _eventExpiredToken = MutableLiveData(false)
     val eventExpiredToken: LiveData<Boolean> get() = _eventExpiredToken
 
-    private var _errorMessage = MutableLiveData<Message>()
-    val errorMessage: LiveData<Message> get() = _errorMessage
+    private var _errorMessage = MutableLiveData<Message?>()
+    val errorMessage: LiveData<Message?> get() = _errorMessage
 
     val listOfNotifications = notificationsRepository.listOfNotifications
 
@@ -40,8 +39,8 @@ class NotificationsViewModel(application: Application) : AndroidViewModel(applic
 
         viewModelScope.launch {
 
-            val token = sharedPreferences.getStringElement(TOKEN_KEY, "")
-            val lang = sharedPreferences.getIntegerElement(LANG_KEY, LANG_AZ)
+            val token = sharedPreferences.token
+            val lang = sharedPreferences.langCode
 
             when (val response = notificationsRepository.fetchNotifications(token, lang)) {
                 is NetworkResult.Failure -> when (response.type) {
@@ -65,7 +64,7 @@ class NotificationsViewModel(application: Application) : AndroidViewModel(applic
     }
 
     private suspend fun startExpireTokenProcess(): Unit = withContext(Dispatchers.IO) {
-        sharedPreferences.setStringElement(TOKEN_KEY, "")
+        sharedPreferences.token = ""
         if (_eventExpiredToken.value == false) _eventExpiredToken.postValue(true)
     }
 

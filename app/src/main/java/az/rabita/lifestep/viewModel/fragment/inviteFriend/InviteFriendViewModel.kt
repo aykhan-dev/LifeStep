@@ -37,15 +37,15 @@ class InviteFriendViewModel(application: Application) : AndroidViewModel(applica
 
     val inviteFriendContentMessage = contentsRepository.inviteFriendsContentMessage
 
-    private var _errorMessage = MutableLiveData<Message>()
-    val errorMessage: LiveData<Message> get() = _errorMessage
+    private var _errorMessage = MutableLiveData<Message?>()
+    val errorMessage: LiveData<Message?> get() = _errorMessage
 
     fun fetchPersonalInfo() {
 
         viewModelScope.launch {
 
-            val token = sharedPreferences.getStringElement(TOKEN_KEY, "")
-            val lang = sharedPreferences.getIntegerElement(LANG_KEY, DEFAULT_LANG)
+            val token = sharedPreferences.token
+            val lang = sharedPreferences.langCode
 
             when (val response = usersRepository.getPersonalInfo(token, lang)) {
                 is NetworkResult.Failure -> when (response.type) {
@@ -61,8 +61,8 @@ class InviteFriendViewModel(application: Application) : AndroidViewModel(applica
     fun fetchInviteFriendsContent() {
         viewModelScope.launch {
 
-            val token = sharedPreferences.getStringElement(TOKEN_KEY, "")
-            val lang = sharedPreferences.getIntegerElement(LANG_KEY, DEFAULT_LANG)
+            val token = sharedPreferences.token
+            val lang = sharedPreferences.langCode
 
             when (val response =
                 contentsRepository.getContent(token, lang, INVITE_FRIENDS_GROUP_ID)) {
@@ -90,7 +90,7 @@ class InviteFriendViewModel(application: Application) : AndroidViewModel(applica
     }
 
     private suspend fun startExpireTokenProcess(): Unit = withContext(Dispatchers.Main) {
-        sharedPreferences.setStringElement(TOKEN_KEY, "")
+        sharedPreferences.token = ""
         if (_eventExpiredToken.value == false) _eventExpiredToken.value = true
     }
 

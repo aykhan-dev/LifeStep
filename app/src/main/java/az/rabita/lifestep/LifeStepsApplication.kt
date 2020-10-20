@@ -5,12 +5,15 @@ import android.content.Context
 import android.content.Intent
 import android.os.Build
 import az.rabita.lifestep.broadcast.LocalNotification
-import az.rabita.lifestep.manager.LocaleManager
 import az.rabita.lifestep.manager.PreferenceManager
 import az.rabita.lifestep.pojo.dataHolder.NotificationInfoHolder
 import az.rabita.lifestep.ui.activity.main.MainActivity
-import az.rabita.lifestep.utils.*
+import az.rabita.lifestep.utils.LOCAL_NOTIFICATION_CODE
+import az.rabita.lifestep.utils.NOTIFICATION_INFO_KEY
+import az.rabita.lifestep.utils.NOTIFICATION_TYPE_KEY
+import az.rabita.lifestep.utils.NOTIFICATION_USER_ID_KEY
 import com.onesignal.OneSignal
+import com.yariksoffice.lingver.Lingver
 import timber.log.Timber
 import java.util.*
 
@@ -23,6 +26,8 @@ class LifeStepsApplication : Application() {
         Timber.plant(Timber.DebugTree())
 
         sharedPreferenceManager = PreferenceManager.getInstance(applicationContext)
+
+        Lingver.init(this, sharedPreferenceManager.language)
 
         val notificationOpenHandler = OneSignal.NotificationOpenedHandler { result ->
             val data = result?.notification?.payload?.additionalData
@@ -47,10 +52,6 @@ class LifeStepsApplication : Application() {
 
         configureDailyNotifications()
 
-    }
-
-    override fun attachBaseContext(base: Context?) {
-        super.attachBaseContext(LocaleManager.onAttach(base, DEFAULT_LANG_KEY))
     }
 
     private fun configureDailyNotifications() {

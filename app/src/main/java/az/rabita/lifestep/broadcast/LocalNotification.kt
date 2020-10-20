@@ -18,8 +18,8 @@ class LocalNotification : BroadcastReceiver() {
         context?.let {
             val builder = NotificationCompat.Builder(it, CHANNEL_NAME)
                 .setSmallIcon(R.drawable.ic_stat_onesignal_default)
-                .setContentTitle("Reminder Notification")
-                .setContentText("Reminder notification at specific time")
+                .setContentTitle(context.getString(R.string.local_notification_title))
+                .setContentText(context.getString(R.string.local_notification_body))
                 .setPriority(NotificationCompat.PRIORITY_DEFAULT)
 
             val manager = NotificationManagerCompat.from(it)

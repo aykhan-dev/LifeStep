@@ -1,20 +1,22 @@
 package az.rabita.lifestep.ui.activity.forgotPassword
 
-import android.content.Context
 import android.os.Bundle
 import androidx.activity.viewModels
-import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.Observer
 import androidx.navigation.findNavController
 import az.rabita.lifestep.R
 import az.rabita.lifestep.databinding.ActivityForgotPasswordBinding
-import az.rabita.lifestep.manager.LocaleManager
+import az.rabita.lifestep.ui.activity.BaseActivity
 import az.rabita.lifestep.ui.dialog.loading.LoadingDialog
 import az.rabita.lifestep.ui.dialog.message.MessageDialog
-import az.rabita.lifestep.utils.*
+import az.rabita.lifestep.utils.ERROR_TAG
+import az.rabita.lifestep.utils.LOADING_TAG
+import az.rabita.lifestep.utils.MAIN_TO_FORGOT_PASSWORD_KEY
+import az.rabita.lifestep.utils.UiState
 import az.rabita.lifestep.viewModel.fragment.forgotPassword.ForgotPasswordViewModel
 
-class ForgotPasswordActivity : AppCompatActivity() {
+class ForgotPasswordActivity : BaseActivity() {
 
     private lateinit var binding: ActivityForgotPasswordBinding
 
@@ -50,7 +52,7 @@ class ForgotPasswordActivity : AppCompatActivity() {
 
     private fun observeStates(): Unit = with(viewModel) {
 
-        uiState.observe(this@ForgotPasswordActivity, {
+        uiState.observe(this@ForgotPasswordActivity, Observer {
             it?.let {
                 when (it) {
                     is UiState.Loading -> supportFragmentManager.let { fm ->
@@ -71,7 +73,7 @@ class ForgotPasswordActivity : AppCompatActivity() {
 
     private fun observeData(): Unit = with(viewModel) {
 
-        errorMessage.observe(this@ForgotPasswordActivity, {
+        errorMessage.observe(this@ForgotPasswordActivity, Observer {
             it?.let { errorMsg ->
                 MessageDialog.getInstance(errorMsg).show(
                     supportFragmentManager,
@@ -84,14 +86,10 @@ class ForgotPasswordActivity : AppCompatActivity() {
 
     private fun navigate(): Unit = with(viewModel) {
 
-        eventBack.observe(this@ForgotPasswordActivity, {
+        eventBack.observe(this@ForgotPasswordActivity, Observer {
             it?.let { if (it) finish() }
         })
 
-    }
-
-    override fun attachBaseContext(newBase: Context?) {
-        super.attachBaseContext(LocaleManager.onAttach(newBase, DEFAULT_LANG_KEY))
     }
 
     override fun onBackPressed() {

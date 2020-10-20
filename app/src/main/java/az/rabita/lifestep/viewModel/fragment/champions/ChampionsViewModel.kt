@@ -14,9 +14,8 @@ import az.rabita.lifestep.pojo.holder.Message
 import az.rabita.lifestep.repository.ReportRepository
 import az.rabita.lifestep.repository.UsersRepository
 import az.rabita.lifestep.ui.dialog.message.MessageType
-import az.rabita.lifestep.utils.DEFAULT_LANG
-import az.rabita.lifestep.utils.LANG_KEY
-import az.rabita.lifestep.utils.TOKEN_KEY
+
+
 import az.rabita.lifestep.utils.isInternetConnectionAvailable
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -34,8 +33,8 @@ class ChampionsViewModel(app: Application) : AndroidViewModel(app) {
     private val _eventExpiredToken = MutableLiveData(false)
     val eventExpiredToken: LiveData<Boolean> get() = _eventExpiredToken
 
-    private var _errorMessage = MutableLiveData<Message>()
-    val errorMessage: LiveData<Message> get() = _errorMessage
+    private var _errorMessage = MutableLiveData<Message?>()
+    val errorMessage: LiveData<Message?> get() = _errorMessage
 
     private val _listOfChampions = MutableLiveData<List<RankerContentPOJO>>()
     val listOfChampions: LiveData<List<RankerContentPOJO>> get() = _listOfChampions
@@ -46,8 +45,8 @@ class ChampionsViewModel(app: Application) : AndroidViewModel(app) {
 
         viewModelScope.launch {
 
-            val token = sharedPreferences.getStringElement(TOKEN_KEY, "")
-            val lang = sharedPreferences.getIntegerElement(LANG_KEY, DEFAULT_LANG)
+            val token = sharedPreferences.token
+            val lang = sharedPreferences.langCode
 
             when (val response = reportRepository.getChampionsOfDay(token, lang)) {
                 is NetworkResult.Success<*> -> run {
@@ -68,8 +67,8 @@ class ChampionsViewModel(app: Application) : AndroidViewModel(app) {
 
         viewModelScope.launch {
 
-            val token = sharedPreferences.getStringElement(TOKEN_KEY, "")
-            val lang = sharedPreferences.getIntegerElement(LANG_KEY, DEFAULT_LANG)
+            val token = sharedPreferences.token
+            val lang = sharedPreferences.langCode
 
             when (val response = reportRepository.getChampionsOfWeek(token, lang)) {
                 is NetworkResult.Success<*> -> run {
@@ -89,8 +88,8 @@ class ChampionsViewModel(app: Application) : AndroidViewModel(app) {
 
         viewModelScope.launch {
 
-            val token = sharedPreferences.getStringElement(TOKEN_KEY, "")
-            val lang = sharedPreferences.getIntegerElement(LANG_KEY, DEFAULT_LANG)
+            val token = sharedPreferences.token
+            val lang = sharedPreferences.langCode
 
             when (val response = reportRepository.getChampionsOfMonth(token, lang)) {
                 is NetworkResult.Success<*> -> run {
@@ -118,7 +117,7 @@ class ChampionsViewModel(app: Application) : AndroidViewModel(app) {
     }
 
     private suspend fun startExpireTokenProcess(): Unit = withContext(Dispatchers.Main) {
-        sharedPreferences.setStringElement(TOKEN_KEY, "")
+        sharedPreferences.token = ""
         if (_eventExpiredToken.value == false) _eventExpiredToken.value = true
     }
 

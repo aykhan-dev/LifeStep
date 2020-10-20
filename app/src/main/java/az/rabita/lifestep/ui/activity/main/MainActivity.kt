@@ -1,23 +1,20 @@
 package az.rabita.lifestep.ui.activity.main
 
-import android.content.Context
 import android.os.Bundle
 import androidx.activity.viewModels
-import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.navigation.findNavController
 import androidx.navigation.ui.setupWithNavController
 import az.rabita.lifestep.R
 import az.rabita.lifestep.databinding.ActivityMainBinding
-import az.rabita.lifestep.manager.LocaleManager
 import az.rabita.lifestep.pojo.dataHolder.NotificationInfoHolder
+import az.rabita.lifestep.ui.activity.BaseActivity
 import az.rabita.lifestep.ui.fragment.home.HomeFragmentDirections
-import az.rabita.lifestep.utils.DEFAULT_LANG_KEY
 import az.rabita.lifestep.utils.NOTIFICATION_INFO_KEY
 import az.rabita.lifestep.viewModel.activity.main.MainViewModel
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : BaseActivity() {
 
     private lateinit var binding: ActivityMainBinding
 
@@ -77,10 +74,6 @@ class MainActivity : AppCompatActivity() {
             }
         })
 
-    }
-
-    override fun attachBaseContext(newBase: Context?) {
-        super.attachBaseContext(LocaleManager.onAttach(newBase, DEFAULT_LANG_KEY))
     }
 
 }

@@ -39,8 +39,8 @@ class LoginViewModel(application: Application) : AndroidViewModel(application) {
     private val _eventExpiredToken = MutableLiveData(false)
     val eventExpiredToken: LiveData<Boolean> = _eventExpiredToken
 
-    private var _errorMessage = MutableLiveData<Message>()
-    val errorMessage: LiveData<Message> get() = _errorMessage
+    private var _errorMessage = MutableLiveData<Message?>()
+    val errorMessage: LiveData<Message?> get() = _errorMessage
 
     val emailInput = MutableLiveData<String>()
     val passwordInput = MutableLiveData<String>()
@@ -69,12 +69,12 @@ class LoginViewModel(application: Application) : AndroidViewModel(application) {
 
                     uiState.value = UiState.Loading
 
-                    val lang = sharedPreferences.getIntegerElement(LANG_KEY, DEFAULT_LANG)
+                    val lang = sharedPreferences.langCode
 
                     when (val response = usersRepository.loginUser(lang, model)) {
                         is NetworkResult.Success<*> -> {
                             val data = response.data as List<TokenContentPOJO>
-                            sharedPreferences.setStringElement(TOKEN_KEY, data[0].token)
+                            sharedPreferences.token = data[0].token
                             _eventNavigateToMainActivity.onOff()
                         }
                         is NetworkResult.Failure -> when (response.type) {
@@ -125,7 +125,7 @@ class LoginViewModel(application: Application) : AndroidViewModel(application) {
         }
 
     private suspend fun startExpireTokenProcess(): Unit = withContext(Dispatchers.Main) {
-        sharedPreferences.setStringElement(TOKEN_KEY, "")
+        sharedPreferences.token = ""
         if (_eventExpiredToken.value == false) _eventExpiredToken.value = true
     }
 

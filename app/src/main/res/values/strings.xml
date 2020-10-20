@@ -159,6 +159,9 @@
     <string name="choose_image">Şəkil seçin</string>
 
     <string name="google_auth_downlaod_message">Google Fit aplikasiyasını telefonunuza quraşdırmalısınız</string>
+    <string name="crop">Kəs</string>
+    <string name="local_notification_title">Vaxt azalır ⌛</string>
+    <string name="local_notification_body">00:00-dan qabaq LifeStep addımlarınızı çevirməyi unutmayın</string>
 
     <string-array name="calcalationSuffixes">
         <item>min</item>

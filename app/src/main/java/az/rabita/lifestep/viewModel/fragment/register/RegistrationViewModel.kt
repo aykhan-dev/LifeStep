@@ -69,7 +69,7 @@ class RegistrationViewModel(application: Application) : AndroidViewModel(applica
 
                 uiState.value = UiState.Loading
 
-                val lang = sharedPreferences.getIntegerElement(LANG_KEY, DEFAULT_LANG)
+                val lang = sharedPreferences.langCode
 
                 when (val response = usersRepository.checkEmail(lang, model)) {
                     is NetworkResult.Success<*> -> _eventNavigateToNextRegisterFragment.onOff()
@@ -109,12 +109,12 @@ class RegistrationViewModel(application: Application) : AndroidViewModel(applica
 
                     uiState.value = UiState.Loading
 
-                    val lang = sharedPreferences.getIntegerElement(LANG_KEY, DEFAULT_LANG)
+                    val lang = sharedPreferences.langCode
 
                     when (val response = usersRepository.registerUser(lang, model)) {
                         is NetworkResult.Success<*> -> {
                             val data = response.data as List<TokenContentPOJO>
-                            sharedPreferences.setStringElement(TOKEN_KEY, data[0].token)
+                            sharedPreferences.token = data[0].token
                             _eventNavigateToMainActivity.onOff()
                         }
                         is NetworkResult.Failure -> when (response.type) {
@@ -172,7 +172,10 @@ class RegistrationViewModel(application: Application) : AndroidViewModel(applica
 
     private suspend fun handleNetworkException(exception: String) {
         if (context.isInternetConnectionAvailable()) showMessageDialog(exception, MessageType.ERROR)
-        else showMessageDialog(context.getString(R.string.no_internet_connection), MessageType.NO_INTERNET)
+        else showMessageDialog(
+            context.getString(R.string.no_internet_connection),
+            MessageType.NO_INTERNET
+        )
     }
 
     private fun showMessageDialogSync(message: String, type: MessageType) {
@@ -180,13 +183,14 @@ class RegistrationViewModel(application: Application) : AndroidViewModel(applica
         _errorMessage.value = null
     }
 
-    private suspend fun showMessageDialog(message: String, type: MessageType): Unit = withContext(Dispatchers.Main) {
-        _errorMessage.value = Message(message, type)
-        _errorMessage.value = null
-    }
+    private suspend fun showMessageDialog(message: String, type: MessageType): Unit =
+        withContext(Dispatchers.Main) {
+            _errorMessage.value = Message(message, type)
+            _errorMessage.value = null
+        }
 
     private suspend fun startExpireTokenProcess(): Unit = withContext(Dispatchers.Main) {
-        sharedPreferences.setStringElement(TOKEN_KEY, "")
+        sharedPreferences.token = ""
         if (_eventExpiredToken.value == false) _eventExpiredToken.value = true
     }
 

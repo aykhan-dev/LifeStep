@@ -18,6 +18,7 @@ import kotlinx.coroutines.withContext
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
+import okhttp3.RequestBody.Companion.asRequestBody
 import java.io.File
 
 
@@ -34,8 +35,8 @@ class EditProfileViewModel(application: Application) : AndroidViewModel(applicat
     private val _eventCloseEditProfilePage = MutableLiveData<Boolean>()
     val eventCloseEditProfilePage: LiveData<Boolean> get() = _eventCloseEditProfilePage
 
-    private var _errorMessage = MutableLiveData<Message>()
-    val errorMessage: LiveData<Message> get() = _errorMessage
+    private var _errorMessage = MutableLiveData<Message?>()
+    val errorMessage: LiveData<Message?> get() = _errorMessage
 
     val nameInput = MutableLiveData<String>()
     val surnameInput = MutableLiveData<String>()
@@ -58,8 +59,8 @@ class EditProfileViewModel(application: Application) : AndroidViewModel(applicat
 
             uiState.value = UiState.Loading
 
-            val token = sharedPreferences.getStringElement(TOKEN_KEY, "")
-            val lang = sharedPreferences.getIntegerElement(LANG_KEY, DEFAULT_LANG)
+            val token = sharedPreferences.token
+            val lang = sharedPreferences.langCode
 
             when (val response = usersRepository.getPersonalInfo(token, lang)) {
                 is NetworkResult.Failure -> when (response.type) {
@@ -82,8 +83,8 @@ class EditProfileViewModel(application: Application) : AndroidViewModel(applicat
 
             uiState.value = UiState.Loading
 
-            val token = sharedPreferences.getStringElement(TOKEN_KEY, "")
-            val lang = sharedPreferences.getIntegerElement(LANG_KEY, DEFAULT_LANG)
+            val token = sharedPreferences.token
+            val lang = sharedPreferences.langCode
 
             val model = ChangedProfileDetailsModelPOJO(
                 name = nameInput.value ?: "",
@@ -112,13 +113,13 @@ class EditProfileViewModel(application: Application) : AndroidViewModel(applicat
             uiState.value = UiState.Loading
 
             val requestFile: RequestBody =
-                RequestBody.create("multipart/form-data".toMediaTypeOrNull(), file)
+                file.asRequestBody("multipart/form-data".toMediaTypeOrNull())
 
             val body: MultipartBody.Part =
                 MultipartBody.Part.createFormData("image", file.name, requestFile)
 
-            val token = sharedPreferences.getStringElement(TOKEN_KEY, "")
-            val lang = sharedPreferences.getIntegerElement(LANG_KEY, DEFAULT_LANG)
+            val token = sharedPreferences.token
+            val lang = sharedPreferences.langCode
 
             when (val response = usersRepository.changeProfilePhoto(token, lang, body)) {
                 is NetworkResult.Success<*> -> fetchPersonalInfo()
@@ -180,12 +181,12 @@ class EditProfileViewModel(application: Application) : AndroidViewModel(applicat
         }
 
     private fun startExpireTokenProcessSync() {
-        sharedPreferences.setStringElement(TOKEN_KEY, "")
+        sharedPreferences.token = ""
         if (_eventExpiredToken.value == false) _eventExpiredToken.postValue(true)
     }
 
     private suspend fun startExpireTokenProcess(): Unit = withContext(Dispatchers.Main) {
-        sharedPreferences.setStringElement(TOKEN_KEY, "")
+        sharedPreferences.token = ""
         if (_eventExpiredToken.value == false) _eventExpiredToken.value = true
     }
 

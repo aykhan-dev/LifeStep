@@ -43,8 +43,8 @@ class DetailedInfoViewModel(application: Application) : AndroidViewModel(applica
     private val _topDonorsList = MutableLiveData<List<RankerContentPOJO>>()
     val topDonorsList: LiveData<List<RankerContentPOJO>> get() = _topDonorsList
 
-    private var _errorMessage = MutableLiveData<Message>()
-    val errorMessage: LiveData<Message> get() = _errorMessage
+    private var _errorMessage = MutableLiveData<Message?>()
+    val errorMessage: LiveData<Message?> get() = _errorMessage
 
     val donatedStepInput = MutableLiveData<String>().apply {
         observeForever {
@@ -63,8 +63,8 @@ class DetailedInfoViewModel(application: Application) : AndroidViewModel(applica
 
             uiState.value = UiState.Loading
 
-            val token = sharedPreferences.getStringElement(TOKEN_KEY, "")
-            val lang = sharedPreferences.getIntegerElement(LANG_KEY, DEFAULT_LANG)
+            val token = sharedPreferences.token
+            val lang = sharedPreferences.langCode
 
             when (val response =
                 assocationsRepository.getAssocationDetails(token, lang, assocationId)) {
@@ -89,8 +89,8 @@ class DetailedInfoViewModel(application: Application) : AndroidViewModel(applica
 
         viewModelScope.launch {
 
-            val token = sharedPreferences.getStringElement(TOKEN_KEY, "")
-            val lang = sharedPreferences.getIntegerElement(LANG_KEY, DEFAULT_LANG)
+            val token = sharedPreferences.token
+            val lang = sharedPreferences.langCode
 
             val model = DonorsModelPOJO(userId = assocationId, pageNumber = 1)
 
@@ -113,8 +113,8 @@ class DetailedInfoViewModel(application: Application) : AndroidViewModel(applica
 
         viewModelScope.launch {
 
-            val token = sharedPreferences.getStringElement(TOKEN_KEY, "")
-            val lang = sharedPreferences.getIntegerElement(LANG_KEY, DEFAULT_LANG)
+            val token = sharedPreferences.token
+            val lang = sharedPreferences.langCode
 
             when (val response = usersRepository.getPersonalInfo(token, lang)) {
                 is NetworkResult.Failure -> when (response.type) {
@@ -132,8 +132,8 @@ class DetailedInfoViewModel(application: Application) : AndroidViewModel(applica
 
             uiState.value = UiState.Loading
 
-            val token = sharedPreferences.getStringElement(TOKEN_KEY, "")
-            val lang = sharedPreferences.getIntegerElement(LANG_KEY, DEFAULT_LANG)
+            val token = sharedPreferences.token
+            val lang = sharedPreferences.langCode
 
             val formatted = getDateAndTime()
 
@@ -176,7 +176,7 @@ class DetailedInfoViewModel(application: Application) : AndroidViewModel(applica
         }
 
     private suspend fun startExpireTokenProcess(): Unit = withContext(Dispatchers.Main) {
-        sharedPreferences.setStringElement(TOKEN_KEY, "")
+        sharedPreferences.token = ""
         if (_eventExpiredToken.value == false) _eventExpiredToken.value = true
     }
 
