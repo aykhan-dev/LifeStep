@@ -13,5 +13,4 @@ class PagerAdapter(
 
     override fun createFragment(position: Int): Fragment = pages[position]
 
-
 }

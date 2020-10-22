@@ -48,11 +48,7 @@ class MainActivity : BaseActivity() {
 
         bottomNavigationView.setupWithNavController(navController)
 
-        bottomNavigationView.setOnNavigationItemReselectedListener {
-
-        }
-
-        navController.addOnDestinationChangedListener { controller, destination, arguments ->
+        navController.addOnDestinationChangedListener { _, destination, _ ->
             if (destination.id == R.id.homeFragment) this@MainActivity.viewModel.changePage(2)
         }
 
@@ -63,13 +59,20 @@ class MainActivity : BaseActivity() {
         indexOfSelectedPage.observe(this@MainActivity, Observer {
             it?.let {
                 with(binding.bottomNavigationView) {
-                    selectedItemId = when (it) {
+                    val destinationId = when (it) {
                         0 -> R.id.nav_graph_main_events
                         1 -> R.id.walletFragment
                         3 -> R.id.adsFragment
                         4 -> R.id.nav_graph_main_settings
                         else -> R.id.homeFragment
                     }
+                    val pageId = when(destinationId) {
+                        R.id.nav_graph_main_settings -> R.id.settingsFragment
+                        R.id.nav_graph_main_events -> R.id.eventsFragment
+                        else -> destinationId
+                    }
+                    if (navController.currentDestination?.id != pageId)
+                        selectedItemId = destinationId
                 }
             }
         })

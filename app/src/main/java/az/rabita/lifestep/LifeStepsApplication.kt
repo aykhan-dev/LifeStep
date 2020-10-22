@@ -36,9 +36,11 @@ class LifeStepsApplication : Application() {
                 val type = data.getInt(NOTIFICATION_TYPE_KEY)
                 val holder = NotificationInfoHolder(type, userId)
                 val intent = Intent(applicationContext, MainActivity::class.java)
+
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
                 intent.putExtra(NOTIFICATION_INFO_KEY, holder)
+
                 startActivity(intent)
             }
         }
@@ -56,33 +58,49 @@ class LifeStepsApplication : Application() {
 
     private fun configureDailyNotifications() {
 
-        createNotificationChannel()
+        if (sharedPreferenceManager.firstTime) {
 
-        val intent = Intent(applicationContext, LocalNotification::class.java)
-        val pendingIntent = PendingIntent.getBroadcast(
-            applicationContext,
-            LOCAL_NOTIFICATION_CODE,
-            intent,
-            PendingIntent.FLAG_UPDATE_CURRENT
-        )
+            createNotificationChannel()
 
-        val manager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
+            val intent = Intent(applicationContext, LocalNotification::class.java)
+            val pendingIntent = PendingIntent.getBroadcast(
+                applicationContext,
+                LOCAL_NOTIFICATION_CODE,
+                intent,
+                PendingIntent.FLAG_UPDATE_CURRENT
+            )
 
-        val calendar = Calendar.getInstance()
+            val manager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
 
-        calendar.timeInMillis = System.currentTimeMillis()
-        calendar.set(Calendar.HOUR_OF_DAY, 22)
-        calendar.set(Calendar.MINUTE, 0)
-        calendar.set(Calendar.SECOND, 0)
+            val calendar = Calendar.getInstance()
 
-        manager.setRepeating(
-            AlarmManager.RTC_WAKEUP,
-            calendar.timeInMillis,
-            AlarmManager.INTERVAL_DAY,
-            pendingIntent
-        )
+            calendar.timeInMillis = System.currentTimeMillis()
+            calendar.set(Calendar.HOUR_OF_DAY, 22)
+            calendar.set(Calendar.MINUTE, 0)
+            calendar.set(Calendar.SECOND, 0)
 
-        Timber.i("✅ Daily notifications have been set")
+            manager.setRepeating(
+                AlarmManager.RTC_WAKEUP,
+                calendar.timeInMillis,
+                AlarmManager.INTERVAL_DAY,
+                pendingIntent
+            )
+
+            calendar.timeInMillis = System.currentTimeMillis()
+            calendar.set(Calendar.HOUR_OF_DAY, 23)
+            calendar.set(Calendar.MINUTE, 0)
+            calendar.set(Calendar.SECOND, 0)
+
+            manager.setRepeating(
+                AlarmManager.RTC_WAKEUP,
+                calendar.timeInMillis,
+                AlarmManager.INTERVAL_DAY,
+                pendingIntent
+            )
+
+            sharedPreferenceManager.firstTime = false
+
+        }
 
     }
 

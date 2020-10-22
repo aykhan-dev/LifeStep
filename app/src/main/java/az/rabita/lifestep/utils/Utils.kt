@@ -2,7 +2,6 @@ package az.rabita.lifestep.utils
 
 import android.app.Activity
 import android.content.Context
-import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.ImageDecoder
 import android.net.ConnectivityManager
@@ -17,10 +16,8 @@ import android.view.View.VISIBLE
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.core.text.isDigitsOnly
-import androidx.fragment.app.Fragment
 import androidx.lifecycle.MutableLiveData
 import az.rabita.lifestep.network.NetworkResult
-import az.rabita.lifestep.network.NetworkResultFailureType
 import az.rabita.lifestep.pojo.apiPOJO.ServerResponsePOJO
 import az.rabita.lifestep.pojo.apiPOJO.content.AdsTransactionContentPOJO
 import az.rabita.lifestep.pojo.apiPOJO.content.DailyContentPOJO
@@ -210,26 +207,21 @@ fun Activity.makeEdgeToEdge() {
     }
 }
 
-suspend fun <T> networkRequest(request: suspend () -> Response<ServerResponsePOJO<T>>): NetworkResult =
+suspend fun <T> networkRequestExceptionally(request: suspend () -> Response<ServerResponsePOJO<T>>): NetworkResult =
     withContext(Dispatchers.IO) {
-        try {
-            val response = request()
-            checkNetworkRequestResponse(response)
-        } catch (exp: Exception) {
-            NetworkResult.Failure(NetworkResultFailureType.ERROR, exp.message ?: "")
-        }
+        return@withContext checkNetworkRequestResponseExceptionally(request())
     }
 
-fun <T> checkNetworkRequestResponse(response: Response<ServerResponsePOJO<T>>): NetworkResult {
-    return if (response.isSuccessful && response.code() == 200) {
-        response.body()?.let { body ->
-            when (val code = body.status.code) {
-                200, 201 -> NetworkResult.Success(body.content)
-                else -> NetworkResult.Failure(
-                    if (code == 300) NetworkResultFailureType.EXPIRED_TOKEN else NetworkResultFailureType.ERROR,
-                    body.status.text
-                )
+fun <T> checkNetworkRequestResponseExceptionally(response: Response<ServerResponsePOJO<T>>): NetworkResult.Success<List<T>?> {
+    return if (response.isSuccessful && response.code() == 200 && response.body() != null) {
+        val body = response.body()!!
+        when (val code = body.status.code) {
+            200 -> NetworkResult.Success(body.content)
+            else -> throw when (code) {
+                201 -> NetworkResult.Exceptions.RepeatedAction(code, body.status.text)
+                300 -> NetworkResult.Exceptions.ExpiredToken(code, body.status.text)
+                else -> NetworkResult.Exceptions.Failure(code, body.status.text)
             }
-        } ?: NetworkResult.Failure(NetworkResultFailureType.ERROR, "")
-    } else NetworkResult.Failure(NetworkResultFailureType.ERROR, response.message())
+        }
+    } else throw NetworkResult.Exceptions.ServerError(response.code(), response.message())
 }

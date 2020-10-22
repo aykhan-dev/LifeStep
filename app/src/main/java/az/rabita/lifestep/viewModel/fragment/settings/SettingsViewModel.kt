@@ -6,12 +6,17 @@ import az.rabita.lifestep.R
 import az.rabita.lifestep.local.getDatabase
 import az.rabita.lifestep.manager.PreferenceManager
 import az.rabita.lifestep.network.NetworkResult
-import az.rabita.lifestep.network.NetworkResultFailureType
 import az.rabita.lifestep.pojo.holder.Message
 import az.rabita.lifestep.repository.ReportRepository
 import az.rabita.lifestep.ui.dialog.message.MessageType
-import az.rabita.lifestep.utils.*
-import kotlinx.coroutines.*
+import az.rabita.lifestep.utils.INVITE_FRIENDS_GROUP_ID
+import az.rabita.lifestep.utils.INVITE_TEXT_KEY
+import az.rabita.lifestep.utils.isInternetConnectionAvailable
+import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.launch
+import timber.log.Timber
 
 class SettingsViewModel(application: Application) : AndroidViewModel(application) {
 
@@ -31,19 +36,22 @@ class SettingsViewModel(application: Application) : AndroidViewModel(application
     private var _errorMessage = MutableLiveData<Message?>()
     val errorMessage: LiveData<Message?> get() = _errorMessage
 
+    private val exceptionHandler = CoroutineExceptionHandler { _, throwable ->
+        when (throwable) {
+            is NetworkResult.Exceptions.ExpiredToken -> startExpireTokenProcess()
+            is NetworkResult.Exceptions.Failure -> handleNetworkException(throwable.message ?: "")
+            else -> Timber.e(throwable)
+        }
+    }
+
     fun fetchFriendshipStats() {
 
-        viewModelScope.launch {
+        viewModelScope.launch(exceptionHandler) {
 
             val token = sharedPreferences.token
             val lang = sharedPreferences.langCode
 
-            when (val response = reportRepository.getFriendshipStats(token, lang)) {
-                is NetworkResult.Failure -> when (response.type) {
-                    NetworkResultFailureType.EXPIRED_TOKEN -> startExpireTokenProcess()
-                    else -> handleNetworkException(response.message)
-                }
-            }
+            reportRepository.getFriendshipStats(token, lang)
 
         }
 
@@ -72,17 +80,20 @@ class SettingsViewModel(application: Application) : AndroidViewModel(application
 
     }
 
-    private suspend fun handleNetworkException(exception: String) {
+    private fun handleNetworkException(exception: String) {
         if (context.isInternetConnectionAvailable()) showMessageDialog(exception, MessageType.ERROR)
-        else showMessageDialog(context.getString(R.string.no_internet_connection), MessageType.NO_INTERNET)
+        else showMessageDialog(
+            context.getString(R.string.no_internet_connection),
+            MessageType.NO_INTERNET
+        )
     }
 
-    private suspend fun showMessageDialog(message: String, type: MessageType): Unit = withContext(Dispatchers.Main) {
+    private fun showMessageDialog(message: String, type: MessageType) {
         _errorMessage.value = Message(message, type)
         _errorMessage.value = null
     }
 
-    private suspend fun startExpireTokenProcess(): Unit = withContext(Dispatchers.Main) {
+    private fun startExpireTokenProcess() {
         sharedPreferences.token = ""
         if (_eventExpiredToken.value == false) _eventExpiredToken.value = true
     }

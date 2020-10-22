@@ -51,7 +51,17 @@ class HomeFragment : Fragment() {
         super.onCreate(savedInstanceState)
         lifecycleScope.launch(Dispatchers.IO) {
             whenResumed {
-                permissions()
+                if (!requireContext().appIsExist("com.google.android.apps.fitness")) {
+                    MessageDialog.getInstance(
+                        Message(
+                            getString(R.string.google_auth_downlaod_message),
+                            MessageType.GOOGLE_FIT_NOT_DOWNLOADED
+                        )
+                    ).show(
+                        requireActivity().supportFragmentManager,
+                        ERROR_TAG
+                    )
+                } else permissions()
             }
         }
     }
@@ -72,13 +82,12 @@ class HomeFragment : Fragment() {
         observeData()
         observeStates()
         observeEvents()
-        //retrieveAdsResults()
+        retrieveAdsResults()
     }
 
     override fun onStart() {
         super.onStart()
-        viewModel.fetchOwnProfileInfo()
-        viewModel.fetchWeeklyStats()
+        viewModel.start()
     }
 
     private fun bindUI(): Unit = with(binding) {
@@ -314,19 +323,7 @@ class HomeFragment : Fragment() {
                 arrayOf(Manifest.permission.ACTIVITY_RECOGNITION),
                 ACTIVITY_RECOGNITION_REQUEST_CODE
             )
-        } else {
-            if (!requireContext().appIsExist("com.google.android.apps.fitness")) {
-                MessageDialog.getInstance(
-                    Message(
-                        getString(R.string.google_auth_downlaod_message),
-                        MessageType.GOOGLE_FIT_NOT_DOWNLOADED
-                    )
-                ).show(
-                    requireActivity().supportFragmentManager,
-                    ERROR_TAG
-                )
-            } else googleAuthFlow()
-        }
+        } else googleAuthFlow()
 
     }
 
@@ -361,7 +358,7 @@ class HomeFragment : Fragment() {
                         Timber.i("Google fit permission accepted")
                         viewModel.accessGoogleFit()
                     } else {
-                        viewModel.showMessageDialogSync(
+                        viewModel.showMessageDialog(
                             getString(R.string.google_auth_fail_message),
                             MessageType.GOOGLE_FIT_NOT_CONNECTED
                         )

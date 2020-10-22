@@ -29,7 +29,7 @@ class ContentsRepository private constructor(database: AppDatabase) {
     val inviteFriendsContentMessage =
         contentsDao.getContent(INVITE_FRIENDS_GROUP_ID, INVITE_TEXT_KEY)
 
-    suspend fun getContent(token: String, lang: Int, groupID: Int): NetworkResult = networkRequest {
+    suspend fun getContent(token: String, lang: Int, groupID: Int): NetworkResult = networkRequestExceptionally {
         contentsService.getContent(token, lang, groupID)
     }.also {
         if (it is NetworkResult.Success<*>) {

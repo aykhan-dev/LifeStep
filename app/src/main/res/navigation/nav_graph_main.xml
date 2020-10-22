@@ -14,10 +14,6 @@
         app:destination="@id/bonusStepDialog" />
 
     <action
-        android:id="@+id/action_to_loading_dialog"
-        app:destination="@id/loadingDialog" />
-
-    <action
         android:id="@+id/action_to_congrats_dialog"
         app:destination="@id/congratsDialog" />
 
@@ -54,12 +50,6 @@
             android:defaultValue="false"
             app:argType="boolean" />
     </dialog>
-
-    <dialog
-        android:id="@+id/loadingDialog"
-        android:name="az.rabita.lifestep.ui.dialog.ads.AdsDialogFragment"
-        android:label="AdsDialogFragment"
-        tools:layout="@layout/dialog_loading" />
 
     <dialog
         android:id="@+id/congratsDialog"

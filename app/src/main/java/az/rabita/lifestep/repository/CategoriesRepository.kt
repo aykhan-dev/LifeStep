@@ -8,7 +8,7 @@ import az.rabita.lifestep.network.ApiInitHelper
 import az.rabita.lifestep.network.NetworkResult
 import az.rabita.lifestep.pojo.apiPOJO.content.CategoriesContentPOJO
 import az.rabita.lifestep.utils.asCategoryEntityObject
-import az.rabita.lifestep.utils.networkRequest
+import az.rabita.lifestep.utils.networkRequestExceptionally
 
 class CategoriesRepository private constructor(database: AppDatabase) {
 
@@ -19,13 +19,14 @@ class CategoriesRepository private constructor(database: AppDatabase) {
 
     val listOfCategories get() = categoriesDao.getCategoriesList()
 
-    suspend fun getCategories(token: String, lang: Int): NetworkResult = networkRequest {
-        categoriesService.getAllCategories(token, lang)
-    }.also {
-        if (it is NetworkResult.Success<*>) {
-            val data = it.data as List<CategoriesContentPOJO>
-            categoriesDao.cacheCategories(data.asCategoryEntityObject())
+    suspend fun getCategories(token: String, lang: Int): NetworkResult =
+        networkRequestExceptionally {
+            categoriesService.getAllCategories(token, lang)
+        }.also {
+            if (it is NetworkResult.Success<*>) {
+                val data = it.data as List<CategoriesContentPOJO>
+                categoriesDao.cacheCategories(data.asCategoryEntityObject())
+            }
         }
-    }
 
 }

@@ -18,6 +18,7 @@ import az.rabita.lifestep.utils.UiState
 import az.rabita.lifestep.utils.logout
 import az.rabita.lifestep.viewModel.fragment.friends.FriendsViewModel
 import jp.wasabeef.recyclerview.animators.ScaleInAnimator
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
@@ -36,6 +37,9 @@ class PageFriendsFragment(
         }
 
     private val loadingDialog = LoadingDialog()
+
+    private lateinit var friendsJob: Job
+    private lateinit var friendshipRequestsJob: Job
 
     private val navController by lazy { findNavController() }
 
@@ -58,6 +62,7 @@ class PageFriendsFragment(
         observeData()
         observeStates()
         observeEvents()
+        fetchPagingList()
     }
 
     private fun bindUI(): Unit = with(binding) {
@@ -79,26 +84,6 @@ class PageFriendsFragment(
                 )
             }
         })
-
-        when (pageType) {
-            FriendsPageType.MY_FRIENDS -> {
-                lifecycleScope.launch {
-                    friendsListFlow.collectLatest { pagingData ->
-                        adapter.submitData(pagingData)
-                    }
-                }
-            }
-            FriendsPageType.FRIEND_REQUESTS -> {
-                lifecycleScope.launch {
-                    friendsRequestListFlow.collectLatest { pagingData ->
-                        adapter.submitData(
-                            lifecycle,
-                            pagingData
-                        )
-                    }
-                }
-            }
-        }
 
     }
 
@@ -134,10 +119,34 @@ class PageFriendsFragment(
 
     }
 
+    fun fetchPagingList(): Unit = with(viewModel) {
+        when (pageType) {
+            FriendsPageType.MY_FRIENDS -> {
+                if (::friendsJob.isInitialized) friendsJob.cancel()
+                friendsJob = lifecycleScope.launch {
+                    friendsListFlow.collectLatest { pagingData ->
+                        adapter.submitData(pagingData)
+                    }
+                }
+            }
+            FriendsPageType.FRIEND_REQUESTS -> {
+                if (::friendshipRequestsJob.isInitialized) friendshipRequestsJob.cancel()
+                friendshipRequestsJob = lifecycleScope.launch {
+                    friendsRequestListFlow.collectLatest { pagingData ->
+                        adapter.submitData(
+                            lifecycle,
+                            pagingData
+                        )
+                    }
+                }
+            }
+        }
+    }
+
     private fun onItemClick(userId: String, isAccepted: Boolean?) {
         isAccepted?.let {
             viewModel.processFriendshipRequest(userId, it)
-            adapter.refresh()
+            fetchPagingList()
         } ?: itemClickListener(userId)
     }
 

@@ -15,7 +15,7 @@ import az.rabita.lifestep.pojo.apiPOJO.model.DonateStepModelPOJO
 import az.rabita.lifestep.pojo.apiPOJO.model.SendStepModelPOJO
 import az.rabita.lifestep.ui.fragment.history.page.HistoryPageType
 import az.rabita.lifestep.utils.NETWORK_PAGE_SIZE
-import az.rabita.lifestep.utils.networkRequest
+import az.rabita.lifestep.utils.networkRequestExceptionally
 
 object TransactionsRepository {
 
@@ -30,7 +30,7 @@ object TransactionsRepository {
         token: String,
         lang: Int,
         model: DonateStepModelPOJO
-    ): NetworkResult = networkRequest {
+    ): NetworkResult = networkRequestExceptionally {
         transactionsService.donateStep(token, lang, model)
     }
 
@@ -38,8 +38,8 @@ object TransactionsRepository {
         token: String,
         lang: Int,
         pageType: HistoryPageType,
-        onErrorListener: (message: String) -> Unit,
-        onExpireTokenListener: () -> Unit
+        onExpireTokenListener: suspend () -> Unit,
+        onErrorListener: suspend (message: String) -> Unit
     ): LiveData<PagingData<HistoryItemContentPOJO>> {
         return Pager(
             config = pagingConfig,
@@ -49,15 +49,15 @@ object TransactionsRepository {
                     lang,
                     pageType,
                     transactionsService,
-                    onErrorListener,
-                    onExpireTokenListener
+                    onExpireTokenListener,
+                    onErrorListener
                 )
             }
         ).liveData
     }
 
     suspend fun transferSteps(token: String, lang: Int, model: SendStepModelPOJO): NetworkResult =
-        networkRequest {
+        networkRequestExceptionally {
             transactionsService.sendStep(token, lang, model)
         }
 
@@ -65,17 +65,17 @@ object TransactionsRepository {
         token: String,
         lang: Int,
         model: CurrentStepModelPOJO
-    ): NetworkResult = networkRequest {
+    ): NetworkResult = networkRequestExceptionally {
         transactionsService.sendCurrentStepCount(token, lang, model)
     }
 
     suspend fun convertSteps(token: String, lang: Int, model: DateModelPOJO): NetworkResult =
-        networkRequest {
+        networkRequestExceptionally {
             transactionsService.convertSteps(token, lang, model)
         }
 
     suspend fun getBonusSteps(token: String, lang: Int, model: DateModelPOJO): NetworkResult =
-        networkRequest {
+        networkRequestExceptionally {
             transactionsService.getBonusSteps(token, lang, model)
         }
 

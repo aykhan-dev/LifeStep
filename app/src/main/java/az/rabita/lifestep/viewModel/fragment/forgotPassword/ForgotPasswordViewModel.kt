@@ -9,7 +9,6 @@ import az.rabita.lifestep.R
 import az.rabita.lifestep.local.getDatabase
 import az.rabita.lifestep.manager.PreferenceManager
 import az.rabita.lifestep.network.NetworkResult
-import az.rabita.lifestep.network.NetworkResultFailureType
 import az.rabita.lifestep.pojo.apiPOJO.content.OtpContentPOJO
 import az.rabita.lifestep.pojo.apiPOJO.model.EmailModelPOJO
 import az.rabita.lifestep.pojo.apiPOJO.model.ForgotPasswordModelPOJO
@@ -19,9 +18,9 @@ import az.rabita.lifestep.pojo.holder.Message
 import az.rabita.lifestep.repository.UsersRepository
 import az.rabita.lifestep.ui.dialog.message.MessageType
 import az.rabita.lifestep.utils.*
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import timber.log.Timber
 
 @Suppress("UNCHECKED_CAST")
 class ForgotPasswordViewModel(application: Application) : AndroidViewModel(application) {
@@ -46,6 +45,9 @@ class ForgotPasswordViewModel(application: Application) : AndroidViewModel(appli
     private var _eventNavigateToPasswordFragment = MutableLiveData<Boolean>()
     val eventNavigateToPasswordFragment: LiveData<Boolean> = _eventNavigateToPasswordFragment
 
+    private var _eventNavigateBackToEmailFragment = MutableLiveData<Boolean>()
+    val eventNavigateBackToEmailFragment: LiveData<Boolean> = _eventNavigateBackToEmailFragment
+
     private val _eventExpiredToken = MutableLiveData(false)
     val eventExpiredToken: LiveData<Boolean> get() = _eventExpiredToken
 
@@ -62,7 +64,7 @@ class ForgotPasswordViewModel(application: Application) : AndroidViewModel(appli
         observeForever { _statePinConfirmButtonEnable.value = isPinValid(it) }
     }
 
-    val passwordInput = MutableLiveData<String>()
+    val passwordInput = MutableLiveData<String?>()
 
     val passwordConfirmInput = MutableLiveData<String>()
 
@@ -70,9 +72,21 @@ class ForgotPasswordViewModel(application: Application) : AndroidViewModel(appli
 
     val uiState = MutableLiveData<UiState>()
 
+    private val exceptionHandler = CoroutineExceptionHandler { _, throwable ->
+        if (uiState.value == UiState.Loading) uiState.value = UiState.LoadingFinished
+        when (throwable) {
+            is NetworkResult.Exceptions.ExpiredToken -> startExpireTokenProcess()
+            is NetworkResult.Exceptions.Failure -> handleNetworkException(throwable.message ?: "")
+            else -> Timber.e(throwable)
+        }
+    }
+
+    var pinGeneratedTime = 0L
+
     fun onEmailConfirmClick() = sendEmailRequest(emailInput.value ?: "")
 
     fun onPinConfirmClick() {
+        //if(System.currentTimeMillis() - pinGeneratedTime > 30000) _eventNavigateBackToEmailFragment.onOff()
         viewModelScope.launch {
             if (checkPinCode(pinInput.value ?: "")) _eventNavigateToPasswordFragment.onOff()
             else showMessageDialog(getString(R.string.invalid_pin_code), MessageType.ERROR)
@@ -80,16 +94,18 @@ class ForgotPasswordViewModel(application: Application) : AndroidViewModel(appli
     }
 
     fun onPasswordConfirmClick() {
-        viewModelScope.launch {
+
+        viewModelScope.launch(exceptionHandler) {
             if (checkPasswords()) {
-                if (fromEditProfilePage) sendUpdatePasswordRequest() else sendChangePasswordRequest()
+                if (fromEditProfilePage) sendUpdatePasswordRequest()
+                else sendChangePasswordRequest()
             } else showMessageDialog(getString(R.string.not_same_passwords), MessageType.ERROR)
         }
     }
 
     private fun sendEmailRequest(email: String) {
 
-        viewModelScope.launch {
+        viewModelScope.launch(exceptionHandler) {
 
             uiState.value = UiState.Loading
 
@@ -97,17 +113,11 @@ class ForgotPasswordViewModel(application: Application) : AndroidViewModel(appli
 
             val lang = sharedPreferences.langCode
 
-            when (val response = usersRepository.sendOtp(lang, model)) {
-                is NetworkResult.Success<*> -> {
-                    val data = response.data as List<OtpContentPOJO>
-                    details = ForgotPasswordInfoHolder(data[0].userId, data[0].otp)
-                    _eventNavigateToPinFragment.onOff()
-                }
-                is NetworkResult.Failure -> when (response.type) {
-                    NetworkResultFailureType.EXPIRED_TOKEN -> startExpireTokenProcess()
-                    else -> handleNetworkException(response.message)
-                }
-            }
+            val response = usersRepository.sendOtp(lang, model)
+
+            val data = (response as NetworkResult.Success<List<OtpContentPOJO>>).data
+            details = ForgotPasswordInfoHolder(data[0].userId, data[0].otp)
+            _eventNavigateToPinFragment.onOff()
 
             uiState.value = UiState.LoadingFinished
 
@@ -115,65 +125,47 @@ class ForgotPasswordViewModel(application: Application) : AndroidViewModel(appli
 
     }
 
-    private fun sendChangePasswordRequest() {
+    private suspend fun sendChangePasswordRequest() {
 
-        viewModelScope.launch {
+        uiState.value = UiState.Loading
 
-            uiState.value = UiState.Loading
+        val model = ForgotPasswordModelPOJO(
+            id = details?.id ?: "",
+            otp = details?.otp ?: "",
+            password = passwordInput.value ?: "",
+            confirmPassword = passwordConfirmInput.value ?: ""
+        )
 
-            val model = ForgotPasswordModelPOJO(
-                id = details?.id ?: "",
-                otp = details?.otp ?: "",
-                password = passwordInput.value ?: "",
-                confirmPassword = passwordConfirmInput.value ?: ""
-            )
+        val lang = sharedPreferences.langCode
 
-            val lang = sharedPreferences.langCode
+        val response = usersRepository.changePassword(lang, model)
 
-            when (val response = usersRepository.changePassword(lang, model)) {
-                is NetworkResult.Success<*> -> {
-                    val successData = response.data
-                    successData?.let { _eventBack.onOff() }
-                }
-                is NetworkResult.Failure -> when (response.type) {
-                    NetworkResultFailureType.EXPIRED_TOKEN -> startExpireTokenProcess()
-                    else -> handleNetworkException(response.message)
-                }
-            }
+        val successData = (response as NetworkResult.Success<*>).data
+        successData?.let { _eventBack.onOff() }
 
-            uiState.value = UiState.LoadingFinished
-
-        }
+        uiState.value = UiState.LoadingFinished
 
     }
 
-    private fun sendUpdatePasswordRequest() {
-        viewModelScope.launch {
+    private suspend fun sendUpdatePasswordRequest() {
 
-            uiState.value = UiState.Loading
+        uiState.value = UiState.Loading
 
-            val token = sharedPreferences.token
-            val lang = sharedPreferences.langCode
+        val token = sharedPreferences.token
+        val lang = sharedPreferences.langCode
 
-            val model = RefreshPasswordModelPOJO(
-                password = passwordInput.value ?: "",
-                confirmPassword = passwordConfirmInput.value ?: ""
-            )
+        val model = RefreshPasswordModelPOJO(
+            password = passwordInput.value ?: "",
+            confirmPassword = passwordConfirmInput.value ?: ""
+        )
 
-            when (val response = usersRepository.updatePassword(token, lang, model)) {
-                is NetworkResult.Success<*> -> {
-                    val successData = response.data
-                    successData?.let { _eventBack.onOff() }
-                }
-                is NetworkResult.Failure -> when (response.type) {
-                    NetworkResultFailureType.EXPIRED_TOKEN -> startExpireTokenProcess()
-                    else -> handleNetworkException(response.message)
-                }
-            }
+        val response = usersRepository.updatePassword(token, lang, model)
 
-            uiState.value = UiState.LoadingFinished
+        val successData = (response as NetworkResult.Success<*>).data
+        successData?.let { _eventBack.onOff() }
 
-        }
+        uiState.value = UiState.LoadingFinished
+
     }
 
     private fun checkPasswords(): Boolean {
@@ -182,17 +174,20 @@ class ForgotPasswordViewModel(application: Application) : AndroidViewModel(appli
 
     private fun checkPinCode(pin: String): Boolean = (pin == details?.otp)
 
-    private suspend fun handleNetworkException(exception: String) {
+    private fun handleNetworkException(exception: String) {
         if (context.isInternetConnectionAvailable()) showMessageDialog(exception, MessageType.ERROR)
-        else showMessageDialog(context.getString(R.string.no_internet_connection), MessageType.NO_INTERNET)
+        else showMessageDialog(
+            context.getString(R.string.no_internet_connection),
+            MessageType.NO_INTERNET
+        )
     }
 
-    private suspend fun showMessageDialog(message: String, type: MessageType): Unit = withContext(Dispatchers.Main) {
+    private fun showMessageDialog(message: String, type: MessageType) {
         _errorMessage.value = Message(message, type)
         _errorMessage.value = null
     }
 
-    private suspend fun startExpireTokenProcess(): Unit = withContext(Dispatchers.Main) {
+    private fun startExpireTokenProcess() {
         sharedPreferences.token = ""
         if (_eventExpiredToken.value == false) _eventExpiredToken.value = true
     }

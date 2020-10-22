@@ -8,7 +8,7 @@ import az.rabita.lifestep.network.ApiInitHelper
 import az.rabita.lifestep.network.NetworkResult
 import az.rabita.lifestep.pojo.apiPOJO.content.AssocationContentPOJO
 import az.rabita.lifestep.utils.asAssocationEntityObject
-import az.rabita.lifestep.utils.networkRequest
+import az.rabita.lifestep.utils.networkRequestExceptionally
 
 class AssocationsRepository private constructor(database: AppDatabase) {
 
@@ -20,7 +20,7 @@ class AssocationsRepository private constructor(database: AppDatabase) {
     val listOfAssocations get() = assocationsDao.getAssocationsList()
 
     suspend fun getAllAssocations(token: String, lang: Int, categoryId: Int): NetworkResult =
-        networkRequest {
+        networkRequestExceptionally {
             assocationsService.getAllAssocations(token, lang, categoryId)
         }.also {
             if (it is NetworkResult.Success<*>) {
@@ -29,11 +29,11 @@ class AssocationsRepository private constructor(database: AppDatabase) {
             }
         }
 
-    suspend fun getAssocationDetails(
+    suspend fun getAssocationDetailsExceptionally(
         token: String,
         lang: Int,
         assocationId: String
-    ): NetworkResult = networkRequest {
+    ): NetworkResult = networkRequestExceptionally {
         assocationsService.getDetailsOfAssocation(token, lang, assocationId)
     }
 

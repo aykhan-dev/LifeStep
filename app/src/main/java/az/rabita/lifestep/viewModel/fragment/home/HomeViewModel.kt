@@ -7,7 +7,6 @@ import az.rabita.lifestep.R
 import az.rabita.lifestep.local.getDatabase
 import az.rabita.lifestep.manager.PreferenceManager
 import az.rabita.lifestep.network.NetworkResult
-import az.rabita.lifestep.network.NetworkResultFailureType
 import az.rabita.lifestep.pojo.apiPOJO.content.AdsTransactionContentPOJO
 import az.rabita.lifestep.pojo.apiPOJO.content.SearchResultContentPOJO
 import az.rabita.lifestep.pojo.apiPOJO.model.ConvertStepsModelPOJO
@@ -30,9 +29,11 @@ import com.google.android.gms.fitness.HistoryClient
 import com.google.android.gms.fitness.data.DataType
 import com.google.android.gms.fitness.data.Field
 import com.google.android.gms.tasks.Tasks
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import timber.log.Timber
 import java.util.*
 
 @Suppress("UNCHECKED_CAST")
@@ -40,6 +41,7 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
 
     private val context = application.applicationContext
     private val sharedPreferences = PreferenceManager.getInstance(context)
+
     private val usersRepository = UsersRepository.getInstance(getDatabase(context))
     private val reportRepository = ReportRepository.getInstance(getDatabase(context))
     private val transactionsRepository = TransactionsRepository
@@ -61,8 +63,7 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
 
     val weeklyStats = reportRepository.weeklyStats.asLiveData()
 
-    val searchingState = MutableLiveData<UiState?>()
-    val uiState = MutableLiveData<UiState>()
+    val uiState = MutableLiveData<UiState?>()
 
     val cachedOwnProfileInfo = usersRepository.cachedProfileInfo
 
@@ -72,44 +73,53 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
     private var calories = 0f
     private var distance = 0f
 
-    fun fetchOwnProfileInfo() {
+    private val exceptionHandler = CoroutineExceptionHandler { _, throwable ->
+        if (uiState.value == UiState.Loading) uiState.value = UiState.LoadingFinished
+        when (throwable) {
+            is NetworkResult.Exceptions.ExpiredToken -> startExpireTokenProcess()
+            is NetworkResult.Exceptions.Failure -> handleNetworkException(throwable.message ?: "")
+            else -> Timber.e(throwable)
+        }
+    }
 
-        viewModelScope.launch {
+    fun start() {
 
-            val token = sharedPreferences.token
-            val lang = sharedPreferences.langCode
+        viewModelScope.launch(exceptionHandler) {
 
-            when (val response = usersRepository.getPersonalInfo(token, lang)) {
-                is NetworkResult.Failure -> when (response.type) {
-                    NetworkResultFailureType.EXPIRED_TOKEN -> startExpireTokenProcess()
-                    else -> handleNetworkException(response.message)
-                }
-            }
+            val requests = listOf(
+                async { fetchOwnProfileInfo() },
+                async { fetchWeeklyStats() }
+            )
+
+            requests.awaitAll()
 
         }
 
     }
 
+    private suspend fun fetchOwnProfileInfo() {
+
+        val token = sharedPreferences.token
+        val lang = sharedPreferences.langCode
+
+        usersRepository.getPersonalInfoExceptionally(token, lang)
+
+    }
+
     fun fetchSearchResults() {
 
-        viewModelScope.launch {
+        viewModelScope.launch(exceptionHandler) {
 
             uiState.value = UiState.Loading
 
             val token = sharedPreferences.token
             val lang = sharedPreferences.langCode
 
-            when (val response =
-                usersRepository.searchUserByFullName(token, lang, searchInput.value ?: "")) {
-                is NetworkResult.Success<*> -> {
-                    val data = response.data as List<SearchResultContentPOJO>
-                    _listOfSearchResult.postValue(data)
-                }
-                is NetworkResult.Failure -> when (response.type) {
-                    NetworkResultFailureType.EXPIRED_TOKEN -> startExpireTokenProcess()
-                    else -> handleNetworkException(response.message)
-                }
-            }
+            val response =
+                usersRepository.searchUserByFullName(token, lang, searchInput.value ?: "")
+
+            val data = (response as NetworkResult.Success<List<SearchResultContentPOJO>>).data
+            _listOfSearchResult.postValue(data)
 
             uiState.value = UiState.LoadingFinished
 
@@ -117,31 +127,21 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
 
     }
 
-    fun fetchWeeklyStats() {
+    private suspend fun fetchWeeklyStats() {
 
-        viewModelScope.launch {
+        val token = sharedPreferences.token
+        val lang = sharedPreferences.langCode
 
-            val token = sharedPreferences.token
-            val lang = sharedPreferences.langCode
+        val date = Calendar.getInstance().time
+        val formatted = DateFormat.format("yyyy-MM-dd hh:mm:ss", date)
 
-            val date = Calendar.getInstance().time
-            val formatted = DateFormat.format("yyyy-MM-dd hh:mm:ss", date)
-
-            when (val response =
-                reportRepository.getWeeklyStats(token, lang, formatted.toString())) {
-                is NetworkResult.Failure -> when (response.type) {
-                    NetworkResultFailureType.EXPIRED_TOKEN -> startExpireTokenProcess()
-                    else -> handleNetworkException(response.message)
-                }
-            }
-
-        }
+        reportRepository.getWeeklyStats(token, lang, formatted.toString())
 
     }
 
     private fun sendCurrentStepData() {
 
-        viewModelScope.launch {
+        viewModelScope.launch(exceptionHandler) {
 
             val token = sharedPreferences.token
             val lang = sharedPreferences.langCode
@@ -156,13 +156,9 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
                 createdDate = formatted.toString()
             )
 
-            when (val response = transactionsRepository.sendCurrentStepData(token, lang, model)) {
-                is NetworkResult.Success<*> -> fetchWeeklyStats()
-                is NetworkResult.Failure -> when (response.type) {
-                    NetworkResultFailureType.EXPIRED_TOKEN -> startExpireTokenProcess()
-                    else -> handleNetworkException(response.message)
-                }
-            }
+            transactionsRepository.sendCurrentStepData(token, lang, model)
+
+            fetchWeeklyStats()
 
         }
 
@@ -176,7 +172,7 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
 
         if (isForBonusSteps) return
 
-        viewModelScope.launch {
+        viewModelScope.launch(exceptionHandler) {
 
             uiState.value = UiState.Loading
 
@@ -189,13 +185,9 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
                 createdDate = getDateAndTime()
             )
 
-            when (val response = adsRepository.sendAdsTransactionResult(token, lang, model)) {
-                is NetworkResult.Success<*> -> fetchWeeklyStats()
-                is NetworkResult.Failure -> when (response.type) {
-                    NetworkResultFailureType.EXPIRED_TOKEN -> startExpireTokenProcess()
-                    else -> handleNetworkException(response.message)
-                }
-            }
+            adsRepository.sendAdsTransactionResult(token, lang, model)
+
+            fetchWeeklyStats()
 
             uiState.value = UiState.LoadingFinished
 
@@ -205,7 +197,7 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
 
     fun createAdsTransaction() {
 
-        viewModelScope.launch {
+        viewModelScope.launch(exceptionHandler) {
 
             uiState.value = UiState.Loading
 
@@ -214,19 +206,13 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
 
             val model = DateModelPOJO(date = getDateAndTime())
 
-            when (val response = adsRepository.createAdsTransaction(token, lang, model)) {
-                is NetworkResult.Success<*> -> {
-                    val data = response.data as List<AdsTransactionContentPOJO>
-                    if (data.isNotEmpty()) {
-                        adsGenerated = true
-                        _adsTransaction.value = data[0]
-                        _adsTransaction.value = null
-                    }
-                }
-                is NetworkResult.Failure -> when (response.type) {
-                    NetworkResultFailureType.EXPIRED_TOKEN -> startExpireTokenProcess()
-                    else -> handleNetworkException(response.message)
-                }
+            val response = adsRepository.createAdsTransaction(token, lang, model)
+
+            val data = (response as NetworkResult.Success<List<AdsTransactionContentPOJO>>).data
+            if (data.isNotEmpty()) {
+                adsGenerated = true
+                _adsTransaction.value = data[0]
+                _adsTransaction.value = null
             }
 
             uiState.value = UiState.LoadingFinished
@@ -237,7 +223,7 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
 
     fun accessGoogleFit() {
 
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch {
 
             val account = GoogleSignIn.getAccountForExtension(context, FITNESS_OPTIONS)
             val historyClient = Fitness.getHistoryClient(context, account)
@@ -281,26 +267,23 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
             this.distance = distance / 1000f
         }
 
-    private suspend fun handleNetworkException(exception: String) {
-        if (context.isInternetConnectionAvailable()) showMessageDialog(exception, MessageType.ERROR)
+    private fun handleNetworkException(exception: String) {
+        if (context.isInternetConnectionAvailable()) showMessageDialog(
+            exception,
+            MessageType.ERROR
+        )
         else showMessageDialog(
             context.getString(R.string.no_internet_connection),
             MessageType.NO_INTERNET
         )
     }
 
-    fun showMessageDialogSync(message: String, type: MessageType) {
+    fun showMessageDialog(message: String, type: MessageType) {
         _errorMessage.value = Message(message, type)
         _errorMessage.value = null
     }
 
-    suspend fun showMessageDialog(message: String, type: MessageType): Unit =
-        withContext(Dispatchers.Main) {
-            _errorMessage.value = Message(message, type)
-            _errorMessage.value = null
-        }
-
-    private suspend fun startExpireTokenProcess(): Unit = withContext(Dispatchers.Main) {
+    private fun startExpireTokenProcess() {
         sharedPreferences.token = ""
         if (_eventExpiredToken.value == false) _eventExpiredToken.value = true
     }

@@ -8,7 +8,6 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
-import az.rabita.lifestep.NavGraphMainDirections
 import az.rabita.lifestep.databinding.FragmentPinBinding
 import az.rabita.lifestep.ui.dialog.message.MessageDialog
 import az.rabita.lifestep.utils.ERROR_TAG
@@ -22,6 +21,11 @@ class PinFragment : Fragment() {
     private val viewModel by activityViewModels<ForgotPasswordViewModel>()
 
     private val navController by lazy { findNavController() }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        viewModel.pinGeneratedTime = System.currentTimeMillis()
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -77,6 +81,12 @@ class PinFragment : Fragment() {
         eventNavigateToPasswordFragment.observe(viewLifecycleOwner, Observer {
             it?.let {
                 if (it) navController.navigate(PinFragmentDirections.actionPinFragmentToPasswordFragment())
+            }
+        })
+
+        eventNavigateBackToEmailFragment.observe(viewLifecycleOwner, Observer {
+            it?.let {
+                if(it) requireActivity().onBackPressed()
             }
         })
 

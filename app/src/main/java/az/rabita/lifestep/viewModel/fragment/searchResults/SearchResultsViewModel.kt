@@ -9,15 +9,15 @@ import az.rabita.lifestep.R
 import az.rabita.lifestep.local.getDatabase
 import az.rabita.lifestep.manager.PreferenceManager
 import az.rabita.lifestep.network.NetworkResult
-import az.rabita.lifestep.network.NetworkResultFailureType
 import az.rabita.lifestep.pojo.apiPOJO.content.SearchResultContentPOJO
 import az.rabita.lifestep.pojo.holder.Message
 import az.rabita.lifestep.repository.UsersRepository
 import az.rabita.lifestep.ui.dialog.message.MessageType
-import az.rabita.lifestep.utils.*
-import kotlinx.coroutines.Dispatchers
+import az.rabita.lifestep.utils.UiState
+import az.rabita.lifestep.utils.isInternetConnectionAvailable
+import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import timber.log.Timber
 
 @Suppress("UNCHECKED_CAST")
 class SearchResultsViewModel(application: Application) : AndroidViewModel(application) {
@@ -35,30 +35,32 @@ class SearchResultsViewModel(application: Application) : AndroidViewModel(applic
     private var _errorMessage = MutableLiveData<Message?>()
     val errorMessage: LiveData<Message?> get() = _errorMessage
 
-    val searchingState = MutableLiveData<UiState>()
+    val searchingState = MutableLiveData<UiState?>()
 
     val cachedOwnProfileInfo = usersRepository.cachedProfileInfo
 
+    private val exceptionHandler = CoroutineExceptionHandler { _, throwable ->
+        if (searchingState.value != UiState.LoadingFinished) searchingState.value = UiState.LoadingFinished
+        when (throwable) {
+            is NetworkResult.Exceptions.ExpiredToken -> startExpireTokenProcess()
+            is NetworkResult.Exceptions.Failure -> handleNetworkException(throwable.message ?: "")
+            else -> Timber.e(throwable)
+        }
+    }
+
     fun fetchSearchResults(searchInput: String) {
 
-        viewModelScope.launch {
+        viewModelScope.launch(exceptionHandler) {
 
             searchingState.value = UiState.Loading
 
             val token = sharedPreferences.token
             val lang = sharedPreferences.langCode
 
-            when (val response =
-                usersRepository.searchUserByFullName(token, lang, searchInput)) {
-                is NetworkResult.Success<*> -> {
-                    val data = response.data as List<SearchResultContentPOJO>
-                    _listOfSearchResult.postValue(data)
-                }
-                is NetworkResult.Failure -> when (response.type) {
-                    NetworkResultFailureType.EXPIRED_TOKEN -> startExpireTokenProcess()
-                    else -> handleNetworkException(response.message)
-                }
-            }
+            val response = usersRepository.searchUserByFullName(token, lang, searchInput)
+
+            val data = (response as NetworkResult.Success<List<SearchResultContentPOJO>>).data
+            _listOfSearchResult.postValue(data)
 
             searchingState.value = UiState.LoadingFinished
 
@@ -66,17 +68,20 @@ class SearchResultsViewModel(application: Application) : AndroidViewModel(applic
 
     }
 
-    private suspend fun handleNetworkException(exception: String) {
+    private fun handleNetworkException(exception: String) {
         if (context.isInternetConnectionAvailable()) showMessageDialog(exception, MessageType.ERROR)
-        else showMessageDialog(context.getString(R.string.no_internet_connection), MessageType.NO_INTERNET)
+        else showMessageDialog(
+            context.getString(R.string.no_internet_connection),
+            MessageType.NO_INTERNET
+        )
     }
 
-    private suspend fun showMessageDialog(message: String, type: MessageType): Unit = withContext(Dispatchers.Main) {
+    private fun showMessageDialog(message: String, type: MessageType) {
         _errorMessage.value = Message(message, type)
         _errorMessage.value = null
     }
 
-    private suspend fun startExpireTokenProcess(): Unit = withContext(Dispatchers.Main) {
+    private fun startExpireTokenProcess() {
         sharedPreferences.token = ""
         if (_eventExpiredToken.value == false) _eventExpiredToken.value = true
     }

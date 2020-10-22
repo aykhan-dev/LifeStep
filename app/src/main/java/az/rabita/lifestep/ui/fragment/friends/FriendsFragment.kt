@@ -8,10 +8,12 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
+import androidx.viewpager2.widget.ViewPager2
 import az.rabita.lifestep.NavGraphMainDirections
 import az.rabita.lifestep.R
 import az.rabita.lifestep.databinding.FragmentFriendsBinding
 import az.rabita.lifestep.ui.dialog.message.MessageDialog
+import az.rabita.lifestep.ui.fragment.friends.page.PageFriendsFragment
 import az.rabita.lifestep.utils.ERROR_TAG
 import az.rabita.lifestep.utils.logout
 import az.rabita.lifestep.viewModel.fragment.friends.FriendsViewModel
@@ -93,11 +95,30 @@ class FriendsFragment : Fragment() {
 
     private fun configureViewPager(): Unit = with(binding) {
         activity?.let {
-            viewPager.adapter = FriendsPagerAdapter(it) { userId ->
-                navController.navigate(
-                    NavGraphMainDirections.actionToOtherProfileFragment(userId)
-                )
-            }
+            val fragments = listOf(
+                PageFriendsFragment(FriendsPageType.MY_FRIENDS) { userId ->
+                    navController.navigate(
+                        NavGraphMainDirections.actionToOtherProfileFragment(userId)
+                    )
+                },
+                PageFriendsFragment(FriendsPageType.FRIEND_REQUESTS) { userId ->
+                    navController.navigate(
+                        NavGraphMainDirections.actionToOtherProfileFragment(userId)
+                    )
+                }
+            )
+            viewPager.adapter = FriendsPagerAdapter(it, fragments)
+            viewPager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
+                override fun onPageScrolled(
+                    position: Int,
+                    positionOffset: Float,
+                    positionOffsetPixels: Int
+                ) {
+                    super.onPageScrolled(position, positionOffset, positionOffsetPixels)
+                    val fragment = fragments[position]
+                    if(fragment.isAdded) fragment.fetchPagingList()
+                }
+            })
         }
         TabLayoutMediator(tabLayoutFriends, viewPager) { _, _ -> }.attach()
     }

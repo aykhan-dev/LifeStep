@@ -8,7 +8,7 @@ import az.rabita.lifestep.network.ApiInitHelper
 import az.rabita.lifestep.network.NetworkResult
 import az.rabita.lifestep.pojo.apiPOJO.content.NotificationContentPOJO
 import az.rabita.lifestep.utils.asNotificationEntityObject
-import az.rabita.lifestep.utils.networkRequest
+import az.rabita.lifestep.utils.networkRequestExceptionally
 
 class NotificationsRepository private constructor(database: AppDatabase) {
 
@@ -20,16 +20,17 @@ class NotificationsRepository private constructor(database: AppDatabase) {
 
     val listOfNotifications get() = notificationDao.getAllNotifications()
 
-    suspend fun fetchNotifications(token: String, lang: Int): NetworkResult = networkRequest {
-        notificationsService.fetchNotifications(token, lang)
-    }.also {
-        if (it is NetworkResult.Success<*>) {
-            val data = it.data as List<NotificationContentPOJO>
-            if (data.isNotEmpty()) {
-                val convertedData = data.asNotificationEntityObject()
-                notificationDao.cacheNotifications(convertedData)
+    suspend fun fetchNotifications(token: String, lang: Int): NetworkResult =
+        networkRequestExceptionally {
+            notificationsService.fetchNotifications(token, lang)
+        }.also {
+            if (it is NetworkResult.Success<*>) {
+                val data = it.data as List<NotificationContentPOJO>
+                if (data.isNotEmpty()) {
+                    val convertedData = data.asNotificationEntityObject()
+                    notificationDao.cacheNotifications(convertedData)
+                }
             }
         }
-    }
 
 }

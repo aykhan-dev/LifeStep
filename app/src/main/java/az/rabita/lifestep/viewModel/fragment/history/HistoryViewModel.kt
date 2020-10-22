@@ -17,6 +17,8 @@ import az.rabita.lifestep.ui.fragment.history.page.HistoryPageType
 
 
 import az.rabita.lifestep.utils.isInternetConnectionAvailable
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 class HistoryViewModel(application: Application) : AndroidViewModel(application) {
 
@@ -37,14 +39,17 @@ class HistoryViewModel(application: Application) : AndroidViewModel(application)
             token = token,
             lang = lang,
             pageType = pageType,
-            onErrorListener = { handleNetworkException(it) },
-            onExpireTokenListener = { startExpireTokenProcess() }
+            onExpireTokenListener = { withContext(Dispatchers.Main) { startExpireTokenProcess() } },
+            onErrorListener = { withContext(Dispatchers.Main) { handleNetworkException(it) } }
         ).cachedIn(viewModelScope)
     }
 
     private fun handleNetworkException(exception: String) {
         if (context.isInternetConnectionAvailable()) showMessageDialog(exception, MessageType.ERROR)
-        else showMessageDialog(context.getString(R.string.no_internet_connection), MessageType.ERROR)
+        else showMessageDialog(
+            context.getString(R.string.no_internet_connection),
+            MessageType.ERROR
+        )
     }
 
     private fun showMessageDialog(message: String, type: MessageType) {

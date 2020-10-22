@@ -8,9 +8,6 @@ class PreferenceManager private constructor(val context: Context) {
 
     companion object : SingletonHolder<PreferenceManager, Context>(::PreferenceManager) {
         const val LANG_CODE_KEY_WORD = "language code"
-        const val LANG_AZ_KEY_WORD = "language az"
-        const val LANG_EN_KEY_WORD = "language en"
-        const val LANG_RU_KEY_WORD = "language ru"
 
         const val LANG_CODE_AZ = 10
         const val LANG_CODE_EN = 20
@@ -26,6 +23,8 @@ class PreferenceManager private constructor(val context: Context) {
 
         const val USER_TOKEN_KEY_WORD = "user access token"
         const val DEFAULT_TOKEN = ""
+
+        const val FIRST_TIME_KEY_WORD = "app is launching for the first time"
     }
 
     private var sharedPreferences: SharedPreferences = context.getSharedPreferences(
@@ -49,14 +48,18 @@ class PreferenceManager private constructor(val context: Context) {
         get() = getStringElement(USER_TOKEN_KEY_WORD, DEFAULT_TOKEN)
         set(value) = setStringElement(USER_TOKEN_KEY_WORD, value)
 
-    fun setStringElement(key: String, value: String) {
+    var firstTime
+        get() = getBooleanElement(FIRST_TIME_KEY_WORD, true)
+        set(value) = setBooleanElement(FIRST_TIME_KEY_WORD, value)
+
+    private fun setStringElement(key: String, value: String) {
         with(sharedPreferences.edit()) {
             this?.putString(key, value)
             this?.apply()
         }
     }
 
-    fun getStringElement(key: String, defaultValue: String): String {
+    private fun getStringElement(key: String, defaultValue: String): String {
         return sharedPreferences.getString(key, defaultValue) ?: ""
     }
 
@@ -69,6 +72,17 @@ class PreferenceManager private constructor(val context: Context) {
 
     private fun getIntegerElement(key: String, defaultValue: Int): Int {
         return sharedPreferences.getInt(key, defaultValue)
+    }
+
+    private fun setBooleanElement(key: String, value: Boolean) {
+        with(sharedPreferences.edit()) {
+            this?.putBoolean(key, value)
+            this?.apply()
+        }
+    }
+
+    private fun getBooleanElement(key: String, defaultValue: Boolean): Boolean {
+        return sharedPreferences.getBoolean(key, defaultValue)
     }
 
 }

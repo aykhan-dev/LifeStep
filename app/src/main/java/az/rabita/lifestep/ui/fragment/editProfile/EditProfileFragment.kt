@@ -146,6 +146,7 @@ class EditProfileFragment : Fragment() {
                 title = getString(R.string.choose_image)
                 cameraButtonText = getString(R.string.camera)
                 galleryButtonText = getString(R.string.gallery)
+                cancelText = getString(R.string.close)
             }
         ).setOnPickResult {
             it?.let {

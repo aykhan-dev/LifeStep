@@ -4,7 +4,7 @@ import az.rabita.lifestep.network.ApiInitHelper
 import az.rabita.lifestep.network.NetworkResult
 import az.rabita.lifestep.pojo.apiPOJO.model.FriendRequestModelPOJO
 import az.rabita.lifestep.pojo.apiPOJO.model.FriendshipActionModelPOJO
-import az.rabita.lifestep.utils.networkRequest
+import az.rabita.lifestep.utils.networkRequestExceptionally
 
 object FriendshipRepository {
 
@@ -15,7 +15,7 @@ object FriendshipRepository {
         lang: Int,
         friendshipActionModelPOJO: FriendshipActionModelPOJO,
         isAccepted: Boolean
-    ): NetworkResult = networkRequest {
+    ): NetworkResult = networkRequestExceptionally {
         if (isAccepted)
             friendShipService.acceptFriendRequest(token, lang, friendshipActionModelPOJO)
         else
@@ -26,7 +26,7 @@ object FriendshipRepository {
         token: String,
         lang: Int,
         model: FriendRequestModelPOJO
-    ): NetworkResult = networkRequest {
+    ): NetworkResult = networkRequestExceptionally {
         friendShipService.sendFriendRequest(token, lang, model)
     }
 

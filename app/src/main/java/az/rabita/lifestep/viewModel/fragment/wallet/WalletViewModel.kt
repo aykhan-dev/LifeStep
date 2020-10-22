@@ -1,21 +1,19 @@
 package az.rabita.lifestep.viewModel.fragment.wallet
 
+
 import android.app.Application
 import androidx.lifecycle.*
 import az.rabita.lifestep.R
 import az.rabita.lifestep.local.getDatabase
 import az.rabita.lifestep.manager.PreferenceManager
 import az.rabita.lifestep.network.NetworkResult
-import az.rabita.lifestep.network.NetworkResultFailureType
 import az.rabita.lifestep.pojo.holder.Message
 import az.rabita.lifestep.repository.ReportRepository
 import az.rabita.lifestep.ui.dialog.message.MessageType
-
-
 import az.rabita.lifestep.utils.isInternetConnectionAvailable
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import timber.log.Timber
 
 class WalletViewModel(application: Application) : AndroidViewModel(application) {
 
@@ -32,25 +30,28 @@ class WalletViewModel(application: Application) : AndroidViewModel(application) 
 
     val walletInfo = reportRepository.walletInfo.asLiveData()
 
+    private val exceptionHandler = CoroutineExceptionHandler { _, throwable ->
+        when (throwable) {
+            is NetworkResult.Exceptions.ExpiredToken -> startExpireTokenProcess()
+            is NetworkResult.Exceptions.Failure -> handleNetworkException(throwable.message ?: "")
+            else -> Timber.e(throwable)
+        }
+    }
+
     fun fetchWalletInfo() {
 
-        viewModelScope.launch {
+        viewModelScope.launch(exceptionHandler) {
 
             val token = sharedPreferences.token
             val lang = sharedPreferences.langCode
 
-            when (val response = reportRepository.getTotalTransactionInfo(token, lang)) {
-                is NetworkResult.Failure -> when (response.type) {
-                    NetworkResultFailureType.EXPIRED_TOKEN -> startExpireTokenProcess()
-                    else -> handleNetworkException(response.message)
-                }
-            }
+            reportRepository.getTotalTransactionInfo(token, lang)
 
         }
 
     }
 
-    private suspend fun handleNetworkException(exception: String) {
+    private fun handleNetworkException(exception: String) {
         if (context.isInternetConnectionAvailable()) showMessageDialog(exception, MessageType.ERROR)
         else showMessageDialog(
             context.getString(R.string.no_internet_connection),
@@ -58,13 +59,12 @@ class WalletViewModel(application: Application) : AndroidViewModel(application) 
         )
     }
 
-    private suspend fun showMessageDialog(message: String, type: MessageType): Unit =
-        withContext(Dispatchers.Main) {
-            _errorMessage.value = Message(message, type)
-            _errorMessage.value = null
-        }
+    private fun showMessageDialog(message: String, type: MessageType) {
+        _errorMessage.value = Message(message, type)
+        _errorMessage.value = null
+    }
 
-    private suspend fun startExpireTokenProcess(): Unit = withContext(Dispatchers.Main) {
+    private fun startExpireTokenProcess() {
         sharedPreferences.token = ""
         if (_eventExpiredToken.value == false) _eventExpiredToken.value = true
     }

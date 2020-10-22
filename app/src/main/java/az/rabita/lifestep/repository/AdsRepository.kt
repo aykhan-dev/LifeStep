@@ -4,7 +4,7 @@ import az.rabita.lifestep.network.ApiInitHelper
 import az.rabita.lifestep.network.NetworkResult
 import az.rabita.lifestep.pojo.apiPOJO.model.ConvertStepsModelPOJO
 import az.rabita.lifestep.pojo.apiPOJO.model.DateModelPOJO
-import az.rabita.lifestep.utils.networkRequest
+import az.rabita.lifestep.utils.networkRequestExceptionally
 
 object AdsRepository {
 
@@ -14,7 +14,7 @@ object AdsRepository {
         token: String,
         lang: Int,
         model: DateModelPOJO
-    ): NetworkResult = networkRequest {
+    ): NetworkResult = networkRequestExceptionally {
         advertisementService.createAdsTransaction(token, lang, model)
     }
 
@@ -22,7 +22,7 @@ object AdsRepository {
         token: String,
         lang: Int,
         model: ConvertStepsModelPOJO
-    ): NetworkResult = networkRequest {
+    ): NetworkResult = networkRequestExceptionally {
         advertisementService.sendAdsTransactionResult(token, lang, model)
     }
 
@@ -30,7 +30,7 @@ object AdsRepository {
         token: String,
         lang: Int,
         model: ConvertStepsModelPOJO
-    ): NetworkResult = networkRequest {
+    ): NetworkResult = networkRequestExceptionally {
         advertisementService.sendBonusAdsTransactionResult(token, lang, model)
     }
 

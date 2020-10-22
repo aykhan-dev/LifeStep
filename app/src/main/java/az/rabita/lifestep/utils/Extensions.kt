@@ -11,6 +11,7 @@ import az.rabita.lifestep.manager.PreferenceManager
 import az.rabita.lifestep.ui.activity.auth.AuthActivity
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import timber.log.Timber
 import java.text.DecimalFormat
 
 fun Activity.logout() {
@@ -20,6 +21,8 @@ fun Activity.logout() {
 
         startActivity(Intent(this, AuthActivity::class.java))
         finish()
+
+        Timber.i("☢ Token is expired, It has been navigated to Login screen")
     }
 }
 

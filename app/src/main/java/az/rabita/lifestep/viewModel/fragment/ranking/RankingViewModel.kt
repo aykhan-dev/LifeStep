@@ -15,6 +15,8 @@ import az.rabita.lifestep.pojo.holder.Message
 import az.rabita.lifestep.repository.UsersRepository
 import az.rabita.lifestep.ui.dialog.message.MessageType
 import az.rabita.lifestep.utils.isInternetConnectionAvailable
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 @Suppress("UNCHECKED_CAST")
 class RankingViewModel(application: Application) : AndroidViewModel(application) {
@@ -39,8 +41,8 @@ class RankingViewModel(application: Application) : AndroidViewModel(application)
             token,
             lang,
             id,
-            { handleNetworkException(it) },
-            { startExpireTokenProcess() }
+            { withContext(Dispatchers.Main) { handleNetworkException(it) } },
+            { withContext(Dispatchers.Main) { startExpireTokenProcess() } }
         ).cachedIn(viewModelScope)
     }
 

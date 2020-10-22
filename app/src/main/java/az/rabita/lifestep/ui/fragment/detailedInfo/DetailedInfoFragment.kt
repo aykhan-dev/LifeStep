@@ -64,8 +64,7 @@ class DetailedInfoFragment : Fragment() {
 
     override fun onStart() {
         super.onStart()
-        viewModel.fetchPersonalInfo()
-        viewModel.fetchDetailedInfo(args.assocationId)
+        viewModel.start(args.assocationId)
     }
 
     private fun bindUI(): Unit = with(binding) {
@@ -123,13 +122,15 @@ class DetailedInfoFragment : Fragment() {
 
     private fun observeData(): Unit = with(viewModel) {
 
-        profileInfo.observe(viewLifecycleOwner, Observer {}) //DON'T REMOVE THIS LINE ELSE IT WILL BE NULL
+        profileInfo.observe(
+            viewLifecycleOwner,
+            Observer {}) //DON'T REMOVE THIS LINE ELSE IT WILL BE NULL
 
         navController.currentBackStackEntry
             ?.savedStateHandle
             ?.getLiveData<Boolean>("Donated")
             ?.observe(viewLifecycleOwner, Observer {
-                viewModel.fetchDetailedInfo(args.assocationId)
+                viewModel.start(args.assocationId)
             })
 
         assocationDetails.observe(viewLifecycleOwner, Observer {

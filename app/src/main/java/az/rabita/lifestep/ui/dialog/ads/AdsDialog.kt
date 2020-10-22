@@ -157,6 +157,7 @@ class AdsDialog : SingleInstanceDialog() {
 
         })
 
+        simplePlayer!!.volume = if (isMuted.value == true) 0f else 1f
         simplePlayer!!.playWhenReady = (playWhenReady)
         simplePlayer!!.seekTo(currentWindow, playbackPosition)
         simplePlayer!!.prepare(mediaSource, false, false)
