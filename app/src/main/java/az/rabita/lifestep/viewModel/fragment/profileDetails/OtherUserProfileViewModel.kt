@@ -53,7 +53,7 @@ class OtherUserProfileViewModel(app: Application) : AndroidViewModel(app) {
     private val _profileInfo = MutableLiveData<PersonalInfoContentPOJO>()
     val profileInfo: LiveData<PersonalInfoContentPOJO> get() = _profileInfo
 
-    val isDailyStatsShown = MutableLiveData<Boolean??>(true)
+    val isDailyStatsShown = MutableLiveData(true)
 
     val cachedOwnProfileInfo = usersRepository.personalInfo.asLiveData()
 

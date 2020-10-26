@@ -159,12 +159,12 @@
             style="@style/Widget.MaterialComponents.Button.TextButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="end"
+            android:layout_gravity="start"
             android:fontFamily="@font/gilroy_semibold"
             android:text="@string/back"
             android:textAllCaps="false"
             android:textAppearance="@style/TextAppearance.MaterialComponents.Body1"
-            android:textColor="@color/main_text_color" />
+            android:textColor="@color/bottom_navigation_view_color" />
 
     </LinearLayout>
 

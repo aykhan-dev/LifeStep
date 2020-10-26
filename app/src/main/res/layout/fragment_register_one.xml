@@ -28,14 +28,13 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-            <EditText
+            <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/edit_text_email"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:backgroundTint="@color/edit_text_bottom_line_color"
                 android:fontFamily="@font/gilroy_medium"
                 android:hint="@string/email"
-                android:imeOptions="actionNext"
                 android:inputType="textEmailAddress"
                 android:paddingBottom="20dp"
                 android:text="@={viewModel.emailInput}"
@@ -54,14 +53,13 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-            <EditText
+            <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/edit_text_password"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:backgroundTint="@color/edit_text_bottom_line_color"
                 android:fontFamily="@font/gilroy_medium"
                 android:hint="@string/password"
-                android:imeOptions="actionNext"
                 android:inputType="textPassword"
                 android:paddingBottom="20dp"
                 android:text="@={viewModel.passwordInput}"
@@ -80,7 +78,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-            <EditText
+            <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/edit_text_password_confirm"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
